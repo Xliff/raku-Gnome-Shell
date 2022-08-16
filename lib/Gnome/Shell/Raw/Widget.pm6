@@ -6,6 +6,7 @@ use GLib::Raw::Definitions;
 use ATK::Raw::Definitions:
 use Mutter::Raw::Definitions;
 use Gnome::Shell::Raw::Definitions;
+use Gnome::Shell::Raw::Enums;
 
 unit package Gnome::Shell::Raw::Widget;
 
