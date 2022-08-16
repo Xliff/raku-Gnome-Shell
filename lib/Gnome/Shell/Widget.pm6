@@ -16,8 +16,10 @@ our subset StWidgetAncestry is export of Mu
 class Gnome::Shell::Widget is Mutter::Clutter::Actor {
   has StWidget $!stw is implementor;
 
-  submethod BUILD ( :$st-widget ) {
-    self.setStWidget($st-widget) if $st-widget
+  submethod BUILD ( :$st-widget, *%props ) {
+    self.setStWidget($st-widget) if $st-widget;
+
+    self."{ .key }"() = .value for %props.pairs;
   }
 
   method setStWidget (StWidgetAncestry $_) {
