@@ -51,6 +51,161 @@ class Gnome::Shell::Widget is Mutter::Clutter::Actor {
     $o;
   }
 
+  # Type: string
+  method pseudo-class is rw  is g-property {
+    my $gv = GLib::Value.new( G_TYPE_STRING );
+    Proxy.new(
+      FETCH => sub ($) {
+        self.prop_get('pseudo-class', $gv);
+        $gv.string;
+      },
+      STORE => -> $, Str() $val is copy {
+        $gv.string = $val;
+        self.prop_set('pseudo-class', $gv);
+      }
+    );
+  }
+
+  # Type: string
+  method style-class is rw  is g-property {
+    my $gv = GLib::Value.new( G_TYPE_STRING );
+    Proxy.new(
+      FETCH => sub ($) {
+        self.prop_get('style-class', $gv);
+        $gv.string;
+      },
+      STORE => -> $, Str() $val is copy {
+        $gv.string = $val;
+        self.prop_set('style-class', $gv);
+      }
+    );
+  }
+
+  # Type: string
+  method style is rw  is g-property {
+    my $gv = GLib::Value.new( G_TYPE_STRING );
+    Proxy.new(
+      FETCH => sub ($) {
+        self.prop_get('style', $gv);
+        $gv.string;
+      },
+      STORE => -> $, Str() $val is copy {
+        $gv.string = $val;
+        self.prop_set('style', $gv);
+      }
+    );
+  }
+
+  # Type: boolean
+  method track-hover is rw  is g-property {
+    my $gv = GLib::Value.new( G_TYPE_BOOLEAN );
+    Proxy.new(
+      FETCH => sub ($) {
+        self.prop_get('track-hover', $gv);
+        $gv.boolean;
+      },
+      STORE => -> $, Int() $val is copy {
+        $gv.boolean = $val;
+        self.prop_set('track-hover', $gv);
+      }
+    );
+  }
+
+  # Type: boolean
+  method hover is rw  is g-property {
+    my $gv = GLib::Value.new( G_TYPE_BOOLEAN );
+    Proxy.new(
+      FETCH => sub ($) {
+        self.prop_get('hover', $gv);
+        $gv.boolean;
+      },
+      STORE => -> $, Int() $val is copy {
+        $gv.boolean = $val;
+        self.prop_set('hover', $gv);
+      }
+    );
+  }
+
+  # Type: boolean
+  method can-focus is rw  is g-property {
+    my $gv = GLib::Value.new( G_TYPE_BOOLEAN );
+    Proxy.new(
+      FETCH => sub ($) {
+        self.prop_get('can-focus', $gv);
+        $gv.boolean;
+      },
+      STORE => -> $, Int() $val is copy {
+        $gv.boolean = $val;
+        self.prop_set('can-focus', $gv);
+      }
+    );
+  }
+
+  # Type: MutterClutterActor
+  method label-actor ( :$raw = False )  is rw  is g-property {
+    my $gv = GLib::Value.new( Mutter::Clutter::Actor.get_type );
+    Proxy.new(
+      FETCH => sub ($) {
+        self.prop_get('label-actor', $gv);
+        propReturnObject(
+          $gv.object,
+          $raw,
+          |Mutter::Clutter::Actor.getTypePair
+        );
+      },
+      STORE => -> $, MutterClutterActor() $val is copy {
+        $gv.object = $val;
+        self.prop_set('label-actor', $gv);
+      }
+    );
+  }
+
+  # Type: AtkRole
+  method accessible-role ( :$raw = False ) is rw is g-property {
+    my $gv = GLib::Value.new( ATK::Role.get_type );
+    Proxy.new(
+      FETCH => sub ($) {
+        self.prop_get('accessible-role', $gv);
+        propReturnObject(
+          $gv.object,
+          $raw,
+          |ATK::Role.getTypePair
+        );
+      },
+      STORE => -> $, AtkRole() $val is copy {
+        $gv.object = $val;
+        self.prop_set('accessible-role', $gv);
+      }
+    );
+  }
+
+  # Type: string
+  method accessible-name is rw  is g-property {
+    my $gv = GLib::Value.new( G_TYPE_STRING );
+    Proxy.new(
+      FETCH => sub ($) {
+        self.prop_get('accessible-name', $gv);
+        $gv.string;
+      },
+      STORE => -> $, Str() $val is copy {
+        $gv.string = $val;
+        self.prop_set('accessible-name', $gv);
+      }
+    );
+  }
+
+  # Is originally:
+  # StWidget *self --> void
+  method style-changed {
+    self.connect($!stw, 'style-changed');
+  }
+
+  # Is originally:
+  # StWidget *self --> void
+  method popup-menu {
+    self.connect($!stw, 'popup-menu');
+  }
+
   method add_accessible_state (Int() $state) is also<add-accessible-state> {
     my AtkStateType $s = $state;
 
