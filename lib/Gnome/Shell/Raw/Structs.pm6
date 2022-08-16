@@ -280,6 +280,26 @@ class StShadow is repr<CStruct> is export {
 	  }
 }
 
+class StShadowHelper is repr<CStruct> is export {
+  has StShadow           $!shadow;
+  has MutterCoglPipeline $!pipeline;
+
+  has gfloat       $.width     is rw;
+  has gfloat       $.height    is rw;
+
+	method shadow {
+		Proxy.new:
+			FETCH => $,               { $!shadow      },
+			STORE => $, StShadow() \s { $!shadow := s }
+	}
+
+	method pipeline {
+		Proxy.new:
+			FETCH => $,                         { $!pipeline      },
+			STORE => $, MutterCoglPipeline() \p { $!pipeline := p }
+	}
+}
+
 class StTextureCache is repr<CStruct> is export {
 	has GObject               $!parent;
 	has StTextureCachePrivate $!priv  ;
