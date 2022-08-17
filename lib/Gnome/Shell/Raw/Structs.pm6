@@ -254,6 +254,39 @@ class StIcon is repr<CStruct> is export {
 	has StIconPrivate $!priv  ;
 }
 
+class StIconColors is repr<CStruct> is export {
+  has guint              $!ref_count;
+  has MutterClutterColor $!foreground;
+  has MutterClutterColor $!warning;
+  has MutterClutterColor $!error;
+  has MutterClutterColor $!success;
+
+	method foreground is rw {
+		Proxy.new:
+			FETCH => $                          { $!foreground      },
+			STORE => $, MutterClutterColor() \c { $!foreground := c };
+	}
+
+  method warning is rw {
+		Proxy.new:
+			FETCH => $                          { $!warning      },
+			STORE => $, MutterClutterColor() \c { $!warning := c };
+	}
+
+  method error is rw {
+		Proxy.new:
+			FETCH => $                          { $!error      },
+			STORE => $, MutterClutterColor() \c { $!error := c };
+	}
+
+  method success is rw {
+		Proxy.new:
+			FETCH => $                          { $!success      },
+			STORE => $, MutterClutterColor() \c { $!success := c };
+	}
+	
+}
+
 class StLabel is repr<CStruct> is export {
 	has StWidget       $!parent_instance;
 	has StLabelPrivate $!priv           ;
