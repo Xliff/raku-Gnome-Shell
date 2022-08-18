@@ -13,7 +13,7 @@ use GLib::Roles::Implementor;
 our subset StButtonAncestry is export of Mu
   where StButton | StWidgetAncestry;
 
-class Gnome::Shell::Button {
+class Gnome::Shell::Button is Gnome::Shell::Widget {
   has StButton $!stb is implementor;
 
   submethod BUILD ( :$st-widget ) {
@@ -48,16 +48,16 @@ class Gnome::Shell::Button {
     $o.ref if $ref;
     $o;
   }
-  multi method new {
+  multi method new (*%props) {
     my $st-button = st_button_new();
 
-    $st-button ?? self.bless( :$st-button ) !! Nil;
+    $st-button ?? self.bless( :$st-button, |%props ) !! Nil;
   }
 
-  method new_with_label (Str() $text) is also<new-with-label> {
+  method new_with_label (Str() $text, *%props) is also<new-with-label> {
     my $st-button = st_button_new_with_label($text);
 
-    $st-button ?? self.bless( :$st-button ) !! Nil;
+    $st-button ?? self.bless( :$st-button, |%props ) !! Nil;
   }
 
   # Type: string
