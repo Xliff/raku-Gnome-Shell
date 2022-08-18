@@ -3,7 +3,7 @@ use v6.c;
 use Method::Also;
 use NativeCall;
 
-use Gnome::Shell::Raw::Typs;
+use Gnome::Shell::Raw::Types;
 
 use GLib::Roles::Implementor;
 
