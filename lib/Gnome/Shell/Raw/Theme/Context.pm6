@@ -3,6 +3,8 @@ use v6.c;
 use NativeCall;
 
 use GLib::Raw::Definitions;
+use Pango::Raw::Definitions;
+use Mutter::Raw::Definitions;
 use Gnome::Shell::Raw::Definitions;
 
 unit package Gnome::Shell::Raw::Theme::Context;

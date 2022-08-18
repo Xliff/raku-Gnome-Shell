@@ -3,7 +3,10 @@ use v6.c;
 use NativeCall;
 
 use GLib::Raw::Definitions;
-use ATK::Raw::Definitions:
+use GLib::Raw::Structs;
+use ATK::Raw::Definitions;
+use ATK::Raw::Enums;
+use ATK::Raw::Structs;
 use Mutter::Raw::Definitions;
 use Gnome::Shell::Raw::Definitions;
 use Gnome::Shell::Raw::Enums;

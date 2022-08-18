@@ -2,10 +2,12 @@ use v6.c;
 
 use Method::Also;
 
+use GLib::Raw::Traits;
 use Gnome::Shell::Raw::Types;
 use Gnome::Shell::Raw::Widget;
 
 use ATK::Role;
+use GLib::GList;
 use Mutter::Clutter::Actor;
 
 use GLib::Roles::Implementor;
@@ -39,7 +41,7 @@ class Gnome::Shell::Widget is Mutter::Clutter::Actor {
     self.setMutterClutterActor($to-parent);
   }
 
-  method Mutter::Clutter::Raw::Definitions::StWidget
+  method Gnome::Shell::Raw::Definitions::StWidget
     is also<StWidget>
   { $!stw }
 
@@ -326,7 +328,7 @@ class Gnome::Shell::Widget is Mutter::Clutter::Actor {
     st_widget_peek_theme_node($!stw);
   }
 
-  method popup_menu is also<popup-menu> {
+  method popup_menu {
     st_widget_popup_menu($!stw);
   }
 
@@ -361,7 +363,7 @@ class Gnome::Shell::Widget is Mutter::Clutter::Actor {
   method set_accessible_role (AtkRole() $role) is also<set-accessible-role> {
     st_widget_set_accessible_role($!stw, $role);
   }
-1
+
   method set_can_focus (Int() $can_focus) is also<set-can-focus> {
     my gboolean $c = $can_focus.so.Int;
 
@@ -402,11 +404,14 @@ class Gnome::Shell::Widget is Mutter::Clutter::Actor {
     st_widget_set_track_hover($!stw, $track_hover);
   }
 
-  method st_describe_actor is also<st-describe-actor> {
-    st_describe_actor($!stw);
+  method describe_actor (MutterClutterActor() $actor)
+    is static
+    is also<describe-actor>
+  {
+    st_describe_actor($actor);
   }
 
-  method style_changed is also<style-changed> {
+  method style_changed {
     st_widget_style_changed($!stw);
   }
 

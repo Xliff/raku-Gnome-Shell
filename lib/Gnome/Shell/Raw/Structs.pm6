@@ -3,34 +3,40 @@ use v6.c;
 use NativeCall;
 
 use GLib::Raw::Definitions;
+use GLib::Raw::Object;
 use GLib::Raw::Structs;
-use Mutter::Clutter::Raw::Definitions;
-use Mutter::Clutter::Raw::Structs;
+use GDK::Raw::Definitions;
+use GTK::Raw::Definitions;
+use GTK::Raw::Enums;
+use Mutter::Raw::Definitions;
+use Mutter::Raw::Structs;
 use Gnome::Shell::Raw::Definitions;
+use Gnome::Shell::Raw::Enums;
+
+class CRParsingLocation is repr<CStruct> is export {
+	has guint $!line       ;
+	has guint $!column     ;
+	has guint $!byte_offset;
+}
+
+class CRNum is repr<CStruct> is export {
+	has CRNumType         $!type    ;
+	has gdouble           $!val     ;
+	has CRParsingLocation $!location;
+}
+
+class CRString is repr<CStruct> is export {
+	has GString           $!stryng  ;
+	has CRParsingLocation $!location;
+}
 
 class CRAtCharsetRule is repr<CStruct> is export {
 	has CRString $!charset;
 }
 
-class CRAtFontFaceRule is repr<CStruct> is export {
-	has CRDeclaration $!decl_list;
-}
-
-class CRAtImportRule is repr<CStruct> is export {
-	has CRString     $!url       ;
-	has GList        $!media_list;
-	has CRStyleSheet $!sheet     ;
-}
-
 class CRAtMediaRule is repr<CStruct> is export {
 	has GList       $!media_list;
 	has CRStatement $!rulesets  ;
-}
-
-class CRAtPageRule is repr<CStruct> is export {
-	has CRDeclaration $!decl_list;
-	has CRString      $!name     ;
-	has CRString      $!pseudo   ;
 }
 
 class CRAttrSel is repr<CStruct> is export {
@@ -43,7 +49,7 @@ class CRAttrSel is repr<CStruct> is export {
 }
 
 class CRCascade is repr<CStruct> is export {
-	has CRCascadePriv $!priv;
+	has Pointer $!priv; #= CRCascadePriv
 }
 
 class CRDeclaration is repr<CStruct> is export {
@@ -61,12 +67,22 @@ class CRDeclaration is repr<CStruct> is export {
 	has gpointer          $!rfu3            ;
 }
 
+class CRAtFontFaceRule is repr<CStruct> is export {
+	has CRDeclaration $!decl_list;
+}
+
+class CRAtPageRule is repr<CStruct> is export {
+	has CRDeclaration $!decl_list;
+	has CRString      $!name     ;
+	has CRString      $!pseudo   ;
+}
+
 class CREncHandler is repr<CStruct> is export {
 	has CREncoding                  $!encoding           ;
-	has CREncInputFunc              $!decode_input       ;
-	has CREncInputFunc              $!encode_output      ;
-	has CREncInputStrLenAsUtf8Func  $!enc_str_len_as_utf8;
-	has CREncUtf8StrLenAsOutputFunc $!utf8_str_len_as_enc;
+	has Pointer $!decode_input                     ; #= CREncInputFunc
+	has Pointer $!encode_output                    ; #= CREncInputFunc
+	has Pointer $!enc_str_len_as_utf8  ; #= CREncInputStrLenAsUtf8Func
+	has Pointer $!utf8_str_len_as_enc ; #= CREncUtf8StrLenAsOutputFunc
 }
 
 class CRFontSizeAdjust is repr<CStruct> is export {
@@ -75,7 +91,7 @@ class CRFontSizeAdjust is repr<CStruct> is export {
 }
 
 class CRInput is repr<CStruct> is export {
-	has CRInputPriv $!priv;
+	has Pointer $!priv; # CRInputPriv
 }
 
 class CRInputPos is repr<CStruct> is export {
@@ -86,28 +102,16 @@ class CRInputPos is repr<CStruct> is export {
 	has glong    $!next_byte_index;
 }
 
-class CRNum is repr<CStruct> is export {
-	has CRNumType         $!type    ;
-	has gdouble           $!val     ;
-	has CRParsingLocation $!location;
-}
-
 class CROMParser is repr<CStruct> is export {
-	has CROMParserPriv $!priv;
+	has Pointer $!priv; # CROMParserPriv
 }
 
 class CRParser is repr<CStruct> is export {
-	has CRParserPriv $!priv;
-}
-
-class CRParsingLocation is repr<CStruct> is export {
-	has guint $!line       ;
-	has guint $!column     ;
-	has guint $!byte_offset;
+	has Pointer $!priv; # CRParserPriv
 }
 
 class CRPropList is repr<CStruct> is export {
-	has CRPropListPriv $!priv;
+	has Pointer $!priv; # CRPropListPriv
 }
 
 class CRPseudo is repr<CStruct> is export {
@@ -126,20 +130,6 @@ class CRRgb is repr<CStruct> is export {
 	has CRParsingLocation $!location     ;
 }
 
-class CRRuleSet is repr<CStruct> is export {
-	has CRSelector    $!sel_list         ;
-	has CRDeclaration $!decl_list        ;
-	has CRStatement   $!parent_media_rule;
-}
-
-class CRSelector is repr<CStruct> is export {
-	has CRSimpleSel       $!simple_sel;
-	has CRSelector        $!next      ;
-	has CRSelector        $!prev      ;
-	has CRParsingLocation $!location  ;
-	has glong             $!ref_count ;
-}
-
 class CRSimpleSel is repr<CStruct> is export {
 	has SimpleSelectorType $!type_mask      ;
 	has gboolean           $!is_case_sentive;
@@ -152,9 +142,18 @@ class CRSimpleSel is repr<CStruct> is export {
 	has CRParsingLocation  $!location       ;
 }
 
-class CRString is repr<CStruct> is export {
-	has GString           $!stryng  ;
-	has CRParsingLocation $!location;
+class CRSelector is repr<CStruct> is export {
+	has CRSimpleSel       $!simple_sel;
+	has CRSelector        $!next      ;
+	has CRSelector        $!prev      ;
+	has CRParsingLocation $!location  ;
+	has glong             $!ref_count ;
+}
+
+class CRRuleSet is repr<CStruct> is export {
+	has CRSelector    $!sel_list         ;
+	has CRDeclaration $!decl_list        ;
+	has CRStatement   $!parent_media_rule;
 }
 
 class CRStyleSheet is repr<CStruct> is export {
@@ -166,13 +165,19 @@ class CRStyleSheet is repr<CStruct> is export {
 	has gulong        $!ref_count         ;
 }
 
-class CRTknzr is repr<CStruct> is export {
-	has CRTknzrPriv $!priv;
+class CRAtImportRule is repr<CStruct> is export {
+	has CRString     $!url       ;
+	has GList        $!media_list;
+	has CRStyleSheet $!sheet     ;
 }
 
-class NaTrayChildClass is repr<CStruct> is export {
-	has GtkSocketClass $!parent_class;
+class CRTknzr is repr<CStruct> is export {
+	has Pointer $!priv; #= CRTknzrPriv
 }
+
+# class NaTrayChildClass is repr<CStruct> is export {
+# 	has GtkSocketClass $!parent_class;
+# }
 
 class NaTrayManager is repr<CStruct> is export {
 	has GObject        $!parent_instance  ;
@@ -190,13 +195,13 @@ class NaTrayManager is repr<CStruct> is export {
 	has GHashTable     $!socket_table     ;
 }
 
-class ShellEmbeddedWindowClass is repr<CStruct> is export {
-	has GtkWindowClass $!parent_class;
-}
-
-class ShellGtkEmbedClass is repr<CStruct> is export {
-	has MutterClutterCloneClass $!parent_class;
-}
+# class ShellEmbeddedWindowClass is repr<CStruct> is export {
+# 	has GtkWindowClass $!parent_class;
+# }
+#
+# class ShellGtkEmbedClass is repr<CStruct> is export {
+# 	has MutterClutterCloneClass $!parent_class;
+# }
 
 class ShellMemoryInfo is repr<CStruct> is export {
 	has guint $!glibc_uordblks     ;
@@ -209,26 +214,26 @@ class ShellMemoryInfo is repr<CStruct> is export {
 }
 
 class ShellNetworkAgent is repr<CStruct> is export {
-	has NMSecretAgentOld         $!parent_instance;
-	has ShellNetworkAgentPrivate $!priv           ;
+	has  Pointer $!parent_instance; # NMSecretAgentOld
+	has  Pointer $!priv           ; # ShellNetworkAgentPrivate
 }
 
-class ShellNetworkAgentClass is repr<CStruct> is export {
-	has NMSecretAgentOldClass $!parent_class;
-}
+# class ShellNetworkAgentClass is repr<CStruct> is export {
+# 	has NMSecretAgentOldClass $!parent_class;
+# }
 
 class ShellWindowPreviewLayout is repr<CStruct> is export {
-	has MutterClutterLayoutManager            $!parent;
-	has ShellWindowPreviewLayoutPrivate $!priv  ;
+	has MutterClutterLayoutManager  $!parent;
+	has Pointer                     $!priv  ; # ShellWindowPreviewLayoutPrivate
 }
 
-class StBinClass is repr<CStruct> is export {
-	has StWidgetClass $!parent_class;
-}
+# class StBinClass is repr<CStruct> is export {
+# 	has StWidgetClass $!parent_class;
+# }
 
 class StBoxLayout is repr<CStruct> is export {
-	has StViewport         $!parent;
-	has StBoxLayoutPrivate $!priv  ;
+	has StViewport  $!parent;
+	has Pointer     $!priv  ; # StBoxLayoutPrivate
 }
 
 class StClipboard is repr<CStruct> is export {
@@ -237,21 +242,26 @@ class StClipboard is repr<CStruct> is export {
 
 class StFocusManager is repr<CStruct> is export {
 	has GObject               $!parent_instance;
-	has StFocusManagerPrivate $!priv           ;
+	has Pointer $!priv           ; # StFocusManagerPrivate
+}
+
+class StWidgetAccessible is repr<CStruct> is export {
+	has MutterCallyActor                $!parent;
+	has Pointer   $!priv; #= StWidgetAccessible
 }
 
 class StGenericAccessible is repr<CStruct> is export {
 	has StWidgetAccessible         $!parent;
-	has StGenericAccessiblePrivate $!priv  ;
+	has Pointer   $!priv; #= StGenericAccessible
 }
 
-class StGenericAccessibleClass is repr<CStruct> is export {
-	has StWidgetAccessibleClass $!parent_class;
-}
+# class StGenericAccessibleClass is repr<CStruct> is export {
+# 	has StWidgetAccessibleClass $!parent_class;
+# }
 
 class StIcon is repr<CStruct> is export {
 	has StWidget      $!parent;
-	has StIconPrivate $!priv  ;
+	has Pointer   $!priv; #= StIcon
 }
 
 class StIconColors is repr<CStruct> is export {
@@ -263,38 +273,38 @@ class StIconColors is repr<CStruct> is export {
 
 	method foreground is rw {
 		Proxy.new:
-			FETCH => $                          { $!foreground      },
-			STORE => $, MutterClutterColor() \c { $!foreground := c };
+			FETCH => -> $                          { $!foreground      },
+			STORE => -> $, MutterClutterColor() \c { $!foreground := c };
 	}
 
   method warning is rw {
 		Proxy.new:
-			FETCH => $                          { $!warning      },
-			STORE => $, MutterClutterColor() \c { $!warning := c };
+			FETCH => -> $                          { $!warning      },
+			STORE => -> $, MutterClutterColor() \c { $!warning := c };
 	}
 
   method error is rw {
 		Proxy.new:
-			FETCH => $                          { $!error      },
-			STORE => $, MutterClutterColor() \c { $!error := c };
+			FETCH => -> $                          { $!error      },
+			STORE => -> $, MutterClutterColor() \c { $!error := c };
 	}
 
   method success is rw {
 		Proxy.new:
-			FETCH => $                          { $!success      },
-			STORE => $, MutterClutterColor() \c { $!success := c };
+			FETCH => -> $                          { $!success      },
+			STORE => -> $, MutterClutterColor() \c { $!success := c };
 	}
-	
+
 }
 
 class StLabel is repr<CStruct> is export {
 	has StWidget       $!parent_instance;
-	has StLabelPrivate $!priv           ;
+	has Pointer            $!priv; #= StLabel
 }
 
 class StScrollView is repr<CStruct> is export {
 	has StBin               $!parent_instance;
-	has StScrollViewPrivate $!priv           ;
+	has Pointer            $!priv; #= StScrollView
 }
 
 class StShadow is repr<CStruct> is export {
@@ -308,8 +318,8 @@ class StShadow is repr<CStruct> is export {
 
 		method color {
 			Proxy.new:
-				FETCH => $,                         { $!color      },
-				STORE => $, MutterClutterColor() \v { $!color := v };
+				FETCH => -> $,                         { $!color      },
+				STORE => -> $, MutterClutterColor() \v { $!color := v };
 	  }
 }
 
@@ -322,20 +332,20 @@ class StShadowHelper is repr<CStruct> is export {
 
 	method shadow {
 		Proxy.new:
-			FETCH => $,               { $!shadow      },
-			STORE => $, StShadow() \s { $!shadow := s }
+			FETCH => -> $,               { $!shadow      },
+			STORE => -> $, StShadow() \s { $!shadow := s }
 	}
 
 	method pipeline {
 		Proxy.new:
-			FETCH => $,                         { $!pipeline      },
-			STORE => $, MutterCoglPipeline() \p { $!pipeline := p }
+			FETCH => -> $,                         { $!pipeline      },
+			STORE => -> $, MutterCoglPipeline() \p { $!pipeline := p }
 	}
 }
 
 class StTextureCache is repr<CStruct> is export {
 	has GObject               $!parent;
-	has StTextureCachePrivate $!priv  ;
+	has Pointer   $!priv; #= StTextureCache
 }
 
 class StThemeNodePaintState is repr<CStruct> is export {
@@ -351,15 +361,10 @@ class StThemeNodePaintState is repr<CStruct> is export {
 	has MutterCoglPipeline $!corner_material     ;
 }
 
-class StViewportClass is repr<CStruct> is export {
-	has StWidgetClass $!parent_class;
-}
+# class StViewportClass is repr<CStruct> is export {
+# 	has StWidgetClass $!parent_class;
+# }
 
-class StWidgetAccessible is repr<CStruct> is export {
-	has MutterCallyActor                $!parent;
-	has StWidgetAccessiblePrivate $!priv  ;
-}
-
-class StWidgetAccessibleClass is repr<CStruct> is export {
-	has MutterCallyActorClass $!parent_class;
-}
+# class StWidgetAccessibleClass is repr<CStruct> is export {
+# 	has MutterCallyActorClass $!parent_class;
+# }

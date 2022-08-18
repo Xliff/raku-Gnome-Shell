@@ -2,6 +2,7 @@ use v6.c;
 
 use Method::Also;
 
+use GLib::Raw::Traits;
 use Gnome::Shell::Raw::Types;
 use Gnome::Shell::Raw::Theme::Context;
 
@@ -37,7 +38,7 @@ class Gnome::Shell::Theme::Context {
     self!setObject($to-parent);
   }
 
-  method Mutter::Clutter::Raw::Definitions::StThemeContext
+  method Gnome::Shell::Raw::Definitions::StThemeContext
     is also<StThemeContext>
   { $!sttc }
 
@@ -54,7 +55,7 @@ class Gnome::Shell::Theme::Context {
     $st-theme-context ?? self.bless( :$st-theme-context ) !! Nil;
   }
 
-  method get_for_stage ( Mutter::Clutter::Stage() $stage )
+  method get_for_stage ( MutterClutterStage() $stage )
     is static
     is also<get-for-stage>
   {
@@ -113,7 +114,7 @@ class Gnome::Shell::Theme::Context {
 
   method intern_node (StThemeNode() $node) is also<intern-node> {
     st_theme_context_intern_node($!sttc, $node);
-  }}
+  }
 
   method set_font (PangoFontDescription() $font) is also<set-font> {
     st_theme_context_set_font($!sttc, $font);

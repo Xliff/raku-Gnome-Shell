@@ -51,7 +51,7 @@ class Gnome::Shell::Shadow {
   { * }
 
   multi method get_box (MutterClutterActorBox() $actor_box) {
-    samewith($actorbox, Mutter::Clutter::ActorBox.alloc);
+    samewith($actor_box, Mutter::Clutter::ActorBox.alloc);
   }
   multi method get_box (
     MutterClutterActorBox()  $actor_box,
@@ -98,17 +98,17 @@ class Gnome::Shell::Shadow::Helper {
   { $!stsh }
 
   method new (StShadow() $shadow) {
-    my $st-shadow-helper = st_shadow_helper_new($stshadow);
+    my $st-shadow-helper = st_shadow_helper_new($shadow);
 
     $st-shadow-helper ?? self.bless( :$st-shadow-helper ) !! Nil;
   }
 
   method copy {
-    st_shadow_helper_copy($!sts);
+    st_shadow_helper_copy($!stsh);
   }
 
   method free {
-    st_shadow_helper_free($!sts);
+    st_shadow_helper_free($!stsh);
   }
 
   method get_type is also<get-type> {
@@ -124,11 +124,11 @@ class Gnome::Shell::Shadow::Helper {
   ) {
     my guint8 $p = $paint_opacity;
 
-    st_shadow_helper_paint($!sts, $framebuffer, $actor_box, $p);
+    st_shadow_helper_paint($!stsh, $framebuffer, $actor_box, $p);
   }
 
   method update (MutterClutterActor() $source) {
-    st_shadow_helper_update($!sts, $source);
+    st_shadow_helper_update($!stsh, $source);
   }
 
 }

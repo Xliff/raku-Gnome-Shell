@@ -36,7 +36,7 @@ class Gnome::Shell::Bin is Gnome::Shell::Widget {
     self.setStWidget($to-parent);
   }
 
-  method Mutter::Clutter::Raw::Definitions::StBin
+  method Gnome::Shell::Raw::Definitions::StBin
     is also<StBin>
   { $!stb }
 

@@ -2,12 +2,14 @@ use v6.c;
 
 use Method::Also;
 
+use GLib::Raw::Traits;
 use Gnome::Shell::Raw::Types;
 use Gnome::Shell::Raw::Icon;
 
-use GIO::Icon;
+use Gnome::Shell::Widget;
 
 use GLib::Roles::Implementor;
+use GIO::Roles::Icon;
 
 our subset StIconAncestry is export of Mu
   where StIcon | StWidgetAncestry;
@@ -36,7 +38,7 @@ class Gnome::Shell::Icon is Gnome::Shell::Widget {
     self.setStWidget($to-parent);
   }
 
-  method Mutter::Clutter::Raw::Definitions::StIcon
+  method Gnome::Shell::Raw::Structs::StIcon
     is also<StIcon>
   { $!sti }
 
@@ -47,8 +49,7 @@ class Gnome::Shell::Icon is Gnome::Shell::Widget {
     $o.ref if $ref;
     $o;
   }
-
-  method new {
+  multi method new {
     my $st-icon = st_icon_new();
 
     $st-icon ?? self.bless( :$st-icon ) !! Nil;
@@ -75,7 +76,7 @@ class Gnome::Shell::Icon is Gnome::Shell::Widget {
 
   # Type: StIcon
   method fallback-gicon ( :$raw = False ) is rw is g-property {
-    my $gv = GLib::Value.new( StIcon );
+    my $gv = GLib::Value.new( GIO::Icon.get_type );
     Proxy.new(
       FETCH => sub ($) {
         self.prop_get('fallback-gicon', $gv);
@@ -85,7 +86,7 @@ class Gnome::Shell::Icon is Gnome::Shell::Widget {
           |GIO::Icon.getTypePair
         );
       },
-      STORE => -> $, StIcon() $val is copy {
+      STORE => -> $, GIcon() $val is copy {
         $gv.object = $val;
         self.prop_set('fallback-gicon', $gv);
       }
@@ -191,4 +192,4 @@ class Gnome::Shell::Icon is Gnome::Shell::Widget {
     st_icon_set_icon_size($!sti, $s);
   }
 
-]
+}

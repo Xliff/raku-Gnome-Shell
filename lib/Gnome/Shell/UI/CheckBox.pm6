@@ -9,8 +9,8 @@ class Gnome::Shell::UI::Checkbox {
 
   submethod BUILD ( :$label ) {
     $!container = Gnome::Shell::BoxLayout.new(
-      x_expand => true,
-      y_expand => true,
+      x_expand => True,
+      y_expand => True,
     );
 
     self.add-child($!container);
@@ -24,7 +24,7 @@ class Gnome::Shell::UI::Checkbox {
     $!container.add_child($!box);
     $!label = Gnome::Shell::Label.new( y-align => CLUTTER_ACTOR_ALIGN_CENTER );
     $!label.clutter-text.line-wrap = True;
-    $!label.clutter-text.ellipsize = PANGO_ELLIPSIZE_MODE_NONE;
+    $!label.clutter-text.ellipsize = PANGO_ELLIPSIZE_NONE;
     $!container.add_child($!label);
 
     self.set_accessible_role(ATK_ROLE_CHECK_BOX);

@@ -2,10 +2,12 @@ use v6.c;
 
 use Method::Also;
 
+use GLib::Raw::Traits;
 use Gnome::Shell::Raw::Types;
 
 use Gnome::Shell::Widget;
 
+use GLib::Roles::Implementor;
 use Gnome::Shell::Roles::Scrollable;
 
 our subset StViewportAncestry is export of Mu
@@ -30,8 +32,8 @@ class Gnome::Shell::Viewport is Gnome::Shell::Widget {
       }
 
       when StScrollable {
-        $to-parent = cast(StWidget, $_);
-        $!sts      = $_;
+        $to-parent      = cast(StWidget, $_);
+        $!st-scrollable = $_;
         cast(StViewport, $_);
       }
 
@@ -43,7 +45,7 @@ class Gnome::Shell::Viewport is Gnome::Shell::Widget {
     self.setStWidget($to-parent);
   }
 
-  method Mutter::Clutter::Raw::Definitions::StViewport
+  method Gnome::Shell::Raw::Definitions::StViewport
     is also<StViewport>
   { $!stv }
 

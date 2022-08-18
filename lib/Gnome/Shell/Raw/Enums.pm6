@@ -1,6 +1,8 @@
 use v6.c;
 
 use GLib::Raw::Definitions;
+use GLib::Raw::Enums;
+use Pango::Raw::Enums;
 
 unit package Gnome::Shell::Raw::Enums;
 

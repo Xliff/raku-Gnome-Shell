@@ -3,8 +3,12 @@ use v6.c;
 use NativeCall;
 
 use GLib::Raw::Definitions;
+use GIO::Raw::Definitions;
+use Pango::Raw::Definitions;
+use Mutter::Raw::Definitions;
 use Gnome::Shell::Raw::Definitions;
 use Gnome::Shell::Raw::Enums;
+use Gnome::Shell::Raw::Structs;
 
 unit package Gnome::Shell::Raw::Theme::Node;
 
@@ -197,7 +201,7 @@ sub st_theme_node_get_height (StThemeNode $node)
 { * }
 
 sub st_theme_node_get_horizontal_padding (StThemeNode $node)
-  returns double
+  returns gdouble
   is native(gnome-shell-st)
   is export
 { * }
@@ -221,13 +225,13 @@ sub st_theme_node_get_length (StThemeNode $node, Str $property_name)
 { * }
 
 sub st_theme_node_get_letter_spacing (StThemeNode $node)
-  returns double
+  returns gdouble
   is native(gnome-shell-st)
   is export
 { * }
 
 sub st_theme_node_get_margin (StThemeNode $node, StSide $side)
-  returns double
+  returns gdouble
   is native(gnome-shell-st)
   is export
 { * }
@@ -271,7 +275,7 @@ sub st_theme_node_get_outline_width (StThemeNode $node)
 { * }
 
 sub st_theme_node_get_padding (StThemeNode $node, StSide $side)
-  returns double
+  returns gdouble
   is native(gnome-shell-st)
   is export
 { * }
@@ -340,7 +344,7 @@ sub st_theme_node_get_url (StThemeNode $node, Str $property_name)
 { * }
 
 sub st_theme_node_get_vertical_padding (StThemeNode $node)
-  returns double
+  returns gdouble
   is native(gnome-shell-st)
   is export
 { * }

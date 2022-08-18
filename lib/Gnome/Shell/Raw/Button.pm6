@@ -4,6 +4,7 @@ use NativeCall;
 
 use GLib::Raw::Definitions;
 use Gnome::Shell::Raw::Definitions;
+use Gnome::Shell::Raw::Enums;
 
 unit package Gnome::Shell::Raw::Button;
 

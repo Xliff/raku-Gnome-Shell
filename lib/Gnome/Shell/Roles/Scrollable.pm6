@@ -1,23 +1,29 @@
 use v6.c;
 
+use Method::Also;
+
 use NativeCall;
 
 use Gnome::Shell::Raw::Types;
 
 use Gnome::Shell::Adjustment;
+use Gnome::Shell::Widget;
+
+use GLib::Roles::Implementor;
 
 role Gnome::Shell::Roles::Scrollable {
-  has StScrollable $!sts is implementor;
+  has StScrollable $!st-scrollable is implementor;
 
-  method Mutter::Clutter::Raw::Definitions::StScrollable
+  method Gnome::Shell::Raw::Definitions::StScrollable
     is also<StScrollable>
-  { $!sts }
+  { $!st-scrollable }
 
   proto method get_adjustments (|)
+    is also<get-adjustments>
   { * }
 
-  multi method get_adjustments ( $raw = False ) (
-    samewith( newCArray(StAdjustment), newCArray(StAdjustment). :$raw )
+  multi method get_adjustments ( :$raw = False ) {
+    samewith( newCArray(StAdjustment), newCArray(StAdjustment), :$raw )
   }
   multi method get_adjustments (
     CArray[StAdjustment]  $hadjustment,
@@ -30,7 +36,7 @@ role Gnome::Shell::Roles::Scrollable {
       $vadjustment
     );
 
-    constant GSA = Gnome::Shell::Adjustment;
+    my constant GSA = Gnome::Shell::Adjustment;
     (
       propReturnObject($hadjustment, $raw, |GSA.getTypePair),
       propReturnObject($vadjustment, $raw, |GSA.getTypePair)
@@ -40,13 +46,15 @@ role Gnome::Shell::Roles::Scrollable {
   method set_adjustments (
     StAdjustment() $hadjustment,
     StAdjustment() $vadjustment
-  ) {
+  )
+    is also<set-adjustments>
+  {
     st_scrollable_set_adjustments($!st-scrollable, $hadjustment, $vadjustment);
   }
 
 }
 
-our subset StViewportAncestry is export of Mu
+our subset StScrollableAncestry is export of Mu
   where StScrollable | StWidgetAncestry;
 
 class Gnome::Shell::Scrollable is Gnome::Shell::Widget {
@@ -59,7 +67,7 @@ class Gnome::Shell::Scrollable is Gnome::Shell::Widget {
   method setStScrollable (StScrollableAncestry $_) {
     my $to-parent;
 
-    $!stv = do {
+    $!st-scrollable = do {
       when StScrollable {
         $to-parent = cast(StWidget, $_);
         $_;
@@ -73,10 +81,10 @@ class Gnome::Shell::Scrollable is Gnome::Shell::Widget {
     self.setStWidget($to-parent);
   }
 
-  multi method new (StScrollableAncestry $st-viewport, :$ref = True) {
-    return unless $st-viewport;
+  multi method new (StScrollableAncestry $st-scrollable, :$ref = True) {
+    return unless $st-scrollable;
 
-    my $o = self.bless( :$st-viewport );
+    my $o = self.bless( :$st-scrollable );
     $o.ref if $ref;
     $o;
   }

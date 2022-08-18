@@ -4,10 +4,13 @@ use Method::Also;
 
 use NativeCall;
 
+use GLib::Raw::Traits;
 use Gnome::Shell::Raw::Types;
 
 use Mutter::Clutter::Text;
 use Gnome::Shell::Widget;
+
+use GLib::Roles::Implementor;
 
 our subset StLabelAncestry is export of Mu
   where StLabel | StWidgetAncestry;
@@ -36,7 +39,7 @@ class Gnome::Shell::Label is Gnome::Shell::Widget {
     self.setStWidget($to-parent);
   }
 
-  method Mutter::Clutter::Raw::Definitions::StLabel
+  method Gnome::Shell::Raw::Definitions::StLabel
     is also<StLabel>
   { $!stl }
 
@@ -47,9 +50,8 @@ class Gnome::Shell::Label is Gnome::Shell::Widget {
     $o.ref if $ref;
     $o;
   }
-
-  method new {
-    my $st-label = st_label_new();
+  multi method new (Str() $text) {
+    my $st-label = st_label_new($text);
 
     $st-label ?? self.bless( :$st-label ) !! Nil;
   }
@@ -58,7 +60,7 @@ class Gnome::Shell::Label is Gnome::Shell::Widget {
   method clutter-text ( :$raw = False ) is rw is g-property
     is also<clutter_text>
   {
-    my $gv = GLib::Value.new( StText );
+    my $gv = GLib::Value.new( Mutter::Clutter::Text.get_type );
     Proxy.new(
       FETCH => sub ($) {
         self.prop_get('clutter-text', $gv);

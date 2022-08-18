@@ -2,6 +2,7 @@ use v6.c;
 
 use Method::Also;
 
+use GLib::Raw::Traits;
 use Gnome::Shell::Raw::Types;
 use Gnome::Shell::Raw::Button;
 
@@ -37,7 +38,7 @@ class Gnome::Shell::Button is Gnome::Shell::Widget {
     self.setStWidget($to-parent);
   }
 
-  method Mutter::Clutter::Raw::Definitions::StButton
+  method Gnome::Shell::Raw::Definitions::StButton
     is also<StButton>
   { $!stb }
 

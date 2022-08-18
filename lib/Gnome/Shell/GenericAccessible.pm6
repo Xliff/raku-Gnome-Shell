@@ -5,6 +5,8 @@ use NativeCall;
 
 use Gnome::Shell::Raw::Types;
 
+use ATK::Object;
+
 use GLib::Roles::Implementor;
 
 our subset StGenericAccessibleAncestry is export of Mu
@@ -34,7 +36,7 @@ class Gnome::Shell::GenericAccessible is ATK::Object {
     self.setAtkObject($to-parent);
   }
 
-  method Mutter::Clutter::Raw::Definitions::StGenericAccessible
+  method Gnome::Shell::Raw::Definitions::StGenericAccessible
     is also<StGenericAccessible>
   { $!stga }
 

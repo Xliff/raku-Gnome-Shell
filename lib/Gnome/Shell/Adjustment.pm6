@@ -2,8 +2,11 @@ use v6.c;
 
 use Method::Also;
 
+use GLib::Raw::Traits;
 use Gnome::Shell::Raw::Types;
 use Gnome::Shell::Raw::Adjustment;
+
+use Mutter::Clutter::Actor;
 
 use GLib::Roles::Implementor;
 use GLib::Roles::Object;
@@ -37,7 +40,7 @@ class Gnome::Shell::Adjustment {
     self!setObject($to-parent);
   }
 
-  method Mutter::Clutter::Raw::Definitions::StAdjustment
+  method Gnome::Shell::Raw::Definitions::StAdjustment
     is also<StAdjustment>
   { $!sta }
 
@@ -48,9 +51,8 @@ class Gnome::Shell::Adjustment {
     $o.ref if $ref;
     $o;
   }
-
-  method new (
-    MutterClutterActor() $actor
+  multi method new (
+    MutterClutterActor() $actor,
     Num()                $value,
     Num()                $lower,
     Num()                $upper,
@@ -64,16 +66,20 @@ class Gnome::Shell::Adjustment {
     my $st-adjustment = st_adjustment_new($actor, $v, $l, $u, $si, $pi, $ps);
   }
 
-  # Type: StActor
-  method actor is rw  is g-property {
-    my $gv = GLib::Value.new( StActor );
+  # Type: MutterClutterActor
+  method actor ( :$raw = False ) is rw  is g-property {
+    my $gv = GLib::Value.new( Mutter::Clutter::Actor.get_type );
     Proxy.new(
       FETCH => sub ($) {
         self.prop_get('actor', $gv);
-        $gv.StActor;
+        propReturnObject(
+          $gv.object,
+          $raw,
+          |Mutter::Clutter::Actor.getTypePair
+        )
       },
-      STORE => -> $,  $val is copy {
-        $gv.StActor = $val;
+      STORE => -> $, MutterClutterActor() $val is copy {
+        $gv.object = $val;
         self.prop_set('actor', $gv);
       }
     );
@@ -211,11 +217,11 @@ class Gnome::Shell::Adjustment {
     samewith($, $, $, $, $, $);
   }
   multi method get_values (
-    $value          is rw
-    $lower          is rw
-    $upper          is rw
-    $step_increment is rw
-    $page_increment is rw
+    $value          is rw,
+    $lower          is rw,
+    $upper          is rw,
+    $step_increment is rw,
+    $page_increment is rw,
     $page_size      is rw
   ) {
     my gdouble ($v, $l, $u, $si, $pi, $ps) = 0e0 xx 6;

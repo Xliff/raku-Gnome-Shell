@@ -23,7 +23,7 @@ class Gnome::Shell::IconColors {
     $!stic = $st-icon-colors;
   }
 
-  method Gnome::Shell::Raw::StructS::StIconColors
+  method Gnome::Shell::Raw::Structs::StIconColors
     is also<StIconColors>
   { $!stic }
 

@@ -38,7 +38,7 @@ class Gnome::Shell::Theme::Node {
     self!setObject($to-parent);
   }
 
-  method Mutter::Clutter::Raw::Definitions::StThemeNode
+  method Gnome::Shell::Raw::Definitions::StThemeNode
     is also<StThemeNode>
   { $!sttn }
 
@@ -192,7 +192,7 @@ class Gnome::Shell::Theme::Node {
   multi method get_background_gradient (
                           $type    is rw,
     MutterClutterColor()  $start,
-    MutterClutterColor()  $end
+    MutterClutterColor()  $end,
                          :$raw            = False
   ) {
     my StGradientType $t = 0;
@@ -233,13 +233,13 @@ class Gnome::Shell::Theme::Node {
     is also<get-background-paint-box>
 
   { * }
-  method get_background_paint_box (MutterClutterActorBox() $allocation) {
+  multi method get_background_paint_box (MutterClutterActorBox() $allocation) {
     samewith($allocation, Mutter::Clutter::ActorBox.alloc);
   }
-  method get_background_paint_box (
+  multi method get_background_paint_box (
     MutterClutterActorBox()  $allocation,
-    MutterClutterActorBox()  $paint_box
-                            :$raw       = False
+    MutterClutterActorBox()  $paint_box,
+                            :$raw         = False
   ) {
     st_theme_node_get_background_paint_box($!sttn, $allocation, $paint_box);
     propReturnObject($paint_box, $raw, |Mutter::Clutter::ActorBox.getTypePair);
@@ -252,7 +252,11 @@ class Gnome::Shell::Theme::Node {
   multi method get_border_color (Int() $side) {
     samewith($side, Mutter::Clutter::Color.alloc);
   }
-  multi method get_border_color (Int() $side, MutterClutterColor() $color) {
+  multi method get_border_color (
+    Int()                 $side,
+    MutterClutterColor()  $color,
+                         :$raw    = False
+  ) {
     my StSide $s = $side;
 
     st_theme_node_get_border_color($!sttn, $side, $color);
@@ -291,12 +295,12 @@ class Gnome::Shell::Theme::Node {
     is also<get-color>
   { * }
 
-  method get_color (Str() $property_name) {
+  multi method get_color (Str() $property_name) {
     samewith($property_name, Mutter::Clutter::Color.alloc);
   }
-  method get_color (
+  multi method get_color (
     Str()                 $property_name,
-    MutterClutterColor()  $color
+    MutterClutterColor()  $color,
                          :$raw            = False
   ) {
     st_theme_node_get_color($!sttn, $property_name, $color);
@@ -308,7 +312,7 @@ class Gnome::Shell::Theme::Node {
   { * }
 
   multi method get_content_box (MutterClutterActorBox() $allocation) {
-    samewith($alocation, Mutter::Clutter::ActorBox.alloc);
+    samewith($allocation, Mutter::Clutter::ActorBox.alloc);
   }
   multi method get_content_box (
     MutterClutterActorBox()  $allocation,
@@ -438,8 +442,9 @@ class Gnome::Shell::Theme::Node {
     samewith($allocation, Mutter::Clutter::ActorBox.alloc);
   }
   multi method get_paint_box (
-    MutterClutterActorBox() $allocation,
-    MutterClutterActorBox() $paint_box
+    MutterClutterActorBox()  $allocation,
+    MutterClutterActorBox()  $paint_box,
+                            :$raw         = False
   ) {
     st_theme_node_get_paint_box($!sttn, $allocation, $paint_box);
     propReturnObject($paint_box, $raw, |Mutter::Clutter::ActorBox.getTypePair);
@@ -468,7 +473,7 @@ class Gnome::Shell::Theme::Node {
   }
 
   method get_text_decoration is also<get-text-decoration> {
-    StTextDecorationEnum( st_theme_node_get_text_decoration($!sttn) )s
+    StTextDecorationEnum( st_theme_node_get_text_decoration($!sttn) );
   }
 
   method get_text_shadow ( :$raw = False ) is also<get-text-shadow> {
@@ -675,6 +680,8 @@ our subset StThemeNodePaintStateAncestry is export of Mu
   where StThemeNodePaintState | GObject;
 
 class Gnome::Shell::Theme::Node::PaintState {
+  also does GLib::Roles::Object;
+  
   has StThemeNodePaintState $!sttnps is implementor;
 
   submethod BUILD ( :$st-theme-node-paint-state) {
@@ -699,7 +706,7 @@ class Gnome::Shell::Theme::Node::PaintState {
     self!setObject($to-parent);
   }
 
-  method Mutter::Clutter::Raw::Definitions::StThemeNodePaintState
+  method Gnome::Shell::Raw::Definitions::StThemeNodePaintState
     is also<StThemeNodePaintState>
   { $!sttnps }
 
@@ -714,32 +721,32 @@ class Gnome::Shell::Theme::Node::PaintState {
     $o;
   }
 
-  method copy (StThemeNodePaintState() $other) {
+  method copy (StThemeNodePaintState() $other, :$raw = False) {
     propReturnObject(
-      st_theme_node_paint_state_copy($!sttn, $other),
+      st_theme_node_paint_state_copy($!sttnps, $other),
       $raw,
       |self.getTypePair
     );
   }
 
   method free {
-    st_theme_node_paint_state_free($!sttn);
+    st_theme_node_paint_state_free($!sttnps);
   }
 
   method init {
-    st_theme_node_paint_state_init($!sttn);
+    st_theme_node_paint_state_init($!sttnps);
   }
 
   method invalidate {
-    st_theme_node_paint_state_invalidate($!sttn);
+    st_theme_node_paint_state_invalidate($!sttnps);
   }
 
   method invalidate_for_file (GFile() $file) is also<invalidate-for-file> {
-    st_theme_node_paint_state_invalidate_for_file($!sttn, $file);
+    st_theme_node_paint_state_invalidate_for_file($!sttnps, $file);
   }
 
   method set_node (StThemeNode() $node) is also<set-node> {
-    st_theme_node_paint_state_set_node($!sttn, $node);
+    st_theme_node_paint_state_set_node($!sttnps, $node);
   }
 
 }

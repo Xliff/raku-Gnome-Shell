@@ -36,7 +36,7 @@ class Gnome::Shell::BoxLayout is Gnome::Shell::Viewport {
     self.setStViewport($to-parent);
   }
 
-  method Mutter::Clutter::Raw::Definitions::StBoxLayout
+  method Gnome::Shell::Raw::Definitions::StBoxLayout
     is also<StBoxLayout>
   { $!stbl }
 
@@ -47,11 +47,10 @@ class Gnome::Shell::BoxLayout is Gnome::Shell::Viewport {
     $o.ref if $ref;
     $o;
   }
-
-  method new {
+  multi method new ( *%props ) {
     my $st-box-layout = st_box_layout_new();
 
-    $st-box-layout ?? self.bless( :$st-box-layout ) !! Nil;
+    $st-box-layout ?? self.bless( :$st-box-layout, |%props ) !! Nil;
   }
 
   method get_pack_start is also<get-pack-start> {

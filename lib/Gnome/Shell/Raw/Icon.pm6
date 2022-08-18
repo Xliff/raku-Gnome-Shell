@@ -3,10 +3,11 @@ use v6.c;
 use NativeCall;
 
 use GLib::Raw::Definitions;
+use GIO::Raw::Definitions;
 use Gnome::Shell::Raw::Definitions;
+use Gnome::Shell::Raw::Structs;
 
 unit package Gnome::Shell::Raw::Icon;
-
 
 ### /home/cbwood/Projects/gnome-shell/src/st/st-icon.h
 

@@ -5,6 +5,8 @@ use NativeCall;
 
 use Gnome::Shell::Raw::Types;
 
+use GLib::GList;
+
 use GLib::Roles::Implementor;
 use GLib::Roles::Object;
 
@@ -37,7 +39,7 @@ class Gnome::Shell::Theme {
     self!setObject($to-parent);
   }
 
-  method Mutter::Clutter::Raw::Definitions::StTheme
+  method Gnome::Shell::Raw::Definitions::StTheme
     is also<StTheme>
   { $!stt }
 
@@ -48,12 +50,11 @@ class Gnome::Shell::Theme {
     $o.ref if $ref;
     $o;
   }
-
-  method new (
+  multi method new (
     GFile() $application_stylesheet,
     GFile() $theme_stylesheet,
     GFile() $default_stylesheet
-  )
+  ) {
     my $st-theme = st_theme_new(
       $application_stylesheet,
       $theme_stylesheet,
@@ -74,7 +75,7 @@ class Gnome::Shell::Theme {
 
   method load_stylesheet (
     GFile()                 $file,
-    CArray[Pointer[GError]] $error = GError
+    CArray[Pointer[GError]] $error = gerror
   )
     is also<load-stylesheet>
   {
