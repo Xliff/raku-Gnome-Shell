@@ -7,4 +7,4 @@ include-directory=/home/cbwood/Projects/gnome-shell/src/st
 exec=mutter-exec
 subprefixes=
 idir-avail=True
-build_exclude=Raw/Traps.pm6
+build-exclude=Gnome::Shell::Raw::Traps,Gnome::Shell::UI
