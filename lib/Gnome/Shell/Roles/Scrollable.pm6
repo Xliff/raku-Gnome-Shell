@@ -4,7 +4,7 @@ use NativeCall;
 
 use Gnome::Shell::Raw::Types;
 
-use Gnome::Shell::Adjustable;
+use Gnome::Shell::Adjustment;
 
 role Gnome::Shell::Roles::Scrollable {
   has StScrollable $!sts is implementor;
