@@ -3,13 +3,13 @@ use v6.c;
 use Method::Also;
 
 use Gnome::Shell::Raw::Types;
-use Gnome::Shell::Raw::Shadow;
+use Gnome::Shell::Raw::St::Shadow;
 
 use GLib::Roles::Implementor;
 
 # BOXED
 
-class Gnome::Shell::Shadow {
+class Gnome::Shell::St::Shadow {
   has StShadow $!sts is implementor;
 
   submethod BUILD ( :$st-shadow ) {
@@ -86,7 +86,7 @@ class Gnome::Shell::Shadow {
 
 # BOXED TOO!
 
-class Gnome::Shell::Shadow::Helper {
+class Gnome::Shell::St::Shadow::Helper {
   has StShadowHelper $!stsh is implementor;
 
   submethod BUILD ( :$st-shadow-helper ) {

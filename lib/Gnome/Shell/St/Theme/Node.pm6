@@ -4,7 +4,7 @@ use Method::Also;
 use NativeCall;
 
 use Gnome::Shell::Raw::Types;
-use Gnome::Shell::Raw::Theme::Node;
+use Gnome::Shell::Raw::St::Theme::Node;
 
 use GLib::Roles::Implementor;
 use GLib::Roles::Object;
@@ -12,7 +12,7 @@ use GLib::Roles::Object;
 our subset StThemeNodeAncestry is export of Mu
   where StThemeNode | GObject;
 
-class Gnome::Shell::Theme::Node {
+class Gnome::Shell::St::Theme::Node {
   also does GLib::Roles::Object;
 
   has StThemeNode $!sttn is implementor;
@@ -679,7 +679,7 @@ class Gnome::Shell::Theme::Node {
 our subset StThemeNodePaintStateAncestry is export of Mu
   where StThemeNodePaintState | GObject;
 
-class Gnome::Shell::Theme::Node::PaintState {
+class Gnome::Shell::St::Theme::Node::PaintState {
   also does GLib::Roles::Object;
   
   has StThemeNodePaintState $!sttnps is implementor;

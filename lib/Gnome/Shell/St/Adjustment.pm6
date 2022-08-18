@@ -4,7 +4,7 @@ use Method::Also;
 
 use GLib::Raw::Traits;
 use Gnome::Shell::Raw::Types;
-use Gnome::Shell::Raw::Adjustment;
+use Gnome::Shell::Raw::St::Adjustment;
 
 use Mutter::Clutter::Actor;
 
@@ -14,7 +14,7 @@ use GLib::Roles::Object;
 our subset StAdjustmentAncestry is export of Mu
   where StAdjustment | GObject;
 
-class Gnome::Shell::Adjustment {
+class Gnome::Shell::St::Adjustment {
   also does GLib::Roles::Object;
 
   has StAdjustment $!sta is implementor;

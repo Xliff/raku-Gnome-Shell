@@ -4,7 +4,7 @@ use Method::Also;
 
 use GLib::Raw::Traits;
 use Gnome::Shell::Raw::Types;
-use Gnome::Shell::Raw::Theme::Context;
+use Gnome::Shell::Raw::St::Theme::Context;
 
 use GLib::Roles::Implementor;
 use GLib::Roles::Object;
@@ -12,7 +12,7 @@ use GLib::Roles::Object;
 our subset StThemeContextAncestry is export of Mu
   where StThemeContext | GObject;
 
-class Gnome::Shell::Theme::Context {
+class Gnome::Shell::St::Theme::Context {
   also does GLib::Roles::Object;
 
   has StThemeContext $!sttc is implementor;

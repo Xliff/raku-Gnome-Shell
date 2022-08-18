@@ -7,7 +7,7 @@ use GIO::Raw::Definitions;
 use Gnome::Shell::Raw::Definitions;
 use Gnome::Shell::Raw::Structs;
 
-unit package Gnome::Shell::Raw::Icon;
+unit package Gnome::Shell::Raw::St::Icon;
 
 ### /home/cbwood/Projects/gnome-shell/src/st/st-icon.h
 

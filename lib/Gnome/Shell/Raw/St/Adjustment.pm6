@@ -6,7 +6,7 @@ use GLib::Raw::Definitions;
 use Mutter::Raw::Definitions;
 use Gnome::Shell::Raw::Definitions;
 
-unit package Gnome::Shell::Raw::Adjustment;
+unit package Gnome::Shell::Raw::St::Adjustment;
 
 ### /home/cbwood/Projects/gnome-shell/src/st/st-adjustment.h
 

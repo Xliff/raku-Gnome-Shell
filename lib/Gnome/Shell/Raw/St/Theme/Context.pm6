@@ -7,7 +7,7 @@ use Pango::Raw::Definitions;
 use Mutter::Raw::Definitions;
 use Gnome::Shell::Raw::Definitions;
 
-unit package Gnome::Shell::Raw::Theme::Context;
+unit package Gnome::Shell::Raw::St::Theme::Context;
 
 ### /home/cbwood/Projects/gnome-shell/src/st/st-theme-context.h
 

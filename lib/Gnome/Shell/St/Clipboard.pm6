@@ -4,7 +4,7 @@ use GLib::Raw::Traits;
 use Method::Also;
 
 use Gnome::Shell::Raw::Types;
-use Gnome::Shell::Raw::Clipboard;
+use Gnome::Shell::Raw::St::Clipboard;
 
 use GLib::GList;
 
@@ -15,7 +15,7 @@ use GLib::Roles::Object;
 our subset StClipboardAncestry is export of Mu
   where StClipboard | GObject;
 
-class Gnome::Shell::Clipboard {
+class Gnome::Shell::St::Clipboard {
   also does GLib::Roles::Object;
 
   has StClipboard $!stc is implementor;

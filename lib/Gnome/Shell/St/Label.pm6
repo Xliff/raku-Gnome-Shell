@@ -8,14 +8,14 @@ use GLib::Raw::Traits;
 use Gnome::Shell::Raw::Types;
 
 use Mutter::Clutter::Text;
-use Gnome::Shell::Widget;
+use Gnome::Shell::St::Widget;
 
 use GLib::Roles::Implementor;
 
 our subset StLabelAncestry is export of Mu
   where StLabel | StWidgetAncestry;
 
-class Gnome::Shell::Label is Gnome::Shell::Widget {
+class Gnome::Shell::St::Label is Gnome::Shell::St::Widget {
   has StLabel $!stl is implementor;
 
   submethod BUILD ( :$st-label ) {

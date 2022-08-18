@@ -9,7 +9,7 @@ use Gnome::Shell::Raw::Definitions;
 use Gnome::Shell::Raw::Enums;
 use Gnome::Shell::Raw::Structs;
 
-unit package Gnome::Shell::Raw::Clipboard;
+unit package Gnome::Shell::Raw::St::Clipboard;
 
 ### /home/cbwood/Projects/gnome-shell/src/st/st-clipboard.h
 

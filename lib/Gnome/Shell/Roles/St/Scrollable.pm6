@@ -6,12 +6,12 @@ use NativeCall;
 
 use Gnome::Shell::Raw::Types;
 
-use Gnome::Shell::Adjustment;
-use Gnome::Shell::Widget;
+use Gnome::Shell::St::Adjustment;
+use Gnome::Shell::St::Widget;
 
 use GLib::Roles::Implementor;
 
-role Gnome::Shell::Roles::Scrollable {
+role Gnome::Shell::Roles::St::Scrollable {
   has StScrollable $!st-scrollable is implementor;
 
   method Gnome::Shell::Raw::Definitions::StScrollable
@@ -36,7 +36,7 @@ role Gnome::Shell::Roles::Scrollable {
       $vadjustment
     );
 
-    my constant GSA = Gnome::Shell::Adjustment;
+    my constant GSA = Gnome::Shell::St::Adjustment;
     (
       propReturnObject($hadjustment, $raw, |GSA.getTypePair),
       propReturnObject($vadjustment, $raw, |GSA.getTypePair)
@@ -57,8 +57,8 @@ role Gnome::Shell::Roles::Scrollable {
 our subset StScrollableAncestry is export of Mu
   where StScrollable | StWidgetAncestry;
 
-class Gnome::Shell::Scrollable is Gnome::Shell::Widget {
-  also does Gnome::Shell::Roles::Scrollable;
+class Gnome::Shell::St::Scrollable is Gnome::Shell::St::Widget {
+  also does Gnome::Shell::Roles::St::Scrollable;
 
   submethod BUILD ( :$st-scrollable ) {
     self.setStScrollable($st-scrollable) if $st-scrollable

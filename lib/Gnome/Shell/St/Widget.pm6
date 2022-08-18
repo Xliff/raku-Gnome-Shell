@@ -4,7 +4,7 @@ use Method::Also;
 
 use GLib::Raw::Traits;
 use Gnome::Shell::Raw::Types;
-use Gnome::Shell::Raw::Widget;
+use Gnome::Shell::Raw::St::Widget;
 
 use ATK::Role;
 use GLib::GList;
@@ -15,7 +15,7 @@ use GLib::Roles::Implementor;
 our subset StWidgetAncestry is export of Mu
   where StWidget | MutterClutterActorAncestry;
 
-class Gnome::Shell::Widget is Mutter::Clutter::Actor {
+class Gnome::Shell::St::Widget is Mutter::Clutter::Actor {
   has StWidget $!stw is implementor;
 
   submethod BUILD ( :$st-widget, *%props ) {

@@ -4,9 +4,9 @@ use Method::Also;
 
 use GLib::Raw::Traits;
 use Gnome::Shell::Raw::Types;
-use Gnome::Shell::Raw::Icon;
+use Gnome::Shell::Raw::St::Icon;
 
-use Gnome::Shell::Widget;
+use Gnome::Shell::St::Widget;
 
 use GLib::Roles::Implementor;
 use GIO::Roles::Icon;
@@ -14,7 +14,7 @@ use GIO::Roles::Icon;
 our subset StIconAncestry is export of Mu
   where StIcon | StWidgetAncestry;
 
-class Gnome::Shell::Icon is Gnome::Shell::Widget {
+class Gnome::Shell::St::Icon is Gnome::Shell::St::Widget {
   has StIcon $!sti is implementor;
 
   submethod BUILD ( :$st-icon ) {

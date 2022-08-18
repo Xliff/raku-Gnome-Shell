@@ -5,16 +5,16 @@ use Method::Also;
 use GLib::Raw::Traits;
 use Gnome::Shell::Raw::Types;
 
-use Gnome::Shell::Widget;
+use Gnome::Shell::St::Widget;
 
 use GLib::Roles::Implementor;
-use Gnome::Shell::Roles::Scrollable;
+use Gnome::Shell::Roles::St::Scrollable;
 
 our subset StViewportAncestry is export of Mu
   where StViewport | StScrollable | StWidgetAncestry;
 
-class Gnome::Shell::Viewport is Gnome::Shell::Widget {
-  also does Gnome::Shell::Roles::Scrollable;
+class Gnome::Shell::St::Viewport is Gnome::Shell::St::Widget {
+  also does Gnome::Shell::Roles::St::Scrollable;
 
   has StViewport $!stv is implementor;
 

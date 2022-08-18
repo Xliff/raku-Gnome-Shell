@@ -5,14 +5,14 @@ use NativeCall;
 
 use Gnome::Shell::Raw::Types;
 
-use Gnome::Shell::Viewport;
+use Gnome::Shell::St::Viewport;
 
 use GLib::Roles::Implementor;
 
 our subset StBoxLayoutAncestry is export of Mu
   where StBoxLayout | StViewportAncestry;
 
-class Gnome::Shell::BoxLayout is Gnome::Shell::Viewport {
+class Gnome::Shell::St::BoxLayout is Gnome::Shell::St::Viewport {
   has StBoxLayout $!stbl is implementor;
 
   submethod BUILD ( :$st-box-layout ) {

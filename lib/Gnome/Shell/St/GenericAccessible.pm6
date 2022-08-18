@@ -12,7 +12,7 @@ use GLib::Roles::Implementor;
 our subset StGenericAccessibleAncestry is export of Mu
   where StGenericAccessible | AtkObjectAncestry;
 
-class Gnome::Shell::GenericAccessible is ATK::Object {
+class Gnome::Shell::St::GenericAccessible is ATK::Object {
   has StGenericAccessible $!stga is implementor;
 
   submethod BUILD ( :$st-generic-acc ) {

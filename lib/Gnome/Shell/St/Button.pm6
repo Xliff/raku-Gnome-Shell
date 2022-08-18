@@ -4,9 +4,9 @@ use Method::Also;
 
 use GLib::Raw::Traits;
 use Gnome::Shell::Raw::Types;
-use Gnome::Shell::Raw::Button;
+use Gnome::Shell::Raw::St::Button;
 
-use Gnome::Shell::Widget;
+use Gnome::Shell::St::Widget;
 
 use GLib::Roles::Implementor;
 
@@ -14,7 +14,7 @@ use GLib::Roles::Implementor;
 our subset StButtonAncestry is export of Mu
   where StButton | StWidgetAncestry;
 
-class Gnome::Shell::Button is Gnome::Shell::Widget {
+class Gnome::Shell::St::Button is Gnome::Shell::St::Widget {
   has StButton $!stb is implementor;
 
   submethod BUILD ( :$st-widget ) {

@@ -6,7 +6,7 @@ use GLib::Raw::Definitions;
 use Gnome::Shell::Raw::Definitions;
 use Gnome::Shell::Raw::Structs;
 
-unit package Gnome::Shell::Raw::IconColors;
+unit package Gnome::Shell::Raw::St::IconColors;
 
 ### /home/cbwood/Projects/gnome-shell/src/st/st-icon-colors.h
 

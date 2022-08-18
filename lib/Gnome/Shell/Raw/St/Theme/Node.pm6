@@ -10,7 +10,7 @@ use Gnome::Shell::Raw::Definitions;
 use Gnome::Shell::Raw::Enums;
 use Gnome::Shell::Raw::Structs;
 
-unit package Gnome::Shell::Raw::Theme::Node;
+unit package Gnome::Shell::Raw::St::Theme::Node;
 
 ### /home/cbwood/Projects/gnome-shell/src/st/st-theme-node.h
 

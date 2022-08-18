@@ -6,7 +6,7 @@ use GLib::Raw::Definitions;
 use Gnome::Shell::Raw::Definitions;
 use Gnome::Shell::Raw::Enums;
 
-unit package Gnome::Shell::Raw::Button;
+unit package Gnome::Shell::Raw::St::Button;
 
 ### /home/cbwood/Projects/gnome-shell/src/st/st-button.h
 

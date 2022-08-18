@@ -9,7 +9,7 @@ use Graphene::Raw::Exports;
 use Mutter::Raw::Exports;
 use Gnome::Shell::Raw::Exports;
 
-unit package Gnome::Shell::Raw::Types;
+unit package Gnome::Shell::Raw::St::Types;
 
 need GLib::Raw::Definitions;
 need GLib::Raw::Enums;

@@ -3,13 +3,13 @@ use v6.c;
 use Method::Also;
 
 use Gnome::Shell::Raw::Types;
-use Gnome::Shell::Raw::IconColors;
+use Gnome::Shell::Raw::St::IconColors;
 
 # BOXED
 
 use GLib::Roles::Implementor;
 
-class Gnome::Shell::IconColors {
+class Gnome::Shell::St::IconColors {
   also does GLib::Roles::Implementor;
 
   has StIconColors $!stic is implementor handles <

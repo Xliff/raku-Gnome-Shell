@@ -13,7 +13,7 @@ use GLib::Roles::Object;
 our subset StThemeAncestry is export of Mu
   where StTheme | GObject;
 
-class Gnome::Shell::Theme {
+class Gnome::Shell::St::Theme {
   also does GLib::Roles::Object;
 
   has StTheme $!stt is implementor;

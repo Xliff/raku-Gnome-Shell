@@ -11,7 +11,7 @@ use Mutter::Raw::Definitions;
 use Gnome::Shell::Raw::Definitions;
 use Gnome::Shell::Raw::Enums;
 
-unit package Gnome::Shell::Raw::Widget;
+unit package Gnome::Shell::Raw::St::Widget;
 
 ### /home/cbwood/Projects/gnome-shell/src/st/st-widget.h
 

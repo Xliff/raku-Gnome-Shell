@@ -13,6 +13,8 @@ use Mutter::Raw::Structs;
 use Gnome::Shell::Raw::Definitions;
 use Gnome::Shell::Raw::Enums;
 
+unit package Gnome::Shell::Raw::Structs;
+
 class CRParsingLocation is repr<CStruct> is export {
 	has guint $!line       ;
 	has guint $!column     ;

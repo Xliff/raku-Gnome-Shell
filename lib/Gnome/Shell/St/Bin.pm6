@@ -5,14 +5,14 @@ use NativeCall;
 
 use Gnome::Shell::Raw::Types;
 
-use Gnome::Shell::Widget;
+use Gnome::Shell::St::Widget;
 
 use GLib::Roles::Implementor;
 
 our subset StBinAncestry is export of Mu
   where StBin | StWidgetAncestry;
 
-class Gnome::Shell::Bin is Gnome::Shell::Widget {
+class Gnome::Shell::St::Bin is Gnome::Shell::St::Widget {
   has StBin $!stb is implementor;
 
   submethod BUILD ( :$st-bin ) {
