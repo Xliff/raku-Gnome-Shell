@@ -37,6 +37,7 @@ class Gnome::Shell::Label is Gnome::Shell::Widget {
   }
 
   method Mutter::Clutter::Raw::Definitions::StLabel
+    is also<StLabel>
   { $!stl }
 
   multi method new (StLabelAncestry $st-label, :$ref = True) {
