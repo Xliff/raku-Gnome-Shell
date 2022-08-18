@@ -1,5 +1,6 @@
 use v6.c;
 
+use Method::Also;
 use NativeCall;
 
 use Gnome::Shell::Raw::Types;
@@ -9,10 +10,46 @@ use GIO::Roles::GFile;
 
 use GLib::Roles::Implementor;
 
+our subset StBorderImageAncestry is export of Mu
+  where StBorderImage | GObject;
+
 class Gnome::Shell::St::BorderImage {
   also does GLib::Roles::Object;
 
   has StBorderImage $!stbi is implementor;
+
+  submethod BUILD ( :$st-border-image ) {
+    self.setStBorderImage($st-border-image)
+      if $st-border-image
+  }
+
+  method setStBorderImage (StBorderImageAncestry $_) {
+    my $to-parent;
+
+    $!stbi = do {
+      when StBorderImage {
+        $to-parent = cast(GObject, $_);
+        $_;
+      }
+
+      default {
+        $to-parent = $_;
+        cast(StBorderImage, $_);
+      }
+    }
+    self!setObject($to-parent);
+  }
+
+  method Mutter::Cogl::Raw::Definitions::StBorderImage
+  { $!stbi }
+
+  multi method new (StBorderImageAncestry $st-border-image, :$ref = True) {
+    return unless $st-border-image;
+
+    my $o = self.bless( :$st-border-image );
+    $o.ref if $ref;
+    $o;
+  }
 
   method new (
     GFile() $file,
@@ -40,6 +77,7 @@ class Gnome::Shell::St::BorderImage {
   }
 
   proto method get_borders (|)
+    is also<get-borders>
   { * }
 
   multi method get_borders {
@@ -59,7 +97,7 @@ class Gnome::Shell::St::BorderImage {
       ($bt, $br, $bb, $bl);
   }
 
-  method get_file ( :$raw = False ) {
+  method get_file ( :$raw = False ) is also<get-file> {
     propReturnObject(
       st_border_image_get_file($!stbi),
       $raw,
