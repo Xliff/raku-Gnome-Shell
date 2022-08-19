@@ -21,6 +21,7 @@ class StEntry               is repr<CPointer> does GLib::Roles::Pointers is expo
 #class StGenericAccessible   is repr<CPointer> does GLib::Roles::Pointers is export { }
 #class StIcon                is repr<CPointer> does GLib::Roles::Pointers is export { }
 #class StIconColors          is repr<CPointer> does GLib::Roles::Pointers is export { }
+class StImageContent        is repr<CPointer> does GLib::Roles::Pointers is export { }
 #class StLabel               is repr<CPointer> does GLib::Roles::Pointers is export { }
 class StPasswordEntry       is repr<CPointer> does GLib::Roles::Pointers is export { }
 class StScrollable          is repr<CPointer> does GLib::Roles::Pointers is export { }
