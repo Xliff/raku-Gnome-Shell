@@ -12,6 +12,7 @@ use Mutter::Raw::Definitions;
 use Mutter::Raw::Structs;
 use Gnome::Shell::Raw::Definitions;
 use Gnome::Shell::Raw::Enums;
+use Gnome::Shell::Raw::Cr::Enums;
 
 unit package Gnome::Shell::Raw::Structs;
 
