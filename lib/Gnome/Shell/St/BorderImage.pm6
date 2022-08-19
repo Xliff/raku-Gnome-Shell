@@ -50,8 +50,7 @@ class Gnome::Shell::St::BorderImage {
     $o.ref if $ref;
     $o;
   }
-
-  method new (
+  multi method new (
     GFile() $file,
     Int()   $border_top,
     Int()   $border_right,
