@@ -16,6 +16,7 @@ class StBorderImage         is repr<CPointer> does GLib::Roles::Pointers is expo
 class StBin                 is repr<CPointer> does GLib::Roles::Pointers is export { }
 #class StBoxLayout           is repr<CPointer> does GLib::Roles::Pointers is export { }
 class StButton              is repr<CPointer> does GLib::Roles::Pointers is export { }
+class StEntry               is repr<CPointer> does GLib::Roles::Pointers is export { }
 #class StGenericAccessible   is repr<CPointer> does GLib::Roles::Pointers is export { }
 #class StIcon                is repr<CPointer> does GLib::Roles::Pointers is export { }
 #class StIconColors          is repr<CPointer> does GLib::Roles::Pointers is export { }
