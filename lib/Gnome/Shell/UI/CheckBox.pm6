@@ -2,7 +2,7 @@ use v6.c;
 
 use Gnome::Shell::Raw::Types;
 
-class Gnome::Shell::UI::Checkbox {
+class Gnome::Shell::St::UI::Checkbox {
   has $!container;
   has $!box;
   has $!label handles(text => 'label');

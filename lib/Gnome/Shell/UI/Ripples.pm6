@@ -2,7 +2,7 @@ use v6.c;
 
 use Gnome::Shell::BoxLayout;
 
-class Gnome::Shell::UI::Ripples {
+class Gnome::Shell::St::UI::Ripples {
   has $!x;
   has $!y;
   has $!px;
