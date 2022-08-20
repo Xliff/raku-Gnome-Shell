@@ -2,6 +2,8 @@ use v6.c;
 
 use NativeCall;
 
+use Cairo;
+
 use GLib::Raw::Definitions;
 
 unit package Gnome::Shell::Raw::Definitions;
@@ -9,7 +11,8 @@ unit package Gnome::Shell::Raw::Definitions;
 # cw: This will need to be replaced with something more robust!
 our constant gnome-shell-st is export := '/usr/lib/gnome-shell/libst-1.0';
 
-our constant Atom is export := guint32;
+our constant cairo_surface_t is export := Cairo::cairo_surface_t;
+our constant Atom            is export := guint32;
 
 class StAdjustment          is repr<CPointer> does GLib::Roles::Pointers is export { }
 class StBorderImage         is repr<CPointer> does GLib::Roles::Pointers is export { }
