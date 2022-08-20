@@ -1,33 +1,28 @@
 use v6.c;
 
-#our \LayoutManager          is export;
-#our \PadOsdService          is export;
-#our \XdndHandler            is export;
-#our \CtrlAltTabManager      is export;
-#our \XdndHandler            is export;
-#our \OsdWindowManager       is export;
-#our \OsdMonitorLabeler      is export;
-#our \Overview               is export;
-#our \KbdA11yDialog          is export;
-#our \WindowManager          is export;
-#our \Mangnifier             is export;
-#our \LocatePointer          is export;
-#our \InputMethod            is export;
-#our \Screenshot             is export;
-#our \MessageTray            is export;
-#our \Panel                  is export;
-#our \KeyboardManager        is export;
-#our \NotificationDaemon     is export;
-#our \WindowAttentionHandler is export;
-#our \ComponentManager       is export;
-#our \PonterA11yTimeout      is export;
-#our \IntrospectService      is export;
-#our \uiGroup                is export;
-#our \ScreenShield           is export;
-#our \ExtensionManager       is export;
-
-
 my %S;
+
+use Gnome::Shell::UI::Layout;
+use Gnome::Shell::UI::PadOsd;
+use Gnome::Shell::UI::XdndHandler;
+use Gnome::Shell::UI::CtrlAltTab;
+use Gnome::Shell::UI::OsdWindow;
+use Gnome::Shell::UI::OsdMonitorLabeler;
+use Gnome::Shell::UI::Overview;
+use Gnome::Shell::UI::KbdA11yDialog;
+use Gnome::Shell::UI::WindowManager;
+use Gnome::Shell::UI::Mangnifier;
+use Gnome::Shell::UI::LocatePointer;
+use Gnome::Shell::UI::InputMethod;
+use Gnome::Shell::UI::Screenshot;
+use Gnome::Shell::UI::MessageTray;
+use Gnome::Shell::UI::Panel;
+use Gnome::Shell::UI::Keyboard;
+use Gnome::Shell::UI::NotificationDaemon;
+use Gnome::Shell::UI::WindowAttentionHandler;
+use Gnome::Shell::UI::Components;
+use Gnome::Shell::UI::PonterA11yTimeout;
+use Gnome::Shell::Misc::Introspect;
 
 class UI does Associative {
 
@@ -38,7 +33,6 @@ class UI does Associative {
           PadOsdService           => PadOsd,
           XdndHandler,
           CtrlAltTabManager       => CtrlAltTab,
-          XdndHandler
           OsdWindowManager        => OsdWindow,
           OsdMonitorLabeler,
           Overview,
@@ -86,3 +80,29 @@ class UI does Associative {
   }
 
 }
+
+sub LayoutManager          is export { Ui.LayoutManager          }
+sub PadOsdService          is export { Ui.PadOsdService          }
+sub XdndHandler            is export { Ui.XdndHandler            }
+sub CtrlAltTabManager      is export { Ui.CtrlAltTabManager      }
+sub XdndHandler            is export { Ui.XdndHandler            }
+sub OsdWindowManager       is export { Ui.OsdWindowManager       }
+sub OsdMonitorLabeler      is export { Ui.OsdMonitorLabeler      }
+sub Overview               is export { Ui.Overview               }
+sub KbdA11yDialog          is export { Ui.KbdA11yDialog          }
+sub WindowManager          is export { Ui.WindowManager          }
+sub Mangnifier             is export { Ui.Mangnifier             }
+sub LocatePointer          is export { Ui.LocatePointer          }
+sub InputMethod            is export { Ui.InputMethod            }
+sub Screenshot             is export { Ui.Screenshot             }
+sub MessageTray            is export { Ui.MessageTray            }
+sub Panel                  is export { Ui.Panel                  }
+sub KeyboardManager        is export { Ui.KeyboardManager        }
+sub NotificationDaemon     is export { Ui.NotificationDaemon     }
+sub WindowAttentionHandler is export { Ui.WindowAttentionHandler }
+sub ComponentManager       is export { Ui.ComponentManager       }
+sub PonterA11yTimeout      is export { Ui.PonterA11yTimeout      }
+sub IntrospectService      is export { Ui.IntrospectService      }
+sub uiGroup                is export { Ui.uiGroup                }
+sub ScreenShield           is export { Ui.ScreenShield           }
+sub ExtensionManager       is export { Ui.ExtensionManager       }
