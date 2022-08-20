@@ -36,6 +36,7 @@ class StSettings            is repr<CPointer> does GLib::Roles::Pointers is expo
 class StTheme               is repr<CPointer> does GLib::Roles::Pointers is export { }
 class StThemeContext        is repr<CPointer> does GLib::Roles::Pointers is export { }
 class StThemeNode           is repr<CPointer> does GLib::Roles::Pointers is export { }
+class StThemeNodeTransition is repr<CPointer> does GLib::Roles::Pointers is export { }
 #class StThemeNodePaintState is repr<CPointer> does GLib::Roles::Pointers is export { }
 class StViewport            is repr<CPointer> does GLib::Roles::Pointers is export { }
 class StWidget              is repr<CPointer> does GLib::Roles::Pointers is export { }
