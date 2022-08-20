@@ -94,18 +94,37 @@ sub MAIN (
     @signals.gist.say;
 
     # 2) Read in the .h file for the signal signatures
-    my $header = $control-io.absolute.subst('.c', '') ~ '.h';
-    die "Could not find header '{ $header }' file for signatures!"
-      unless $header.IO.r;
+    my $signature-matches;
+    SIGNATURES: {
+      my $header = $control-io.absolute.subst('.c', '') ~ '.h';
+      die "Could not find header '{ $header }' file for signatures!"
+        unless $header.IO.r;
 
-    @signals.map({ .subst('-', '_', :g) }).say;
+      @signals.map({ .subst('-', '_', :g) }).say;
 
-    my $signature-matches = $header.IO.slurp ~~ m:g/
-      $<rt>=[(\w+) \s* '*'?] '(*' \s*
-      $<signal>=<{ @signals.map({ .subst('-', '_', :g) }) }> ')'
-      \s*
-      '(' $<sig>=( <-[\)]>+ ) ')'
-    /;
+      $signature-matches = $header.IO.slurp ~~ m:g/
+        $<rt>=[(\w+) \s* '*'?] '(*' \s*
+        $<signal>=<{ @signals.map({ .subst('-', '_', :g) }) }> ')'
+        \s*
+        '(' $<sig>=( <-[\)]>+ ) ')'
+      /;
+
+      last SIGNATURES if $signature-matches;
+
+      $header = $control-io.absolute.subst('.c', '') ~ '-private.h';
+      die "Could not find header '{ $header }' file for signatures!"
+        unless $header.IO.r;
+
+      my $file-prefix = $control-io.extension('').basename.subst('-', '_', :g);
+
+      $signature-matches = $header.IO.slurp ~~ m:g/
+        $<rt>=[(\w+) \s* '*'?] \s*
+        '_'<{ $file-prefix }>'_'
+        $<signal>=<{ @signals.map({ .subst('-', '_', :g) }) }>
+        \s*
+        '(' $<sig>=( <-[\)]>+ ) ')'
+      /;
+    }
 
     $signature-matches.gist.say;
 
