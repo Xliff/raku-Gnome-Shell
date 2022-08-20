@@ -1,4 +1,5 @@
 prefix=Gnome::Shell::
+struct-prefix=St
 modules=Gnome::Shell::Raw::Types
 backups=backup,bitbucket,google-backup,azure-backup,hut
 hfile-prefix=
