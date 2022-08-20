@@ -99,6 +99,7 @@ class Gnome::Shell::WorkspaceBackground {
 
 }
 
+### /home/cbwood/Projects/gnome-shell/src/shell-workspace-background.h
 sub shell_workspace_background_get_type
   returns GType
   is export
