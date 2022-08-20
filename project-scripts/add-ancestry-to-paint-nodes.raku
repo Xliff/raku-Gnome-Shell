@@ -4,6 +4,7 @@ sub MAIN (
   $file,
   :var(:$initvar) = 'object-var',
   :$parent,
+  :$prefix        = 'Mutter::Cogl',
   :$commit
 ) {
   my $fio      = $file.IO;
@@ -64,7 +65,7 @@ sub MAIN (
         self{ $sp }(\$to-parent);
       \}
 
-      method Mutter::Clutter::Raw::Definitions::{ $tn }
+      method { $prefix }::Raw::Definitions::{ $tn }
       \{ { .[0] } \}
 
       multi method new ({ $tn }Ancestry \${ $initvar }, :\$ref = True) \{
