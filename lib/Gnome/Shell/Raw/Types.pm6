@@ -40,6 +40,7 @@ need Pango::Raw::Subs;
 need Graphene::Raw::Definitions;
 need Mutter::Raw::Definitions;
 need Mutter::Raw::Enums;
+need Mutter::Raw::GSettingsEnums;
 need Mutter::Raw::Subs;
 need Mutter::Raw::Structs;
 need Gnome::Shell::Raw::Definitions;
