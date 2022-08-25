@@ -80,6 +80,7 @@ class Gnome::Shell::WindowPreview is Gnome::Shell::St::Widget {
   }
 }
 
+### /home/cbwood/Projects/gnome-shell/src/shell-window-preview.h
 sub shell_window_preview_get_type
   returns GType
   is export
