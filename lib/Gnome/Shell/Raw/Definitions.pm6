@@ -42,6 +42,7 @@ class StThemeNodeTransition    is repr<CPointer> does GLib::Roles::Pointers is e
 class StViewport               is repr<CPointer> does GLib::Roles::Pointers is export { }
 class StWidget                 is repr<CPointer> does GLib::Roles::Pointers is export { }
 
+class ShellApp                 is repr<CPointer> does GLib::Roles::Pointers is export { }
 class ShellWorkspaceBackground is repr<CPointer> does GLib::Roles::Pointers is export { }
 class ShellWindowPreview       is repr<CPointer> does GLib::Roles::Pointers is export { }
 class ShellWM                  is repr<CPointer> does GLib::Roles::Pointers is export { }
