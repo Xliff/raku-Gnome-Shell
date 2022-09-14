@@ -48,6 +48,7 @@ class ShellMountOperation      is repr<CPointer> does GLib::Roles::Pointers is e
 class ShellScreenshot          is repr<CPointer> does GLib::Roles::Pointers is export { }
 class ShellWorkspaceBackground is repr<CPointer> does GLib::Roles::Pointers is export { }
 class ShellWindowPreview       is repr<CPointer> does GLib::Roles::Pointers is export { }
+class ShellWindowTracker       is repr<CPointer> does GLib::Roles::Pointers is export { }
 class ShellWM                  is repr<CPointer> does GLib::Roles::Pointers is export { }
 
 class CRAdditionalSel          is repr<CPointer> does GLib::Roles::Pointers is export { }
