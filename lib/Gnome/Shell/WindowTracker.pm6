@@ -7,10 +7,11 @@ use NativeCall;
 use GLib::Raw::Traits;
 use Gnome::Shell::Raw::Types;
 
+use GLib::GList;
 use Mutter::Meta::Startup;
 use Gnome::Shell::App;
-use GLib::Roles::Object;
 
+use GLib::Roles::Object;
 use GLib::Roles::Implementor;
 
 our subset ShellWindowTrackerAncestry is export of Mu
@@ -43,7 +44,7 @@ class Gnome::Shell::WindowTracker {
     self!setObject($to-parent);
   }
 
-  method Mutter::Cogl::Raw::Definitions::ShellWindowTracker
+  method Gnome::Shell::Raw::Definitions::ShellWindowTracker
     is also<ShellWindowTracker>
   { $!swt }
 
@@ -87,7 +88,7 @@ class Gnome::Shell::WindowTracker {
   method get_app_from_pid (Int() $pid, :$raw = False)
     is also<get-app-from-pid>
   {
-    mu gint $p = $pid;
+    my gint $p = $pid;
 
     propReturnObject(
       shell_window_tracker_get_app_from_pid($!swt, $p),
@@ -113,7 +114,7 @@ class Gnome::Shell::WindowTracker {
     );
   }
 
-  method get_window_app (MetaWindow() $metawin, :$raw = False)
+  method get_window_app (MutterMetaWindow() $metawin, :$raw = False)
     is also<get-window-app>
   {
     propReturnObject(
