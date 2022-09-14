@@ -7,6 +7,7 @@ use GLib::Raw::Traits;
 use Gnome::Shell::Raw::Types;
 
 use Mutter::Clutter::Actor;
+use Mutter::Meta::Startup;
 use Gnome::Shell::St::Widget;
 
 use GLib::Roles::Implementor;
