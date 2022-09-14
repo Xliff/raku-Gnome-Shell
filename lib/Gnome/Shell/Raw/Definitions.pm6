@@ -45,6 +45,7 @@ class StWidget                 is repr<CPointer> does GLib::Roles::Pointers is e
 class ShellApp                 is repr<CPointer> does GLib::Roles::Pointers is export { }
 class ShellGlobal              is repr<CPointer> does GLib::Roles::Pointers is export { }
 class ShellMountOperation      is repr<CPointer> does GLib::Roles::Pointers is export { }
+class ShellScreenshot          is repr<CPointer> does GLib::Roles::Pointers is export { }
 class ShellWorkspaceBackground is repr<CPointer> does GLib::Roles::Pointers is export { }
 class ShellWindowPreview       is repr<CPointer> does GLib::Roles::Pointers is export { }
 class ShellWM                  is repr<CPointer> does GLib::Roles::Pointers is export { }
