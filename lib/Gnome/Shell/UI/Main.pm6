@@ -24,7 +24,7 @@ use Gnome::Shell::UI::Components;
 use Gnome::Shell::UI::PonterA11yTimeout;
 use Gnome::Shell::Misc::Introspect;
 
-class UI does Associative {
+class Gnome::Shell::Main::UI does Associative {
 
   method initializeUI {
     # cw: Theres more stuff before this! DO THAT!
@@ -106,3 +106,5 @@ sub IntrospectService      is export { Ui.IntrospectService      }
 sub uiGroup                is export { Ui.uiGroup                }
 sub ScreenShield           is export { Ui.ScreenShield           }
 sub ExtensionManager       is export { Ui.ExtensionManager       }
+
+constant UI is export := Gnome::Shell::Main::UI;
