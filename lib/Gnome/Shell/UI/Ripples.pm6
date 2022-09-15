@@ -101,3 +101,5 @@ class Gnome::Shell::St::UI::Ripples {
   }
 
 }
+
+constant Ripples is export := Gnome::Shell::UI::Ripples;
