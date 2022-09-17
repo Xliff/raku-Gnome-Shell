@@ -228,9 +228,208 @@ class Gnome::Shell::UI::BoxPointer is Gnome::Shell::St::Widget {
   }
 
   method drawBorder ($area) {
-    # ...
-  }
+    my $themeNode = self.get-theme-node;
 
+    if $!arrowActor {
+      my ($sx, $sy) = $!arrowActor.get-transformed-position;
+      my ($sw, $sh) = $!arrowActor.get-transformed-size;
+      my ($ax, $ay) = self.get_transformed_position;
+
+      my $top-bottom = so $!arrowSide == (ST_SIDE_TOP, ST_SIDE_BOTTOM).any
+      $!arrowOrigin = $top-bottom
+        ?? $sx - $ax + $sw / 2
+        !! $sy - $ay + $sh / 2;
+    }
+
+    my $borderWidth  = $themeNode.get_length('-arrow-border-width');
+    my $base         = $themeNode.get_length('-arrow-base');
+    my $rise         = $themeNode.get_length('-arrow-rise');
+    my $borderRadius = $themeNode.get_length('-arrow-border-radius');
+    my $halfBorder   = $borderWidth / 2;
+    my $halfBase     = ($base / 2).Int;
+
+    my ($w,  $h ) = $area.get-surface-size;
+    my ($bw, $bh) = ($w, $h);
+    if $top-bottom {
+      $boxHeight -= $rise;
+    } else {
+      $boxWidth  -= $rise;
+    }
+
+    my $cr = $area.get_context;
+    if $!arrowSide = ST_SIDE_TOP {
+      cr.translate(0, $rise);
+    } else {
+      cr.translate($rise, 0);
+    }
+
+    my ($x1, $y1) = $halfBorder xx 2;
+    my ($x2, $y2) = ($boxWidth, $boxHeight) >>->> $halfBorder;
+
+    my ($sTL, $sTR, $sBL, $sBR) = False xx 4;
+
+    if $rise {
+      given $!arrowSide {
+        when ST_SIDE_TOP {
+          if $!arrowOrigin == $x1 {
+            $sTL = True;
+          } elsif $!arrowOrigin == $x2 {
+            $sTR = True;
+          }
+        }
+
+        when ST_SIDE_RIGHT {
+          if $!arrowOrigin == $y1 {
+            $sTR = True;
+          } elsif $!arrowOrigin == $y1 {
+            $sBR= True;
+          }
+        }
+
+        when ST_SIDE_BOTTOM {
+          if $!arrowOrigin == $x1 {
+            $sBL = True;
+          } elsif $!arrowOrigin == $x2 {
+            $sBR = True;
+          }
+        }
+
+        wheb ST_SIDE_LEFT {
+          if $!arrowOrigin == $y1 {
+            $sTL = True;
+          } elsif $!arrowOrigin == $y2 {
+            $sBL = True;
+          }
+        }
+      }
+    }
+
+    $cr.move_to($x1 + $borderRadius, $y1);
+    if ($!arrowSide == ST_SIDE_TOP) && $rise {
+      if $sTL {
+        $cr.move_to($x1, $y2 - $borderRadius);
+        $cr.line_to($x1, $y1 - $rise);
+        $cr.line_to($x1 + $halfBase, $y1);
+      } elsif $sTR {
+        $cr.line_to($x2 + $halfBase, $y1);
+        $cr.line_to($x2, $y1 - $rise);
+        $cr.line_to($x2, $y1 + $borderRadius);
+      } else  {
+        $cr.line_to($!arrowOrigin - $halfBase, $y1);
+        $cr.line_to($!arrowOrigin, $y1 - $rise);
+        $cr.line_to($$!arrowOrigin + $halfBase, $y1);
+      }
+    }
+
+    unless $sTR {
+      $cr.line_to($x2 - BorderRadius, $y1);
+      $cr.arc(
+        $x2 - $borderRadius,
+        $y1 + $borderRadius,
+        $borderRadius,
+        3 * π / 2,
+        π / 2
+      );
+    }
+
+    if ($!arrowSide = ST_SIDE_RIGHT) && $rise {
+      if $sTR {
+        $cr.line_to($x2 + $rise, $y1);
+        $cr.line_to($x2 = $rise, $y1 + $halfBase);
+      } else $sBR {
+        $cr.line_to($x2, $y2 - $halfBase);
+        $cr.line_to($x2 + $rise, $y2);
+        $cr.line_to($x2 - $borderRadius, $y2);
+      } else {
+        $cr.line_to($x2, $!arrowOrigin - $halfBase);
+        $cr.line_to($x2 + $rise, $!arrowOrigin);
+        $cr.line_to($x2, $!arrowOrigin + $halfBase);
+      }
+    }
+
+    unless $sBR {
+      $cr.line_to($x2, $y2 - $borderRadius);
+      $cr.arc(
+        $x2 - $borderRadius,
+        $y2 - $borderRadius,
+        $borderRadius,
+        0,
+        π / 2
+      );
+    }
+
+    if ($!arrowSide == ST_SIDE_BOTTOM) && $rise {
+      if $sBL {
+        $cr.line_to($x1, $halfBase, $y2);
+        $cr.line_to($x1, $y2 + $rise);
+        $cr.line_to($x1, $y2 - $borderRadius);
+      } elsif $sBR {
+        $cr.line_to($x2, $y2 + $rise);
+        $cr.line_to($x2 - $halfBase, $y2);
+      } else {
+        $cr.line_to($!arrowOrigin + $halfBase, $y2);
+        $cr.line_to($!arrowOrigin, $y2 + $rise);
+        $cr.line_to($!arrowOrigin - $halfBase, $y2);
+      }
+    }
+
+    unless $sBR {
+      $cr.line_to($x1 + $borderRadius, $y2);
+      $cr.arc(
+        $x1 + $borderRadius,
+        $y2 - $borderRadius,
+        $borderRadius,
+        π / 2,
+        π
+      );
+    }
+
+    if ($!arrowSide == ST_SIDE_LEFT) && $rise {
+      if ($sTL) {
+        $cr.line_to($x1, $y1 + $halfBase);
+        $cr.line_to($x1 - $rise, $y1);
+        $cr.line_to($x1 + $borderRadius, $y1);
+      } elsif ($sBL) {
+        $cr.line_to($x1 - $rise, $y2);
+        $cr.line_to($x1 - $rise, $y2 - $halfBase);
+      } else {
+        $cr.line_to($x1, $!arrowOrigin + $halfBase);
+        $cr.line_to($x1 - $rise, $!arrowOrigin);
+        $cr.line_to($x1, $!arrowOrigin - $halfBase);
+      }
+    }
+
+    unless $STL {
+      $cr.line_to($x1, $y1 + $borderRadius);
+      $cr.arc(
+        $x1 + $borderRadius,
+        $y1 + $borderRadius,
+        $borderRadius,
+        π,
+        3 * π / 2
+      );
+    }
+
+    my $bgColor = $themeNode.lookup_color(
+      '-arrow-background-color',
+      False
+    );
+
+    if $bgColor {
+      $cr.clutter_set_source_color($bgColor);
+      $cr.fill( :preserve );
+    }
+
+    if $borderWidth > 0 {
+      $borderColor = $themeNode.get-color('-arrow-border-color');
+      $cr.clutter_set_source_color($borderColor);
+      $cr.set_line_width($borderWidth);
+      $cr.stroke;
+    }
+
+    $cr.dispose
+  }
+  
   method setPosition ($sourceActor, $alignment) {
     if $!sourceActor.not || +$sourceActor != +$!sourceActor {
       #$!sourceActor.disconnectObject(self);
