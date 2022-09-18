@@ -285,10 +285,11 @@ sub generateFromFile (
       $*types = $type;
       getType
     } else {
-      $*types = $type-prefix ~ .<p>[3].split('_')
-                                      .skip(2)
-                                      .map( *.lc.tc )
-                                      .join;
+      my $pre = .<p>[3] // '';
+      $*types = $type-prefix ~ $pre.split('_')
+                                   .skip(2)
+                                   .map( *.lc.tc )
+                                   .join;
     }
 
     my $dep = False;
