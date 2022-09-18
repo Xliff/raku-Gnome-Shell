@@ -429,7 +429,7 @@ class Gnome::Shell::UI::BoxPointer is Gnome::Shell::St::Widget {
 
     $cr.dispose
   }
-  
+
   method setPosition ($sourceActor, $alignment) {
     if $!sourceActor.not || +$sourceActor != +$!sourceActor {
       #$!sourceActor.disconnectObject(self);
@@ -447,7 +447,103 @@ class Gnome::Shell::UI::BoxPointer is Gnome::Shell::St::Widget {
   }
 
   method reposition ($allocationBox) {
-    # ...
+    my $sourceActor = $!sourceActor;
+    my $alignment = $!arrowAlignment;
+    my $monitorIndex = UI<layoutManager>.findIndexForActor($sourceActor);
+
+    $!sourceExtents = $sourceActor.get_transformed_extents;
+    $!workArea = UI<layoutManager>.getWorkAreaForMonitor($monitorIndex);
+
+    my $sourceAllocation = $sourceActor.get_allocation_box;
+    my $sourceContentBox = $sourceActor ~~ Gnome::Shell::St::Widget
+        ?? $sourceActor.get_theme_node.get_content_box($sourceAllocation)
+        !! Mutter::Clutter::ActorBox.new(
+            x2 => $sourceAllocation.get_width,
+            y2 => $sourceAllocation.get_height,
+        });
+    my $sourceTopLeft = $!sourceExtents.get_top_left;
+    my $sourceBottomRight = $!sourceExtents.get_bottom_right;
+    my $sourceCenterX = $sourceTopLeft.x + $sourceContentBox.x1 +
+      ($sourceContentBox.x2 - $sourceContentBox.x1) * $!sourceAlignment;
+    my $sourceCenterY = $sourceTopLeft.y + $sourceContentBox.y1 +
+      ($sourceContentBox.y2 - $sourceContentBox.y1) * $!sourceAlignment;
+    my ($, $, $natWidth, $natHeight) = self.get_preferred_size;
+
+    my $workarea = $!workArea;
+    my $themeNode = self.get_theme_node();
+    my $borderWidth = $themeNode.get_length('-arrow-border-width');
+    my $arrowBase = $themeNode.get_length('-arrow-base');
+    my $borderRadius = $themeNode.get_length('-arrow-border-radius');
+    my $margin = 4 * $borderRadius + $borderWidth + $arrowBase;
+
+    my $gap = $themeNode.get_length('-boxpointer-gap');
+    my $padding = $themeNode.get_length('-arrow-rise');
+
+    my ($resX, $resY);
+    given $!arrowSide {
+      when ST_SIDE_TOP    { $resY = $sourceBottomRight.y + $gap }
+      when ST_SIDE_BOTTOM { $resY = $sourceTopLeft.y     - $natHeight - $gap }
+      when ST_SIDE_LEFT   { $resX = $sourceBottomRight.x + $gap }
+      when ST_SIDE_RIGHT  { $resX = $sourceTopLeft.x     - $natWidth - $gap }
+    }
+
+    my  $arrowOrigin;
+    my  $halfBase     = ($arrowBase / 2).Int;
+    my  $halfBorder   = $borderWidth / 2;
+    my  $halfMargin   = $margin / 2;
+    my ($x1, $y1)     = $halfBorder xx 2;
+    my ($x2, $y2)     = ($natWidth, $natHeight) >>->> $halfBorder;
+
+    given $!arrowSide {
+      when ST_SIDE_TOP | ST_SIDE_BOTTOM {
+        $resX = $sourceCenterX -
+                  ($halfMargin + ($natWidth - $margin) * $alignment);
+        $resX = max($resX, $workarea.x + $padding);
+        $resX = min(
+          $resX,
+          $workarea.x + $workarea.width - ($padding + $natWidth)
+        );
+
+        $arrowOrigin = $sourceCenterX - $resX;
+        if $arrowOrigin <= $x1 + $borderRadius + $halfBase {
+            $resX += $arrowOrigin - $x1 if $arrowOrigin > $x1
+            $arrowOrigin = $x1;
+        } else if $arrowOrigin >= $x2 - ($borderRadius + $halfBase) {
+            $resX -= $x2 - $arrowOrigin if $arrowOrigin < $x2
+            $arrowOrigin = $x2;
+        }
+      }
+
+      when ST_SIDE_LEFT | ST_SIDE_RIGHT {
+        $resY = $sourceCenterY -
+                  ($halfMargin + ($natHeight - $margin) * $alignment);
+
+        $resY = max($resY, $workarea.y + $padding);
+        $resY = min(
+          $resY,
+          $workarea.y + $workarea.height - ($padding + $natHeight)
+        );
+
+        $arrowOrigin = $sourceCenterY - $resY;
+        if $arrowOrigin <= $y1 + $borderRadius + $halfBase {
+          $resY += $arrowOrigin - $y1 if $arrowOrigin > $y1;
+          $arrowOrigin = $y1;
+        } else if $arrowOrigin >= $y2 - ($borderRadius + $halfBase) {
+          $resY -= $y2 - $arrowOrigin if $arrowOrigin < $y2;
+          $arrowOrigin = $y2;
+        }
+      }
+    }
+    self.setArrowOrigin($arrowOrigin);
+
+    my $parent = self.get-parent;
+    my ($success, $x, $y);
+    while $success.not {
+      ($success, $x, $y) = $parent.transform-stage-point($resX, $resY);
+      $parent .= get-parent;
+    }
+
+    $allocationBox.set-origin($x.Int, $y.Int);
   }
 
   method setArrowOrigin ($origin) {
