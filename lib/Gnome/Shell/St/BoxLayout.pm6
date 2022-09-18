@@ -3,6 +3,7 @@ use v6.c;
 use Method::Also;
 use NativeCall;
 
+use GLib::Raw::Traits;
 use Gnome::Shell::Raw::Types;
 
 use Gnome::Shell::St::Viewport;
@@ -51,6 +52,36 @@ class Gnome::Shell::St::BoxLayout is Gnome::Shell::St::Viewport {
     my $st-box-layout = st_box_layout_new();
 
     $st-box-layout ?? self.bless( :$st-box-layout, |%props ) !! Nil;
+  }
+
+  # Type: boolean
+  method vertical is rw  is g-property {
+    my $gv = GLib::Value.new( G_TYPE_BOOLEAN );
+    Proxy.new(
+      FETCH => sub ($) {
+        self.prop_get('vertical', $gv);
+        $gv.boolean;
+      },
+      STORE => -> $, Int() $val is copy {
+        $gv.boolean = $val;
+        self.prop_set('vertical', $gv);
+      }
+    );
+  }
+
+  # Type: boolean
+  method pack-start is rw  is g-property {
+    my $gv = GLib::Value.new( G_TYPE_BOOLEAN );
+    Proxy.new(
+      FETCH => sub ($) {
+        self.prop_get('pack-start', $gv);
+        $gv.boolean;
+      },
+      STORE => -> $, Int() $val is copy {
+        $gv.boolean = $val;
+        self.prop_set('pack-start', $gv);
+      }
+    );
   }
 
   method get_pack_start is also<get-pack-start> {
