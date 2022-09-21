@@ -23,9 +23,18 @@ class Gnome::Shell::UI::InhibitShortcutsDialog {
 
   has $!permStore;
 
-  submethod BUILD ( :$!window ) {
+  submethod BUILD ( :$!window, :$ui-inhibit-shortcuts-dialog ) {
+    if $ui-inhibit-shortcuts-dialog {
+      self.setUiInhibitShortcutsDialog($ui-inhibit-shortcuts-dialog);
+      return;
+    }
+
+    return unless $window;
+
     $!dialog = Gnome::Shell::UI::ModalDialog.new;
     self.buildLayout;
+
+    self!setObject( GLib::Object.new(G_TYPE_OBJECT) );
   }
 
   method window is rw {
