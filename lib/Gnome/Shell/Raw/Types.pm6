@@ -7,6 +7,7 @@ use JSON::GLib::Raw::Exports;
 use Pango::Raw::Exports;
 use Graphene::Raw::Exports;
 use Mutter::Raw::Exports;
+use NetworkManager::Raw::Exports;
 use Gnome::Shell::Raw::Exports;
 
 unit package Gnome::Shell::Raw::St::Types;
@@ -43,6 +44,9 @@ need Mutter::Raw::Enums;
 need Mutter::Raw::GSettingsEnums;
 need Mutter::Raw::Subs;
 need Mutter::Raw::Structs;
+need NetworkManager::Raw::Definitions;
+need NetworkManager::Raw::Enums;
+need NetworkManager::Raw::Structs; 
 need Gnome::Shell::Raw::Definitions;
 need Gnome::Shell::Raw::Enums;
 need Gnome::Shell::Raw::Structs;
@@ -55,5 +59,6 @@ BEGIN {
                          |@pango-exports,
                          |@graphene-exports,
                          |@mutter-exports,
+                         |@nm-exports,
                          |@gnome-shell-exports;
 }
