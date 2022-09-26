@@ -117,7 +117,7 @@ class Gnome::Shell::NetworkAgent is NetworkManager::SecretAgent::Old {
   }
 
   # Type: NMSecretAgentCapabilities
-  method capabilities ( :flags = False ) is rw  is g-property {
+  method capabilities ( :$flags = False ) is rw  is g-property {
     my $gv = GLib::Value.new(
       GLib::Value.typeFromEnum(NMSecretAgentCapabilities)
     );
