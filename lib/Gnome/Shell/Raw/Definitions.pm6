@@ -43,6 +43,7 @@ class StViewport               is repr<CPointer> does GLib::Roles::Pointers is e
 class StWidget                 is repr<CPointer> does GLib::Roles::Pointers is export { }
 
 class ShellApp                 is repr<CPointer> does GLib::Roles::Pointers is export { }
+class ShellBlurEffect          is repr<CPointer> does GLib::Roles::Pointers is export { }
 class ShellGlobal              is repr<CPointer> does GLib::Roles::Pointers is export { }
 class ShellGLSLEffect          is repr<CPointer> does GLib::Roles::Pointers is export { }
 class ShellMountOperation      is repr<CPointer> does GLib::Roles::Pointers is export { }
