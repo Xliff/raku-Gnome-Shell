@@ -57,6 +57,8 @@ class ShellWindowPreview         is repr<CPointer> does GLib::Roles::Pointers is
 class ShellWindowTracker         is repr<CPointer> does GLib::Roles::Pointers is export { }
 class ShellWM                    is repr<CPointer> does GLib::Roles::Pointers is export { }
 
+class ShellPolkitAuthenticationAgent is repr<CPointer> does GLib::Roles::Pointers is export { }
+
 class CRAdditionalSel            is repr<CPointer> does GLib::Roles::Pointers is export { }
 class CREncoding                 is repr<CPointer> does GLib::Roles::Pointers is export { }
 class CRStatement                is repr<CPointer> does GLib::Roles::Pointers is export { }
