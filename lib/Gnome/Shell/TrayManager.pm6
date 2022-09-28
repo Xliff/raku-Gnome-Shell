@@ -16,7 +16,7 @@ our subset ShellTrayManagerAncestry is export of Mu
 
 class Gnome::Shell::TrayManager {
   also does GLib::Roles::Object;
-  also does Mutter::Clutter::Roles::Generic;
+  also does Mutter::Clutter::Roles::Signals::Generic;
 
   has ShellTrayManager $!stm is implementor;
 
@@ -56,8 +56,7 @@ class Gnome::Shell::TrayManager {
     $o.ref if $ref;
     $o;
   }
-
-  method new {
+  multi method new {
     my $shell-tray-manager = shell_tray_manager_new();
 
     $shell-tray-manager ?? self.bless( :$shell-tray-manager ) !! Nil;
