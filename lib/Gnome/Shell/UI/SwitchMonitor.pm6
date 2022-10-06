@@ -5,8 +5,10 @@ use Gnome::Shell::UI::SwitcherPopup;
 
 constant APP_ICON_SIZE is export = 96;
 
+class Gnome::Shell::UI::SwitchMonitor::Switcher { ... }
+
 class Gnome::Shell::UI::SwitchMonitorPopup
-  is Gnome::Shell::UI::SwitcherPopUp
+  is Gnome::Shell::UI::Switcher::PopUp
 {
 
   submethod BUILD {
@@ -42,7 +44,7 @@ class Gnome::Shell::UI::SwitchMonitorPopup
 
     self.setItems(@items);
 
-    $!switcherList = Gnome::Shell::UI::SwitchMOnitorSwitcher.new(@items);
+    $!switcherList = Gnome::Shell::UI::SwitchMonitor::Switcher.new(@items);
   }
 
   method show ($backward, $binding, $mask) {
@@ -81,8 +83,8 @@ class Gnome::Shell::UI::SwitchMonitorPopup
   }
 }
 
-class Gnome::Shell::UI::SwitchMonitorSwitcher
-  is Gnome::Shell::UI::SwitcherPopup::SwitcherList
+class Gnome::Shell::UI::SwitchMonitor::Switcher
+  is Gnome::Shell::UI::Switcher::List
 {
   submethod BUILD ( :@items ) {
     self.addIcon($_) for @items;
