@@ -6,13 +6,17 @@ use GLib::Raw::Traits;
 use Gnome::Shell::Raw::Types;
 use Gnome::Shell::Raw::KeyringPrompt;
 
+use GLib::Value;
+use GCR::SystemPrompter;
+use Mutter::Clutter::Text;
+
 use GLib::Roles::Implementor;
 use GLib::Roles::Object;
 
 our subset ShellKeyringPromptAncestry is export of Mu
   where ShellKeyringPrompt | GObject;
 
-class Gnome::Shell::KeyringPrompt {
+class Gnome::Shell::Keyring::Prompt {
   also does GLib::Roles::Object;
 
   has ShellKeyringPrompt $!skp is implementor;
@@ -200,6 +204,44 @@ class Gnome::Shell::KeyringPrompt {
     is also<set-password-actor>
   {
     shell_keyring_prompt_set_password_actor($!skp, $password_actor);
+  }
+
+}
+
+class Gnome::Shell::UI:Keyring::Prompter 
+  is GCR::SystemPrompter
+{
+  has $!currentPrompt;
+  has $!dbusId;
+  has $!enabled;
+  has $!registered;
+
+  submethod BUILD {
+    self.new-prompt.tap( -> *@a {
+      my $dialog = (
+        $!enabled ?? Gnome::Shell::Keyring::Dialog
+                  !! Gnome::Shell::Keyring::DummyDialog
+      ).new;
+      @a.tail.r = $!currentPrompt = $dialog.prompt;
+    });
+  }
+
+  method enable {
+    unless $!registered {
+      self.register(GIO::DBus.session);
+      $!dbusId = GIO::DBus::Connection.session.own_name(
+        'org.gnome.keyring.SystemPrompter',
+        G_BUS_NAME_OWNER_ALLOW_REPLACEMENT
+      );
+      $!registered = True;
+    }
+    $!enabled = True;
+  }
+
+  method disable {
+    $!enabled = False;
+    $!currentPrompt.cancel if self.prompting ;
+    $!currentPrompt = Nil;
   }
 
 }
