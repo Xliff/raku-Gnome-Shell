@@ -1,14 +1,21 @@
-use v6.c;
+ause v6.c;
 
 use Gnome::Shell::Raw::Types;
+
+use Gnome::Shell::Misc::DBusUtils;
 
 use GIO::Roles::File;
 
 unit package Gnome::Shell::Misc::FileUtils;
 
-constant StdNT = 'standard::name,standard::type'
+constant StdNT = 'standard::name,standard::type';
 
-sub collectFromDatadirs ($subdir, $includeUserDir, &processFile) {
+our &loadInterfaceXML is export    :=
+  &Gnome::Shell::Misc::DBusUtils::loadInterfaceXML;
+our &loadSubInterfaceXML is export :=
+  &Gnome::Shell::Misc::DBusUtils::loadSubInterfaceXML;
+  
+sub collectFromDatadirs ($subdir, $includeUserDir, &processFile) is export {
   my @dataDirs = GLib.get-system-data-dirs();
   @dataDirs.unshift(GLib.get-user-data-dir) if $includeUserDir;
 
@@ -26,7 +33,7 @@ sub collectFromDatadirs ($subdir, $includeUserDir, &processFile) {
   }
 }
 
-sub recursivelyDeleteDir ($dir, $deleteParent) {
+sub recursivelyDeleteDir ($dir, $deleteParent) is export {
   my $children = $dir.enumerate-children(StdNT);
 
   while (my $info = $children.next-file) {
@@ -42,7 +49,7 @@ sub recursivelyDeleteDir ($dir, $deleteParent) {
   }
 }
 
-sub recursivelyMoveDir ($srcDir, $destDir) {
+sub recursivelyMoveDir ($srcDir, $destDir) is export {
   my $children = $srcDir.enumerate-children(StdNT);
 
   $destDir.make-directory-with-parents unless $destDir.query-exists;
