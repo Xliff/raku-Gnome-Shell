@@ -305,13 +305,18 @@ class Gnome::Shell::St::Widget is Mutter::Clutter::Actor {
     so st_widget_has_style_pseudo_class($!stw, $pseudo_class);
   }
 
-  method navigate_focus (
-    MutterClutterActor() $from,
-    Int()          $direction,
-    Int()          $wrap_around
-  )
+  proto method navigate_focus
     is also<navigate-focus>
-  {
+  { * }
+
+  multi method navigate_focus ($direction, $wrap-around = False) {
+    samewith(MutterClutterActor, $direction, $wrap-around);
+  }
+  multi method navigate_focus (
+    MutterClutterActor() $from,
+    Int()                $direction,
+    Int()                $wrap_around
+  ) {
     my StDirectionType $d = $direction;
     my gboolean        $w = $wrap_around.so.Int;
 
