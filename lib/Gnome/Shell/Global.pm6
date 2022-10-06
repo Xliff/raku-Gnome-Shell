@@ -52,6 +52,320 @@ class Gnome::Shell::Global {
     $o;
   }
 
+  # Type: string
+  method session-mode is rw  is g-property {
+    my $gv = GLib::Value.new( G_TYPE_STRING );
+    Proxy.new(
+      FETCH => sub ($) {
+        self.prop_get('session-mode', $gv);
+        $gv.string;
+      },
+      STORE => -> $, Str() $val is copy {
+        $gv.string = $val;
+        self.prop_set('session-mode', $gv);
+      }
+    );
+  }
+
+  # Type: int
+  method screen-width is rw  is g-property {
+    my $gv = GLib::Value.new( G_TYPE_INT );
+    Proxy.new(
+      FETCH => sub ($) {
+        self.prop_get('screen-width', $gv);
+        $gv.int;
+      },
+      STORE => -> $, Int() $val is copy {
+        warn 'screen-width does not allow writing'
+      }
+    );
+  }
+
+  # Type: int
+  method screen-height is rw  is g-property {
+    my $gv = GLib::Value.new( G_TYPE_INT );
+    Proxy.new(
+      FETCH => sub ($) {
+        self.prop_get('screen-height', $gv);
+        $gv.int;
+      },
+      STORE => -> $, Int() $val is copy {
+        warn 'screen-height does not allow writing'
+      }
+    );
+  }
+
+  # Type: MutterMetaBackend
+  method backend ( :$raw = False ) is rw  is g-property {
+    my $gv = GLib::Value.new( Mutter::Meta::Backend.get_type );
+    Proxy.new(
+      FETCH => sub ($) {
+        self.prop_get('backend', $gv);
+        propReturnObject(
+          $gv.object,
+          $raw,
+          |Mutter::Meta::Backend.getTypePair
+        )
+      },
+      STORE => -> $,  $val is copy {
+        warn 'backend does not allow writing'
+      }
+    );
+  }
+
+  # Type: MutterMetaContext
+  method context ( :$raw = False ) is rw  is g-property {
+    my $gv = GLib::Value.new( Mutter::Meta::Context.get_type );
+    Proxy.new(
+      FETCH => sub ($) {
+        self.prop_get('context', $gv);
+        propReturnObject(
+          $gv.StContext,
+          $raw,
+          |Mutter::Meta::Context.getTypePair
+        );
+      },
+      STORE => -> $,  $val is copy {
+        warn 'context does not allow writing'
+      }
+    );
+  }
+
+  # Type: MutterMetaDisplay
+  method display ( :$raw = False ) is rw  is g-property {
+    my $gv = GLib::Value.new( Mutter::Meta::Display.get_type );
+    Proxy.new(
+      FETCH => sub ($) {
+        self.prop_get('display', $gv);
+        propReturnObject(
+          $gv.object,
+          $raw,
+          |Mutter::Meta::Display.getTypePair
+        );
+      },
+      STORE => -> $,  $val is copy {
+        warn 'display does not allow writing'
+      }
+    );
+  }
+
+  # Type: MutterMetaWorkspaceManager
+  method workspace-manager ( :$raw = False ) is rw  is g-property {
+    my $gv = GLib::Value.new( Mutter::Meta::WorkspaceManager.get_type );
+    Proxy.new(
+      FETCH => sub ($) {
+        self.prop_get('workspace-manager', $gv);
+        propRetrnObject(
+          $gv.object,
+          $raw,
+          |Mutter::Meta::WorkspaceManager.getTypePair
+        );
+      },
+      STORE => -> $,  $val is copy {
+        warn 'workspace-manager does not allow writing'
+      }
+    );
+  }
+
+  # Type: MutterClutterActor
+  method stage ( :$raw = False ) is rw  is g-property {
+    my $gv = GLib::Value.new( Mutter::Clutter::Actor.get_type );
+    Proxy.new(
+      FETCH => sub ($) {
+        self.prop_get('stage', $gv);
+        propReturnObjec(
+          $gv.object,
+          $raw,
+          |Mutter::Clutter::Actor.getTypePair
+        );
+      },
+      STORE => -> $,  $val is copy {
+        warn 'stage does not allow writing'
+      }
+    );
+  }
+
+  # Type: MutterClutterActor
+  method window-group ( :$raw = False ) is rw  is g-property {
+    my $gv = GLib::Value.new( Mutter::Clutter::Actor.get_type );
+    Proxy.new(
+      FETCH => sub ($) {
+        self.prop_get('window-group', $gv);
+        propReturnObject(
+          $gv.object,
+          $raw,
+          |Mutter::Clutter::Actor.getTypePair
+        );
+      },
+      STORE => -> $,  $val is copy {
+        warn 'window-group does not allow writing'
+      }
+    );
+  }
+
+  # Type: MutterClutterActor
+  method top-window-group ( :$raw = False ) is rw  is g-property {
+    my $gv = GLib::Value.new( Mutter::Clutter::Actor.get_type );
+    Proxy.new(
+      FETCH => sub ($) {
+        self.prop_get('top-window-group', $gv);
+        propReturnObject(
+          $gv.object,
+          $raw,
+          |Mutter::Clutter::Actor.getTypePair
+        )
+      },
+      STORE => -> $,  $val is copy {
+        warn 'top-window-group does not allow writing'
+      }
+    );
+  }
+
+  # Type: ShellWm
+  method window-manager ( :$raw = False ) is rw  is g-property {
+    my $gv = GLib::Value.new( Gnome::Shell::Wm.get_type );
+    Proxy.new(
+      FETCH => sub ($) {
+        self.prop_get('window-manager', $gv);
+        propReturnObject(
+          $gv.object,
+          $raw,
+          |Gnome::Shell::Wm.getTypePair
+        );
+      },
+      STORE => -> $,  $val is copy {
+        warn 'window-manager does not allow writing'
+      }
+    );
+  }
+
+  # Type: GSettings
+  method settings is rw  is g-property {
+    my $gv = GLib::Value.new( GIO::Settings.get_type );
+    Proxy.new(
+      FETCH => sub ($) {
+        self.prop_get('settings', $gv);
+        propReturnObject(
+          $gv.StSettings,
+          $raw,
+          |GIO::Settings.getTypePair
+        );
+      },
+      STORE => -> $,  $val is copy {
+        warn 'settings does not allow writing'
+      }
+    );
+  }
+
+  # Type: string
+  method datadir is rw  is g-property {
+    my $gv = GLib::Value.new( G_TYPE_STRING );
+    Proxy.new(
+      FETCH => sub ($) {
+        self.prop_get('datadir', $gv);
+        $gv.string;
+      },
+      STORE => -> $, Str() $val is copy {
+        warn 'datadir does not allow writing'
+      }
+    );
+  }
+
+  # Type: string
+  method imagedir is rw  is g-property {
+    my $gv = GLib::Value.new( G_TYPE_STRING );
+    Proxy.new(
+      FETCH => sub ($) {
+        self.prop_get('imagedir', $gv);
+        $gv.string;
+      },
+      STORE => -> $, Str() $val is copy {
+        warn 'imagedir does not allow writing'
+      }
+    );
+  }
+
+  # Type: string
+  method userdatadir is rw  is g-property {
+    my $gv = GLib::Value.new( G_TYPE_STRING );
+    Proxy.new(
+      FETCH => sub ($) {
+        self.prop_get('userdatadir', $gv);
+        $gv.string;
+      },
+      STORE => -> $, Str() $val is copy {
+        warn 'userdatadir does not allow writing'
+      }
+    );
+  }
+
+  # Type: StFocusManager
+  method focus-manager ( :$raw = False ) is rw  is g-property {
+    my $gv = GLib::Value.new( Gnome::Shell::St::FocusManager.get_type );
+    Proxy.new(
+      FETCH => sub ($) {
+        self.prop_get('focus-manager', $gv);
+        propReturnObject(
+          $gv.object,
+          $raw,
+          |Gnome::Shell::St::FocusManager.getTypePair
+        );
+      },
+      STORE => -> $,  $val is copy {
+        warn 'focus-manager does not allow writing'
+      }
+    );
+  }
+
+  # Type: boolean
+  method frame-timestamps is rw  is g-property {
+    my $gv = GLib::Value.new( G_TYPE_BOOLEAN );
+    Proxy.new(
+      FETCH => sub ($) {
+        self.prop_get('frame-timestamps', $gv);
+        $gv.boolean;
+      },
+      STORE => -> $, Int() $val is copy {
+        $gv.boolean = $val;
+        self.prop_set('frame-timestamps', $gv);
+      }
+    );
+  }
+
+  # Type: boolean
+  method frame-finish-timestamp is rw  is g-property {
+    my $gv = GLib::Value.new( G_TYPE_BOOLEAN );
+    Proxy.new(
+      FETCH => sub ($) {
+        self.prop_get('frame-finish-timestamp', $gv);
+        $gv.boolean;
+      },
+      STORE => -> $, Int() $val is copy {
+        $gv.boolean = $val;
+        self.prop_set('frame-finish-timestamp', $gv);
+      }
+    );
+  }
+
+  # Type: GDbusProxy
+  method switcheroo-control ( :$raw = False ) is rw  is g-property {
+    my $gv = GLib::Value.new( GIO::DBus::Proxy.get_type );
+    Proxy.new(
+      FETCH => sub ($) {
+        self.prop_get('switcheroo-control', $gv);
+        propReturnObject(
+          $gv.object,
+          $raw,
+          |GIO::DBus::Proxy.getTypePair
+        );
+      },
+      STORE => -> $,  $val is copy {
+        warn 'switcheroo-control does not allow writing'
+      }
+    );
+  }
+
+
   method get {
     my $shell-global = shell_global_get();
 
