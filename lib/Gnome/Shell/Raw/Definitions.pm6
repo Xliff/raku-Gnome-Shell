@@ -53,6 +53,7 @@ class ShellPerfLog               is repr<CPointer> does GLib::Roles::Pointers is
 class ShellScreenshot            is repr<CPointer> does GLib::Roles::Pointers is export { }
 class ShellSecureTextBuffer      is repr<CPointer> does GLib::Roles::Pointers is export { }
 class ShellTrayManager           is repr<CPointer> does GLib::Roles::Pointers is export { }
+class ShellTrayIcon              is repr<CPointer> does GLib::Roles::Pointers is export { }
 class ShellWorkspaceBackground   is repr<CPointer> does GLib::Roles::Pointers is export { }
 class ShellWindowPreview         is repr<CPointer> does GLib::Roles::Pointers is export { }
 class ShellWindowTracker         is repr<CPointer> does GLib::Roles::Pointers is export { }
@@ -64,3 +65,5 @@ class CRAdditionalSel            is repr<CPointer> does GLib::Roles::Pointers is
 class CREncoding                 is repr<CPointer> does GLib::Roles::Pointers is export { }
 class CRStatement                is repr<CPointer> does GLib::Roles::Pointers is export { }
 class CRTerm                     is repr<CPointer> does GLib::Roles::Pointers is export { }
+
+class GtkActionMuxer             is repr<CPointer> does GLib::Roles::Pointers is export { }
