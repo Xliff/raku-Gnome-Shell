@@ -67,3 +67,5 @@ class CRStatement                is repr<CPointer> does GLib::Roles::Pointers is
 class CRTerm                     is repr<CPointer> does GLib::Roles::Pointers is export { }
 
 class GtkActionMuxer             is repr<CPointer> does GLib::Roles::Pointers is export { }
+class GtkActionObserver          is repr<CPointer> does GLib::Roles::Pointers is export { }
+class GtkActionObservable        is repr<CPointer> does GLib::Roles::Pointers is export { }
