@@ -5,7 +5,7 @@ use Gnome::Shell::UI::CheckBox;
 use Gnome::Shell::UI::Dialog;
 use Gnome::Shell::UI::ModalDialog;
 
-use Gnome::Shell::UI::FileUtils;
+use Gnome::Shell::Misc::FileUtils;
 
 constant requestIface = loadInterfaceXML('org.freedesktop.impl.portal.Request');
 constant accessIface  = loadInterfaceXML('org.freedesktop.impl.portal.Access');

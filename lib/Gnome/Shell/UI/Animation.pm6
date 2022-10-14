@@ -1,6 +1,6 @@
 use v6.c;
-use Gnome::Shell::Misc::Params;
 
+use Gnome::Shell::Raw::Types;
 
 constant ANIMATED_ICON_UPDATE_TIMEOUT is export = 16;
 constant SPINNER_ANIMATION_TIME       is export = 300;

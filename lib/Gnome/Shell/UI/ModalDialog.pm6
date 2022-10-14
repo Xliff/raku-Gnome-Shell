@@ -1,12 +1,12 @@
 use v6.c;
 
+use Gnome::Shell::Raw::Types;
 use Gnome::Shell::St::Widget;
-
 use Gnome::Shell::UI::Dialog;
-use Gnome::Shell::UI::Layout;
-use Gnome::Shell::UI::Lightbox;
+#use Gnome::Shell::UI::Layout;
+#use Gnome::Shell::UI::Lightbox;
 use Gnome::Shell::UI::Main;
-use Gnome::Shell::UI::Params;
+
 
 constant OPEN_AND_CLOSE_TIME  is export = 100;
 constant FADE_OUT_DIALOG_TIME is export = 1000;

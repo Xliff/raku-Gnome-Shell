@@ -3,7 +3,7 @@ use v6.c;
 use Cairo;
 
 use Mutter::Clutter::Cairo;
-use Gnome::Shell::UI::DrawingArea;
+#use Gnome::Shell::UI::DrawingArea;
 use Gnome::Shell::UI::Main;
 
 use GLib::Roles::Object;

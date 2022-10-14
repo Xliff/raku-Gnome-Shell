@@ -1,9 +1,9 @@
 use v6;
 
 use Muttter::Clutter::ClickAction;
-use Gnome::Shell::BoxPointer;
-use Gnome::Shell::Main;
-use Gnome::Shell::PopupMenu;
+use Gnome::Shell::UI::BoxPointer;
+use Gnome::Shell::UI::Main;
+#use Gnome::Shell::UI::PopupMenu;
 
 class Gnome::Shell:UI::BackgroundMenu is Gnome::Shell::UI::PopupMenu {
 

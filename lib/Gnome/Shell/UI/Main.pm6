@@ -2,27 +2,27 @@ use v6.c;
 
 my %S;
 
-use Gnome::Shell::UI::Layout;
-use Gnome::Shell::UI::PadOsd;
-use Gnome::Shell::UI::XdndHandler;
+#use Gnome::Shell::UI::Layout;
+#use Gnome::Shell::UI::PadOsd;
+#use Gnome::Shell::UI::XdndHandler;
 use Gnome::Shell::UI::CtrlAltTab;
 use Gnome::Shell::UI::OsdWindow;
-use Gnome::Shell::UI::OsdMonitorLabeler;
-use Gnome::Shell::UI::Overview;
-use Gnome::Shell::UI::KbdA11yDialog;
-use Gnome::Shell::UI::WindowManager;
-use Gnome::Shell::UI::Mangnifier;
-use Gnome::Shell::UI::LocatePointer;
-use Gnome::Shell::UI::InputMethod;
-use Gnome::Shell::UI::Screenshot;
-use Gnome::Shell::UI::MessageTray;
-use Gnome::Shell::UI::Panel;
-use Gnome::Shell::UI::Keyboard;
-use Gnome::Shell::UI::NotificationDaemon;
-use Gnome::Shell::UI::WindowAttentionHandler;
-use Gnome::Shell::UI::Components;
-use Gnome::Shell::UI::PonterA11yTimeout;
-use Gnome::Shell::Misc::Introspect;
+#use Gnome::Shell::UI::OsdMonitorLabeler;
+#use Gnome::Shell::UI::Overview;
+#use Gnome::Shell::UI::KbdA11yDialog;
+#use Gnome::Shell::UI::WindowManager;
+#use Gnome::Shell::UI::Mangnifier;
+#use Gnome::Shell::UI::LocatePointer;
+#use Gnome::Shell::UI::InputMethod;
+#use Gnome::Shell::UI::Screenshot;
+#use Gnome::Shell::UI::MessageTray;
+#use Gnome::Shell::UI::Panel;
+#use Gnome::Shell::UI::Keyboard;
+#use Gnome::Shell::UI::NotificationDaemon;
+#use Gnome::Shell::UI::WindowAttentionHandler;
+#use Gnome::Shell::UI::Components;
+#use Gnome::Shell::UI::PonterA11yTimeout;
+#use Gnome::Shell::Misc::Introspect;
 
 class Gnome::Shell::Main::UI does Associative {
 

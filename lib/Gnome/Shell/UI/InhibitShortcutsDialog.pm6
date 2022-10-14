@@ -2,7 +2,7 @@ use v6.c;
 
 use Gnome::Shell::UI::Dialog;
 use Gnome::Shell::UI::ModalDialog;
-use Gnome::Shell::UI::PermissionStore;
+#use Gnome::Shell::UI::PermissionStore;
 
 use GLib::Roles::Object;
 use Mutter::Meta::Roles::InhibitShortcutsDialog;
