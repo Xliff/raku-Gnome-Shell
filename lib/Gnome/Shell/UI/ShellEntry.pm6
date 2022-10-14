@@ -2,9 +2,9 @@ use v6.c;
 
 use Gnome::Shell::UI::BoxPointer;
 use Gnome::Shell::UI::Main;
-use Gnome::Shell::UI::PopupMenu;
+#use Gnome::Shell::UI::PopupMenu;
 
-class Gnome::Shell::UI::EntryMenu 
+class Gnome::Shell::UI::EntryMenu
 	is Gnome::Shell::UI::Popup::Menu
 {
 	has $!entry;
@@ -19,7 +19,7 @@ class Gnome::Shell::UI::EntryMenu
 		$!copyItem = Gnome::Shell::Popup::MenuItem.new('Copy');
 		$!copyItem.activate.tap( -> @*a { self.onCopyActivated });
 		self.addMenuItem($!copyItem);
-		
+
 		$!pasteItem = Gnome::Shell::Popup::MenuItem.new('Paste');
 		$!pasteItem.activate.tap( -> @*a { self.onPasteActivated });
 		self.addMenuItem($!pasteItem);
@@ -63,7 +63,7 @@ class Gnome::Shell::UI::EntryMenu
 
 	method updatePasteItem {
 		$!clipboard.get-text(
-			ST_CLIPBOARD_TYPE_CLIPBOARD, 
+			ST_CLIPBOARD_TYPE_CLIPBOARD,
 			-> *@a ($, $text) { $!pasteItem.setSensitive($text.so) }
 		);
 	}
@@ -76,7 +76,7 @@ class Gnome::Shell::UI::EntryMenu
 
 	method onCopyActivated {
 		$!clipboard.set-text(
-			ST_CLIPBOARD_TYPE_CLIPBOARD, 
+			ST_CLIPBOARD_TYPE_CLIPBOARD,
 			$!entry.clutter-text.get-selection
 		);
 	}
@@ -115,7 +115,7 @@ sub onButtonPressEvent ($actor, $event, $entry) {
 		setMernuAlignment($entry, $event.get-coords.head);
 		$entry.menu.open(BOXPOINTER_POPUP_ANIMATION_FULL);
 		return CLUTTER_EVENT_STOP;
-	} 
+	}
 	CLUTTER_EVENT_PROPAGATE;
 }
 
@@ -126,7 +126,7 @@ sub onPopup ($actor, $entry) {
 		$cursorPosition
 	);
 
-	$entry.menu.setSourceAlignment($textX * $entry.width ** -1) 
+	$entry.menu.setSourceAlignment($textX * $entry.width ** -1)
 		if $textX.defined;
 	$entry.menu.open(BOXPOINTER_POPUP_ANIMATION_FULL);
 }
@@ -157,8 +157,8 @@ sub addContextMenu is export ($entry, $params) {
 	});
 }
 
-class Gnome::Shell::UI::CapsLockWarning 
- 	is Gnome::Shell::St::Label 
+class Gnome::Shell::UI::CapsLockWarning
+ 	is Gnome::Shell::St::Label
 {
 	has $!keymap;
 	has $!stateChangedId;
@@ -175,7 +175,7 @@ class Gnome::Shell::UI::CapsLockWarning
 		$!stateChangedId = 0;
 
 		self.notify('mapped').tap( -> *@a {
-			self.is-mapped 
+			self.is-mapped
 			  ?? $!keymap.state-changed.tap( -> *@a { self.sync(True) })
 			  !! $!keymap.disconnect-object(self);
 
@@ -207,4 +207,4 @@ class Gnome::Shell::UI::CapsLockWarning
 		self.bless( :$style-class )
 	}
 
-}	
+}

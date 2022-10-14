@@ -1,6 +1,6 @@
 use v6;
 
-use Gnome::Shell::UI::Layout;
+#use Gnome::Shell::UI::Layout;
 use Gnome::Shell::UI::Main;
 
 constant ANIMATION_TIME  is export = 100;

@@ -1,6 +1,6 @@
 use v6.c;
 
-use Gnome::Shell::UI::DND;
+#use Gnome::Shell::UI::DND;
 use Gnome::Shell::UI::Main;
 
 use Mutter::Clutter::Actor;

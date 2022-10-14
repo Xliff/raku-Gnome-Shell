@@ -1,6 +1,6 @@
 use v6.c;
 
-use Gnome::Shell::BoxLayout;
+use Gnome::Shell::St::BoxLayout;
 
 class Gnome::Shell::St::UI::Ripples {
   has $!x;

@@ -1,8 +1,8 @@
 use v6.c;
 
-use Gnome::Shell;
+#use Gnome::Shell;
 use Gnome::Shell::UI::Main;
-use Gnome::Shell::UI::MessageTray;
+#use Gnome::Shell::UI::MessageTray;
 
 class Gnome::Shell::UI::WindowAttentionSource
   is Gnome::Shell::UI::MessageTray::Source
