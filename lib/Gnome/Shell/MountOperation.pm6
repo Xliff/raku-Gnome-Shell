@@ -6,15 +6,15 @@ use NativeCall;
 
 use Gnome::Shell::Raw::Types;
 
+use GIO::MountOperation;
+
 use GLib::Roles::Object;
 use GLib::Roles::Implementor;
 
 our subset ShellMountOperationAncestry is export of Mu
-  where ShellMountOperation | GObject;
+  where ShellMountOperation | GMountOperationAncestry;
 
-class Gnome::Shell::MountOperation {
-  also does GLib::Roles::Object;
-
+class Gnome::Shell::MountOperation is GIO::MountOperation {
   has ShellMountOperation $!gsmo is implementor;
 
   submethod BUILD ( :$shell-mount-operation ) {
@@ -27,7 +27,7 @@ class Gnome::Shell::MountOperation {
 
     $!gsmo = do {
       when ShellMountOperation {
-        $to-parent = cast(GObject, $_);
+        $to-parent = cast(GMountOperation, $_);
         $_;
       }
 
@@ -36,10 +36,10 @@ class Gnome::Shell::MountOperation {
         cast(ShellMountOperation, $_);
       }
     }
-    self!setObject($to-parent);
+    self.setGMountOperation($to-parent);
   }
 
-  method Mutter::Cogl::Raw::Definitions::ShellMountOperation
+  method Gnome::Shell::Raw::Definitions::ShellMountOperation
     is also<ShellMountOperation>
   { $!gsmo }
 
@@ -59,6 +59,10 @@ class Gnome::Shell::MountOperation {
     $shell-mount-operation ?? self.bless( :$shell-mount-operation ) !! Nil;
   }
 
+  method show-processes-2 {
+    self.connect($!gsmo, 'show-processes-2');
+  }
+
   method get_show_processes_choices is also<get-show-processes-choices> {
     shell_mount_operation_get_show_processes_choices($!gsmo);
   }
@@ -67,7 +71,9 @@ class Gnome::Shell::MountOperation {
     shell_mount_operation_get_show_processes_message($!gsmo);
   }
 
-  method get_show_processes_pids ( :$raw = False ) is also<get-show-processes-pids> {
+  method get_show_processes_pids ( :$raw = False ) 
+    is also<get-show-processes-pids> 
+  {
     propReturnObject(
       shell_mount_operation_get_show_processes_pids($!gsmo),
       $raw,
@@ -105,7 +111,7 @@ sub shell_mount_operation_get_show_processes_pids (
 { * }
 
 sub shell_mount_operation_new ()
-  returns GMountOperation
+  returns ShellMountOperation
   is native(gnome-shell)
   is export
 { * }
