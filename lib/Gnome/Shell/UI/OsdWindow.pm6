@@ -3,7 +3,7 @@ use v6.c;
 use Gnome::Shell::Raw::Types;
 
 use Gnome::Shell::UI::BarLevel;
-use Gnome::Shell::UI::Layout;
+#use Gnome::Shell::UI::Layout;
 use Gnome::Shell::UI::Main;
 
 constant HIDE_TIMEOUT         is export = 1500;
@@ -192,7 +192,7 @@ class Gnome::Shell::UI::OsdWindow::Manager {
   method hideAll {
     .cancel for @!osdWindows;
   }
-  
+
 }
 
 
