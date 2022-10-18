@@ -48,6 +48,7 @@ class ShellGlobal                is repr<CPointer> does GLib::Roles::Pointers is
 class ShellGLSLEffect            is repr<CPointer> does GLib::Roles::Pointers is export { }
 class ShellInvertLightnessEffect is repr<CPointer> does GLib::Roles::Pointers is export { }
 class ShellKeyringPrompt         is repr<CPointer> does GLib::Roles::Pointers is export { }
+class ShellMimeSniffer           is repr<CPointer> does GLib::Roles::Pointers is export { }
 class ShellMountOperation        is repr<CPointer> does GLib::Roles::Pointers is export { }
 class ShellPerfLog               is repr<CPointer> does GLib::Roles::Pointers is export { }
 class ShellScreenshot            is repr<CPointer> does GLib::Roles::Pointers is export { }
