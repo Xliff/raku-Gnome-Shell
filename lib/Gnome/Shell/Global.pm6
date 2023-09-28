@@ -5,18 +5,22 @@ use Method::Also;
 use Gnome::Shell::Raw::Types;
 use Gnome::Shell::Raw::Global;
 
+use GLib::Raw::Traits;
 use GIO::LaunchContext;
 use GIO::Settings;
 use Mutter::Clutter::Stage;
 use Mutter::Meta::Display;
-use Mutter::Meta::WorkspaceManager;
+use Mutter::Meta::Workspace::Manager;
 
 use GLib::Roles::Implementor;
+use GLib::Roles::Object;
 
 our subset ShellGlobalAncestry is export of Mu
   where ShellGlobal | GObject;
 
 class Gnome::Shell::Global {
+  also does GLib::Roles::Object;
+
   has ShellGlobal $!sg is implementor;
 
   submethod BUILD ( :$shell-global ) {
@@ -155,7 +159,7 @@ class Gnome::Shell::Global {
     Proxy.new(
       FETCH => sub ($) {
         self.prop_get('workspace-manager', $gv);
-        propRetrnObject(
+        propReturnObject(
           $gv.object,
           $raw,
           |Mutter::Meta::WorkspaceManager.getTypePair
@@ -173,7 +177,7 @@ class Gnome::Shell::Global {
     Proxy.new(
       FETCH => sub ($) {
         self.prop_get('stage', $gv);
-        propReturnObjec(
+        propReturnObject(
           $gv.object,
           $raw,
           |Mutter::Clutter::Actor.getTypePair
@@ -240,7 +244,7 @@ class Gnome::Shell::Global {
   }
 
   # Type: GSettings
-  method settings is rw  is g-property {
+  method settings ( :$raw = False ) is rw  is g-property {
     my $gv = GLib::Value.new( GIO::Settings.get_type );
     Proxy.new(
       FETCH => sub ($) {
@@ -423,8 +427,8 @@ class Gnome::Shell::Global {
     samewith($, $, $);
   }
   multi method get_pointer ($x is rw, $y is rw, $mods is rw) {
-    my gint                ($xx, $yu) = 0 xx 2;
-    my ClutterModifierType  $m        = 0;
+    my gint                      ($xx, $yy) = 0 xx 2;
+    my MutterClutterModifierType  $m        = 0;
 
     shell_global_get_pointer($!sg, $xx, $yy, $m);
     ($x, $y, $mods) = ($xx, $yy, $m);
@@ -485,7 +489,7 @@ class Gnome::Shell::Global {
   method run_at_leisure (
              &func,
     gpointer $user_data  = gpointer,
-             &notify     = %DEFAULT-HANDLERS<GDestroyNotify>
+             &notify     = %DEFAULT-CALLBACKS<GDestroyNotify>
   )
     is also<run-at-leisure>
   {
