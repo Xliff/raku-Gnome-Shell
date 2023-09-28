@@ -6,7 +6,16 @@ use Cairo;
 
 use GLib::Raw::Definitions;
 
+use GLib::Roles::Object;
+
 unit package Gnome::Shell::Raw::Definitions;
+
+# cw: This project has sub-class, so must use the GLib::Object::Registrar mechanism
+our $gnome-shell-registrar
+  is   export
+  does GLib::Roles::Object::Registrar['Gnome-Shell'];
+
+BEGIN add-object-registrar($gnome-shell-registrar);
 
 # cw: This will need to be replaced with something more robust!
 our constant gnome-shell       is export := '/usr/lib/gnome-shell/lib-gnome-shell';
@@ -44,6 +53,8 @@ class StWidget                   is repr<CPointer> does GLib::Roles::Pointers is
 
 class ShellApp                   is repr<CPointer> does GLib::Roles::Pointers is export { }
 class ShellBlurEffect            is repr<CPointer> does GLib::Roles::Pointers is export { }
+class ShellGtkEmbed              is repr<CPointer> does GLib::Roles::Pointers is export { }
+class ShellEmbeddedWindow        is repr<CPointer> does GLib::Roles::Pointers is export { }
 class ShellGlobal                is repr<CPointer> does GLib::Roles::Pointers is export { }
 class ShellGLSLEffect            is repr<CPointer> does GLib::Roles::Pointers is export { }
 class ShellInvertLightnessEffect is repr<CPointer> does GLib::Roles::Pointers is export { }
@@ -53,6 +64,8 @@ class ShellMountOperation        is repr<CPointer> does GLib::Roles::Pointers is
 class ShellPerfLog               is repr<CPointer> does GLib::Roles::Pointers is export { }
 class ShellScreenshot            is repr<CPointer> does GLib::Roles::Pointers is export { }
 class ShellSecureTextBuffer      is repr<CPointer> does GLib::Roles::Pointers is export { }
+class ShellSquareBin             is repr<CPointer> does GLib::Roles::Pointers is export { }
+class ShellStack                 is repr<CPointer> does GLib::Roles::Pointers is export { }
 class ShellTrayManager           is repr<CPointer> does GLib::Roles::Pointers is export { }
 class ShellTrayIcon              is repr<CPointer> does GLib::Roles::Pointers is export { }
 class ShellWorkspaceBackground   is repr<CPointer> does GLib::Roles::Pointers is export { }
