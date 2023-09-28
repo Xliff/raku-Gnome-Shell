@@ -59,7 +59,7 @@ class Gnome::Shell::MountOperation is GIO::MountOperation {
     $shell-mount-operation ?? self.bless( :$shell-mount-operation ) !! Nil;
   }
 
-  method show-processes-2 {
+  method show_processes_2 {
     self.connect($!gsmo, 'show-processes-2');
   }
 
@@ -71,8 +71,8 @@ class Gnome::Shell::MountOperation is GIO::MountOperation {
     shell_mount_operation_get_show_processes_message($!gsmo);
   }
 
-  method get_show_processes_pids ( :$raw = False ) 
-    is also<get-show-processes-pids> 
+  method get_show_processes_pids ( :$raw = False )
+    is also<get-show-processes-pids>
   {
     propReturnObject(
       shell_mount_operation_get_show_processes_pids($!gsmo),
