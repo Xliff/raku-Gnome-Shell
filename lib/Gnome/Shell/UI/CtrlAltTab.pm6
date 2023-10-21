@@ -5,6 +5,8 @@ use Gnome::Shell::UI::Switcher;
 
 constant POPUP_APPICON_SIZE is export = 96;
 
+### /home/cbwood/Projects/gnome-shell/js/ui/ctrlAltTab.js
+
 class Gnome::Shell::UI::CtrlAltTab::Popup { ... }
 
 class Gnome::Shell::UI::CtrlAltTab::Manager {
@@ -19,7 +21,7 @@ class Gnome::Shell::UI::CtrlAltTab::Manager {
 				sortGroup     => SORT_GROUP_TOP,
 				focusCallback => -> *@a {
 					self.focusWindows( |@a )
-				} 
+				}
 			}
 		);
 	}
@@ -35,12 +37,12 @@ class Gnome::Shell::UI::CtrlAltTab::Manager {
 		@!items.push($item);
 		my $s := self;
 		$root.destroy.tap(-> *@a { $s.removeGroup($root) });
-		Global.focus-manager.add-group($root) 
+		Global.focus-manager.add-group($root)
 			if $root ~~ Gnome::Shell::St::Widget;
 	}
 
 	method removeGroup ($root) {
-		Global.focus-manager.remove-group($root) 
+		Global.focus-manager.remove-group($root)
 			if $root ~~ Gnome::Shell::St::Widget;
 		@!items .= grep( * =:= $root );
 	}
@@ -60,12 +62,12 @@ class Gnome::Shell::UI::CtrlAltTab::Manager {
 			my $display    = Global.display;
 			my $aWorkspace = global.workspace-manager.get-active-workspace;
 			my $windows    = $display.get-tab-list(
-				META_TABLIST_DOCS, 
+				META_TABLIST_DOCS,
 				$aWorkspace
 			);
 			my $windowTracker = Gnome::Shell::WindowTracker.get-default;
 			my $textureCache  = Gnome::Shell::St::TextureCache.get-default;
-			
+
 			for $windows[] {
 				my ($icon, $iconName);
 				if .get-window-type == META_WINDOW_TYPE_DESKTOP {
@@ -80,7 +82,7 @@ class Gnome::Shell::UI::CtrlAltTab::Manager {
 							 icon-size => POPUP_APPICON_SIZE
 						   );
 				}
-			
+
 
 				my $w = $_;
 				@!items.push: {
@@ -103,7 +105,7 @@ class Gnome::Shell::UI::CtrlAltTab::Manager {
 				return $d;
 			}
 
-			return $a.proxy.get-transformed-position.head - 
+			return $a.proxy.get-transformed-position.head -
 				   $b.proxy.get-transformed-position.head;
 		};
 
@@ -119,7 +121,7 @@ class Gnome::Shell::UI::CtrlAltTab::Manager {
 
 class Gnome::Shell::UI::CtrlAltTab::Switcher { ... }
 
-class Gnome::Shell::UI::CtrlAltTab::Popup 
+class Gnome::Shell::UI::CtrlAltTab::Popup
 	is Gnome::Shell::UI::Switcher::Popup
 {
 	has $!switcherList;
@@ -135,15 +137,15 @@ class Gnome::Shell::UI::CtrlAltTab::Popup
 			}
 
 			when META_KEY_BINDING_ACTION_SWITCH_PANELS_BACKWARDS {
-				self.select(self.previous)	
+				self.select(self.previous)
 			}
 
 			when $keysym == CLUTTER_KEY_LEFT {
-				self.select(self.previous)		
+				self.select(self.previous)
 			}
 
 			when $keysymn == CLUTTER_KEY_RIGHT {
-				self.select(self.next)	
+				self.select(self.next)
 			}
 		}
 		CLUTTER_EVENT_PROPAGATE
@@ -152,14 +154,14 @@ class Gnome::Shell::UI::CtrlAltTab::Popup
 	method finish ($time) {
 		callsame;
 		UI<ctrlAltTabManager>.focusGroup(
-			self.items[self.selectedIndex], 
+			self.items[self.selectedIndex],
 			$time
 		);
 	}
 }
 
-class Gnome::Shell::CtrlAltTab::Switcher 
-	is Gnome::Shell::SwitcherPopup::List 
+class Gnome::Shell::CtrlAltTab::Switcher
+	is Gnome::Shell::SwitcherPopup::List
 {
 
 	submethod BUILD (:@items) {

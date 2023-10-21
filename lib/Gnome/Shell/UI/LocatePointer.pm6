@@ -7,6 +7,8 @@ use Gnome::Shell::UI::Main;
 constant LOCATE_POINTER_KEY    is export = 'locate-pointer';
 constant LOCATE_POINTER_SCHEMA is export = 'org.gnome.desktop.interface';
 
+### /home/cbwood/Projects/gnome-shell/js/ui/locatePointer.js
+
 class Gnome::Shell::UI::LocatePointer {
   has $!settings;
   has $!ripples;
@@ -38,5 +40,5 @@ class Gnome::Shell::UI::LocatePointer {
 
     $!ripples.playAnimation( |global.get-pointer );
   }
-  
+
 }

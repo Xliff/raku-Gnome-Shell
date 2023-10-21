@@ -4,10 +4,12 @@ use Gnome::Shell::Misc::Signals;
 use Gnome::Shell::Misc::FileUtils;
 use Gnome::Shell::Misc::Config;
 
+### /home/cbwood/Projects/gnome-shell/js/ui/sessionMode.js
+
 constant DEFAULT_MODE = 'restrictive';
 
 constant USER_SESSION_COMPONENTS = <
-    polkitAgent 
+    polkitAgent
     telepathyClient
     keyring
     autorunManager
@@ -50,7 +52,7 @@ my \modes = (
         isGreeter        => True,
         isPrimary        => True,
         unlockDialog     => imports.gdm.loginDialog.LoginDialog,
-        components       => Config.HAVE_NETWORKMANAGER 
+        components       => Config.HAVE_NETWORKMANAGER
             ?? <networkAgent polkitAgent>
             !! <polkitAgent>
         panel => {
@@ -92,10 +94,10 @@ my \modes = (
             left   => <activities appMenu>
             center => <dateMenu>,
             right  => <
-            	screenRecording 
-            	screenSharing 
-            	dwellClick 
-            	a11y 
+            	screenRecording
+            	screenSharing
+            	dwellClick
+            	a11y
             	keyboard
             	quickSettings
             >,
@@ -146,8 +148,8 @@ sub listModes {
     $loop.run;
 }
 
-class Gnome::Shell::UI::SessionMode 
-    is   Gnome::Shell::Misc::Signals::EventEmitter 
+class Gnome::Shell::UI::SessionMode
+    is   Gnome::Shell::Misc::Signals::EventEmitter
     does Associative
 {
     has @!modeStack;
@@ -156,7 +158,7 @@ class Gnome::Shell::UI::SessionMode
     submethod BUILD {
         loadModes;
 
-        my $isPrimary = modes[Global.session-mode] && 
+        my $isPrimary = modes[Global.session-mode] &&
                         modes[Global.session-mode]<isPrimary>;
         my $mode      = $isPrimary ? Global.session-mode !! 'user';
         @!modeStack   = [$mode];
@@ -176,7 +178,7 @@ class Gnome::Shell::UI::SessionMode
         @!modeStack.push: $mode;
         self.sync;
     }
- 
+
     method popMode ($mode) {
         if self.currentMode ne $mode || @!modeStack.elems == 1
             X::Gnome::Shell::InvalidSessionMode.new.throw;
@@ -192,7 +194,7 @@ class Gnome::Shell::UI::SessionMode
         @!modeStack.tail = $to;
         self.sync;
     }
-    
+
     method currentMode {
         @!modeStack.tail;
     }

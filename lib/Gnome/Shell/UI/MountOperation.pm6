@@ -16,6 +16,8 @@ constant LIST_ITEM_ICON_SIZE          is export = 48;
 constant WORK_SPINNER_ICON_SIZE       is export = 16;
 constant REMEMBER_MOUNT_PASSWORD_KEY  is export = 'remember-mount-password';
 
+### /home/cbwood/Projects/gnome-shell/js/ui/shellMountOperation.js
+
 sub setButtonForChoices ($dialog, $oldChoices, $choices) {
 	my @buttons;
 	my $buttonsChanged = $oldChoices.elems != $choices.elems;
@@ -85,23 +87,23 @@ class Gnome::Shell::UI::MountOperation {
 			$!dialog.reaskPassword;
 		} else {
 			$!dialog = Gnome::Shell::MountOperation::PasswordDialog.new(
-				$message, 
+				$message,
 				$flags
 			);
 		}
 
-		$!dialog.response.tap( 
+		$!dialog.response.tap(
 			-> *@a ( $, $choice, $password, $remember, $hiddenV, $systemV, $pim) {
 				if $choice == -1 {
 					$!mountOp.reply(G_MOUNT_OPERATION_ABORTED);
 				} else {
 					$!mountOp.set_password_save(
-						$remember ?? G_PASSWORD_SAVE_PERMANENTLY 
+						$remember ?? G_PASSWORD_SAVE_PERMANENTLY
 						          !! G_PASSWORD_SAVE_NEVER
 				  );
 
 				  given $!mountOp {
-				  	.set-password($password), 
+				  	.set-password($password),
 				  	.set-is-tcrypt-hidden-volume($hiddenVolume),
 				  	.set-is-tcrypt-system-volume($systemVolume),
 				  	.set-pim($pim),
@@ -134,9 +136,9 @@ class Gnome::Shell::UI::MountOperation {
 		my $message   = $!mountOp.get-show-processes-message;
 		my $processes = $!mountOp.get-show-processes-pids;
 		my $choices   = $!mountOp.get-show-processes-choices;
-		
+
 		unless $!processesDialog {
-			$!dialog = $!processesDialog = 
+			$!dialog = $!processesDialog =
 				Gnome::Shell::MountOperation::ProcessesDialog;
 
 			my $s = self;
@@ -152,13 +154,13 @@ class Gnome::Shell::UI::MountOperation {
 
 			$!processDialog.open;
 		}
-		
-		$!processDialog.update($message, $processes, $choices);	
+
+		$!processDialog.update($message, $processes, $choices);
 	}
 
 	method onShowUnmountProgress ($, $message, $, $bytesLeft) {
 		$!notifier //= Gnome::Shell::MountOperation::UnmountNotifier.new;
-		
+
 		$bytesLeft ?? $!notifier.show($message) !! $!notifier.done($message);
 	}
 
@@ -178,7 +180,7 @@ class Gnome::Shell::UI::MountOperation::UnmountNotifier {
 		( .title, .iconName ) = ('', 'media-removable') given self;
 
 		UI<messageTray.add(self);
-	}	
+	}
 
 	method show ($message) {
 		my ($header, $text) = $message.split(',')[^2];
@@ -189,7 +191,7 @@ class Gnome::Shell::UI::MountOperation::UnmountNotifier {
 				$header,
 				$text
 			);
-			.setTransient(True), .setUrgency(MESSAGE_TRAY_URGENCY_CRITICAL) 
+			.setTransient(True), .setUrgency(MESSAGE_TRAY_URGENCY_CRITICAL)
 				given $!notifification;
 		} else {
 			$notification.update($header, $text);
@@ -248,7 +250,7 @@ class Gnome::Shell::UI::MountOperation::QuestionDialog
 }
 
 my $disksApp;
-class Gnome::Shell::UI::MountOperation::PasswordDialog 
+class Gnome::Shell::UI::MountOperation::PasswordDialog
 	is   Gnome::Shell::UI::ModalDialog
 	does Signalling[
 		[ 'response', [gint, Str, guint32, guint32, guint32] ]
@@ -293,13 +295,13 @@ class Gnome::Shell::UI::MountOperation::PasswordDialog
 
 			$!keyFilesLabel = Gnome::Shell::St::Label.new( visible => False );
 			$!keyFilesLabel.clutter-text.set-markup( qq:to/MARK/.chomp );
-				To unlock a volume that uses keyfiles, use the <i>{ 
+				To unlock a volume that uses keyfiles, use the <i>{
 				$disksApp.get-name }</i> utility instead.
 				MARK
 			( .ellipsize, .line-wrap ) = (PANGO_ELLIPSIZE_NONE, True)
 				given $keyFilesLabel.clutter-text;
 
-			$content.add-child($_) for $!hiddenVolume,     $!systemVolume, 
+			$content.add-child($_) for $!hiddenVolume,     $!systemVolume,
 				                         $!keyfilesCheckbox, $!keyfilesLabel;
 
 		  $!pimEntry = Gnome::Shell::St::PasswordEntry.new(
@@ -312,8 +314,8 @@ class Gnome::Shell::UI::MountOperation::PasswordDialog
 		  addContextMenu($!pimEntry);
 
 			$passwordGridLayout.attach(
-				$!pimEntry, 
-				$rtl ?? 1 !! 0, 
+				$!pimEntry,
+				$rtl ?? 1 !! 0,
 				$curGridRow++,
 				1,
 				1
@@ -399,7 +401,7 @@ class Gnome::Shell::UI::MountOperation::PasswordDialog
 
 		self.setButtons($!defaultButtons);
 	}
-		
+
 	method new ($message, $flags) {
 		self.bless( :$message, :$flags, :$styleClass = 'prompt-dialog' );
 	}
@@ -428,7 +430,7 @@ class Gnome::Shell::UI::MountOperation::PasswordDialog
 
 			if $pim.Int ~~ Failure {
 				$!pimEntry.text = '';
-				( .text, .opacity ) = ('The PIM must be a number or empty', 255) 
+				( .text, .opacity ) = ('The PIM must be a number or empty', 255)
 					given $!errorMessageLabel;
 				return;
 			}
@@ -455,7 +457,7 @@ class Gnome::Shell::UI::MountOperation::PasswordDialog
 	method onKeyfilesCheckboxClicked {
 		my $ukf = $!keyfilesCheckbox.checked;
 
-		.reactive = .can-focus = $ukf.not 
+		.reactive = .can-focus = $ukf.not
 			for $!passwordEntry, $!pimEntry, $!rememberChoice;
 
 		$!keyfilesLabel.visible = $ukf;
@@ -464,7 +466,7 @@ class Gnome::Shell::UI::MountOperation::PasswordDialog
 	}
 
 	method onOpenDisksButton {
-		$disksApp 
+		$disksApp
 			?? $disksApp.activate
 		  !! notifyError(
            "Unable to start { $disksApp.get-name }",
@@ -473,12 +475,12 @@ class Gnome::Shell::UI::MountOperation::PasswordDialog
   }
 }
 
-class Gnome::Shell::UI::MountOperation::ProcessesDialog 
+class Gnome::Shell::UI::MountOperation::ProcessesDialog
 	is   Gnome::Shell::UI::ModalDialog
 	does Signalling[
 		[ 'response', [gint] ]
 	]
-{ 
+{
 	has @!oldChoices;
 	has $!applicationSection;
 	has $!content;
@@ -526,9 +528,9 @@ class Gnome::Shell::UI::MountOperation::ProcessesDialog
 our $GnomeShellMountOpIface = loadInterfaceXML('org.Gtk.MountOperationHandler');
 
 our enum MountOperationType is export <
-	NONE 
-	ASK_PASSWORD 
-	ASK_QUESTION 
+	NONE
+	ASK_PASSWORD
+	ASK_QUESTION
 	SHOW_PROCESSES
 >;
 
@@ -547,7 +549,7 @@ class Gnome::Shell::MountOperation::Handler {
 		);
 
 		$dbusImpl.export(
-			GIO::DBus::Connection.session, 
+			GIO::DBus::Connection.session,
 			'/org/gtk/MountOperationHandler'
 		);
 		GIO::DBus::Connection.session.bus_own_name_on_connection(
@@ -594,8 +596,3 @@ class Gnome::Shell::MountOperation::Handler {
 	}
 
 	# ... 589 AskPassword
-
-
-
-
-

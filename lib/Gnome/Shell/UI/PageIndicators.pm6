@@ -7,6 +7,8 @@ constant INDICATOR_INACTIVE_OPACITY_HOVER is export = 255;
 constant INDICATOR_INACTIVE_SCALE         is export = 2 / 3;
 constant INDICATOR_INACTIVE_SCALE_PRESSED is export = 0.5;
 
+### /home/cbwood/Projects/gnome-shell/js/ui/pageIndicators.js
+
 class Gnome::Shell::UI::PageIndicators
   is Gnome::Shell::St::BoxLayout
 {

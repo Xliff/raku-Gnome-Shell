@@ -5,6 +5,8 @@ use Gnome::Shell::UI::BoxPointer;
 use Gnome::Shell::UI::Main;
 #use Gnome::Shell::UI::PopupMenu;
 
+### /home/cbwood/Projects/gnome-shell/js/ui/backgroundMenu.js
+
 class Gnome::Shell:UI::BackgroundMenu is Gnome::Shell::UI::PopupMenu {
 
   submethod BUILD {

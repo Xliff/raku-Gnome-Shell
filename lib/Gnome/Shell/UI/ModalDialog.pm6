@@ -1,12 +1,16 @@
 use v6.c;
 
 use Gnome::Shell::Raw::Types;
+
 use Gnome::Shell::St::Widget;
+
 use Gnome::Shell::UI::Dialog;
+use Gnome::Shell::UI::Global;
 #use Gnome::Shell::UI::Layout;
 #use Gnome::Shell::UI::Lightbox;
 use Gnome::Shell::UI::Main;
 
+### /home/cbwood/Projects/gnome-shell/js/ui/modalDialog.js
 
 constant OPEN_AND_CLOSE_TIME  is export = 100;
 constant FADE_OUT_DIALOG_TIME is export = 1000;
@@ -19,6 +23,8 @@ enum State is export <
   FADED_OUT
 >;
 
+use GLib::Roles::Object;
+
 class Gnome::Shell::UI::ModalDialog is Gnome::Shell::St::Widget {
   has State $!state;
   has       %!Signals;
@@ -28,20 +34,22 @@ class Gnome::Shell::UI::ModalDialog is Gnome::Shell::St::Widget {
   has $.contentLayout;
   has $.buttonLayout;
 
+  has $!grab;
   has $!backgroundBin;
   has $!monitorConstraint;
   has $!hasModal;
   has $!actionMode;
   has $!shellReactive;
   has $!shouldFadeIn;
-  has $!shouldFadeOut;
   has $!destroyOnClose;
-  has $!lightbox;
+  has $!lightBox;
   has $!eventBlocker;
 
   has $!initialKeyFocus;
   has $!initialKeyFocusDestroyId;
   has $!savedKeyFocus;
+
+  has $.shouldFadeOut is rw;
 
   submethod BUILD ( :%params ) {
     %!Signals<opened closed> = Signals::Preserving.new xx 2;
@@ -61,7 +69,7 @@ class Gnome::Shell::UI::ModalDialog is Gnome::Shell::St::Widget {
     # });
 
     $!state          = CLOSED;
-    $!hasModal       = false;
+    $!hasModal       = False;
     $!actionMode     = %params<actionMode>;
     $!shellReactive  = %params<shellReactive>;
     $!shouldFadeIn   = %params<shouldFadeIn>;
@@ -71,8 +79,8 @@ class Gnome::Shell::UI::ModalDialog is Gnome::Shell::St::Widget {
     Main.layoutManager.modalDialogGroup.add-actor(self);
 
     my $constraint = Mutter::Clutter::BindConstraint(
-      source     => global.stage,
-      coordinate => CLUTTER_BIND_COORDINATE_ALL
+      source     => Global.stage,
+      coordinate => CLUTTER_BIND_ALL
     );
     self.add-constraint($constraint);
 
@@ -87,7 +95,7 @@ class Gnome::Shell::UI::ModalDialog is Gnome::Shell::St::Widget {
     );
 
     $!monitorConstraint = Gnome::Shell::UI::Layout::MonitorConstraint.new;
-    $!backgroundBin.add-constraint($monitorConstraint);
+    $!backgroundBin.add-constraint($!monitorConstraint);
     self.add-actor($!backgroundBin);
 
     $!dialogLayout = Gnome::Shell::UI::Dialog::Dialog.new(
@@ -101,14 +109,14 @@ class Gnome::Shell::UI::ModalDialog is Gnome::Shell::St::Widget {
       $!lightBox = Gnome::Shell::UI::Lightbox.new(
         self,
         inhibitEvents => True,
-        radialEffect  => True`
+        radialEffect  => True
       );
       $!lightBox.highlight($!backgroundBin);
       $!eventBlocker = Mutter::Clutter::Actor.new( reactive => True );
       $!backgroundStack.add-actor($!eventBlocker);
     }
 
-    global.focus-manager.add-group($!dialogLayout);
+    Global.focus-manager.add-group($!dialogLayout);
     $!initialKeyFocus = 0;
     $!initialKeyFocusDestroyId = 0;
     $!savedKeyFocus = 0;
@@ -127,7 +135,7 @@ class Gnome::Shell::UI::ModalDialog is Gnome::Shell::St::Widget {
 
   method key_press_event is vfunc {
     return CLUTTER_EVENT_STOP
-      if global.focus-manager.navigate-from-event(
+      if Global.focus-manager.navigate-from-event(
         Mutter::Clutter.get-current-event
       );
 
@@ -144,32 +152,28 @@ class Gnome::Shell::UI::ModalDialog is Gnome::Shell::St::Widget {
     $!dialogLayout.clearButtons;
   }
 
-  method setButtons (%buttons) {
+  method setButtons (@buttons) {
     self.clearButtons;
 
-    self.addButton($_) for %buttons.pairs;
-  }
-
-  method addButton (Pair $buttonInfo) {
-    $!dialogLayout.addButton($buttonInfo);
+    self.addButton($_) for @buttons;
   }
 
   method fadeOpen ($onPrimary) {
     if $onPrimary {
       $!monitorConstraint.primary = True;
     } else {
-      $monitorConstraint.index = global.display.get-current-monitor();
+      $!monitorConstraint.index = Global.display.get-current-monitor();
     }
 
     self.state             = OPENING;
     $!dialogLayout.opacity = 255;
-    $!lightbox.lightOn if $!lightbox;
+    $!lightBox.lightOn if $!lightBox;
     self.opacity = 0;
     self.show;
     self.ease(
       opacity => 255,
       $!shouldFadeIn ?? OPEN_AND_CLOSE_TIME !! 0,
-      CLUTTER_ANIMATION_MODE_EASE_OUT_QUAD,
+      CLUTTER_EASE_OUT_QUAD,
       onComplete => -> *@a {
         self.state = OPENED;
         %!Signals<opened>.emit;
@@ -189,7 +193,7 @@ class Gnome::Shell::UI::ModalDialog is Gnome::Shell::St::Widget {
   }
 
   method open ($timestamp, $onPrimary) {
-    return True  if $!state == (OPEN, OPENING).any;
+    return True  if $!state == (OPENED, OPENING).any;
     return False if self.pushModal($timestamp);
 
     self.fadeOpen($onPrimary);
@@ -203,7 +207,7 @@ class Gnome::Shell::UI::ModalDialog is Gnome::Shell::St::Widget {
     self.destroy if $!destroyOnClose;
   }
 
-  method close ($tikmestamp) {
+  method close ($timestamp) {
     return if $!state == (CLOSED, CLOSING).any;
     self.state = CLOSING;
     self.popModal($timestamp);
@@ -213,7 +217,7 @@ class Gnome::Shell::UI::ModalDialog is Gnome::Shell::St::Widget {
       self.ease(
         opacity => 0,
         OPEN_AND_CLOSE_TIME,
-        CLUTTER_ANIMATION_MODE_EASE_OUT_QUAD,
+        CLUTTER_EASE_OUT_QUAD,
         onComplete => -> *@a { self.closeComplete }
       );
     } else {
@@ -224,7 +228,7 @@ class Gnome::Shell::UI::ModalDialog is Gnome::Shell::St::Widget {
   method popModal ($timestamp) {
     return if self.hasModal;
 
-    my $focus = global.stage.key-focus;
+    my $focus = Global.stage.key-focus;
     if $focus && self.contains($focus) {
       $!savedKeyFocus = $focus;
     } else {
@@ -233,7 +237,7 @@ class Gnome::Shell::UI::ModalDialog is Gnome::Shell::St::Widget {
     Main.popModal($!grab, $timestamp);
     ($!grab, $!hasModal) = (Nil, False);
 
-    $!backgroundStack.set-child-above-sibling($!evengBlocker)
+    $!backgroundStack.set-child-above-sibling($!eventBlocker)
       if $!shellReactive.not;
   }
 
@@ -277,7 +281,7 @@ class Gnome::Shell::UI::ModalDialog is Gnome::Shell::St::Widget {
     $!dialogLayout.ease(
       opacity => 0,
       FADE_OUT_DIALOG_TIME,
-      CLUTTER_ANIMATION_MODE_EASE_OUT_QUAD,
+      CLUTTER_EASE_OUT_QUAD,
       onComplete => -> *@a { $s = FADED_OUT }
     );
   }

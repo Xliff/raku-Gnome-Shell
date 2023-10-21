@@ -1,24 +1,31 @@
 use v6.c;
 
+use Mutter::Raw::Clutter::Keysyms;
+use Gnome::Shell::Raw::Types;
+
 use Gnome::Shell::St::Bin;
 use Gnome::Shell::St::BoxLayout;
 use Gnome::Shell::St::Label;
 use Gnome::Shell::St::ScrollView;
 
-class Gnome::Shell::Dialog is Gnome::Shell::St::Widget {
-  has $!dialog;
-  has $!initialKeyFocus;
-  has $!pressedKey;
-  has %!buttonKeys;
-  has $!parentActor      is built;
+use GLib::Roles::Object;
 
-  has $!buttonLayout;
-  has $!contentLayout;
+### /home/cbwood/Projects/gnome-shell/js/ui/dialog.js
+
+class Gnome::Shell::Dialog is Gnome::Shell::St::Widget {
+  has $!dialog              is built;
+  has $!initialKeyFocus     is built;
+  has $!setInitialKeyFocus  is built;
+  has $!pressedKey          is built;
+  has %!buttonKeys          is built;
+  has $!parentActor         is built;
+  has $!buttonLayout        is built;
+  has $!contentLayout       is built;
 
   method buttonLayout is rw {
     Proxy.new:
       FETCH => -> $     { $!buttonLayout },
-      STORE => -> $, \v { $!buttonLayout := $v };
+      STORE => -> $, \v { $!buttonLayout := v };
   }
 
   method contentLayout is rw {
@@ -44,11 +51,11 @@ class Gnome::Shell::Dialog is Gnome::Shell::St::Widget {
     $!dialog = Gnome::Shell::St::BoxLayout.new(
       style-class => 'modal-dialog',
       x-align     => CLUTTER_ACTOR_ALIGN_CENTER,
-      y-align     => CLUTTER_ACTOR_ALIGN_CENTER
+      y-align     => CLUTTER_ACTOR_ALIGN_CENTER,
       vertical    => True
     );
 
-    $!dialog.request-mode = CLUTTER_REQUEST_MODE_HEIGHT_FOR_WIDTH;
+    $!dialog.request-mode = CLUTTER_REQUEST_HEIGHT_FOR_WIDTH;
     $!dialog.set-offscreen-redirect(CLUTTER_OFFSCREEN_REDIRECT_ALWAYS);
 
     $!contentLayout = Gnome::Shell::St::BoxLayout.new(
@@ -70,41 +77,36 @@ class Gnome::Shell::Dialog is Gnome::Shell::St::Widget {
     .reactive = False for $!buttonLayout.get-children;
   }
 
-
-  }
-
-}
   method onDestroy {
     self.makeInactive;
   }
 
   method event ($e) is vfunc {
     given $e.type {
-      when CLUTTER_EVENT_TYPE_KEY_PRESS {
+      when CLUTTER_KEY_PRESS {
         $!pressedKey = $e.get-key-symbol;
       }
 
-      when CLUTTER_EVENT_TYPE_KEY_RELEASE {
+      when CLUTTER_KEY_RELEASE {
         my ($pressedKey, $symbol) = ($!pressedKey, $e.get-key-symbol);
         $!pressedKey = Nil;
 
         return CLUTTER_EVENT_PROPAGATE unless $symbol == $pressedKey;
 
-        my $buttonInfo = $!buttonKeys[$symbol];
+        my $buttonInfo = %!buttonKeys{ $symbol };
         return CLUTTER_EVENT_PROPAGATE unless $buttonInfo;
 
         if .head.reactive && .tail {
           .tail();
            return CLUTTER_EVENT_STOP;
-         }
-       }
-     }
-   }
-   CLUTTER_EVENT_PROPAGATE;
+        }
+      }
+    }
+    CLUTTER_EVENT_PROPAGATE;
   }
 
   method setInitialKeyFocus ($actor) {
-    $!initialKeyFocus.disconnectObject(self) with $!initialKeyFocus;
+    with $!initialKeyFocus { .disconnectObject(self) }
     $!initialKeyFocus = $actor;
     $actor.destroy.tap( -> *@a { $!initialKeyFocus = Nil});
   }
@@ -120,14 +122,18 @@ class Gnome::Shell::Dialog is Gnome::Shell::St::Widget {
 
     if $key {
       @key = $key.Array
-    } else if $isDefault {
-      @key = [CLUTTER_KEY_Return, CLUTTER_KEY_KP_Enter, CLUTTER_KEY_ISO_Enter];
+    } elsif $isDefault {
+      @key = [
+        MUTTER_CLUTTER_KEY_Return,
+        MUTTER_CLUTTER_KEY_KP_Enter,
+        MUTTER_CLUTTER_KEY_ISO_Enter
+      ];
     }
 
     my $button = Gnome::Shell::St::Button.new(
       $label,
       style-class => 'modal-dialog-linked-button',
-      button-mask => ST_BUTTON_MASK_ONE +| ST_BUTTON_MASK_THREE,
+      button-mask => ST_BUTTON_ONE +| ST_BUTTON_THREE,
       reactive    => True,
       can-focus   => True,
       x-expand    => True,
@@ -146,14 +152,15 @@ class Gnome::Shell::Dialog is Gnome::Shell::St::Widget {
 
   method clearButtons {
     $!buttonLayout.destroy-all-children;
-    $!buttonKeys = Nil;
+    %!buttonKeys = Nil;
   }
 
 }
 
-class Gnome::Shell::MessageDialog::Content is Gnome::Shell::St::BoxLayout {
-  has $!title;
-  has $!description;
+class Gnome::Shell::Dialog::Message::Content is Gnome::Shell::St::BoxLayout {
+  has $!title                  is built;
+  has $!description            is built;
+  has $!updateTitleStyleLater  is built;
 
   submethod BUILD ($params) {
     $!title       = Gnome::Shell::St::Label.new(
@@ -163,7 +170,7 @@ class Gnome::Shell::MessageDialog::Content is Gnome::Shell::St::BoxLayout {
       style-class => 'message-dialog-description'
     );
 
-    $!description.clutter-text.ellipsize = PANGO_ELLIPSIZE_MODE_NONE;
+    $!description.clutter-text.ellipsize = PANGO_ELLIPSIZE_NONE;
     $!description.clutter-text.line-wrap = True;
 
     my $defaultParams = (
@@ -180,7 +187,8 @@ class Gnome::Shell::MessageDialog::Content is Gnome::Shell::St::BoxLayout {
   }
 
   method onDestroy {
-    Mutter::Meta::Later.remove($!updateTitleStyleLater) if $!updateTitleStytleLater;
+    Mutter::Meta::Later.remove($!updateTitleStyleLater)
+      if $!updateTitleStyleLater;
   }
 
   method updateTitleStyle {
@@ -193,7 +201,7 @@ class Gnome::Shell::MessageDialog::Content is Gnome::Shell::St::BoxLayout {
       return if $!updateTitleStyleLater;
 
       $!updateTitleStyleLater = Mutter::Meta::Later.add(
-        META_LATER_TYPE_BEFORE_REDRAW,
+        META_LATER_BEFORE_REDRAW,
         -> *@a {
           $!updateTitleStyleLater = 0;
           $!title.add-style-class-name('lightweight');
@@ -210,7 +218,7 @@ class Gnome::Shell::MessageDialog::Content is Gnome::Shell::St::BoxLayout {
       STORE => -> $, \v {
         return if $!title.text eq v;
 
-        self.setLabel($!title, $v);
+        self.setLabel($!title, v);
         $!title.remove-style-class-name('lightweight');
         self.updateTitleStyle;
         self.emit('notify::title');
@@ -224,7 +232,7 @@ class Gnome::Shell::MessageDialog::Content is Gnome::Shell::St::BoxLayout {
       STORE => -> $, \v {
         return if $!description.text eq v;
 
-        setLabel($!description, v);
+        self.setLabel($!description, v);
         self.emit('notify::description');
       }
   }
@@ -244,11 +252,11 @@ class Gnome::Shell::Dialog::ListSection is Gnome::Shell::St::BoxLayout {
   submethod BUILD {
     $!title = Gnome::Shell::St::Label.new(
       style-class => 'dialog-list-title'
-    ):
+    );
 
     $!list-scroll-view = Gnome::Shell::St::ScrollView(
       style-class       => 'dialog-list-scrollview',
-      hscrollbar-policy => GNOME_SHELL_POLICY_TYPE_NEVER
+      hscrollbar-policy => ST_POLICY_NEVER
     );
 
     $!list = Gnome::Shell::St::BoxLayout(
@@ -283,16 +291,17 @@ class Gnome::Shell::Dialog::ListSection is Gnome::Shell::St::BoxLayout {
 
 }
 
-class Gnome::Shell::UI::Dialog::ListSectionItem is Gnome::Shell::BoxLayout {
-
-  has $!iconActorBin;
-  has $!title,
-  has $!description;
-  has $!title-changed;
-  has $!description-changed;
+class Gnome::Shell::UI::Dialog::ListSectionItem
+  is Gnome::Shell::St::BoxLayout
+{
+  has $!iconActorBin        is built;
+  has $!title               is built;
+  has $!description         is built;
+  has $!title-changed       is built;
+  has $!description-changed is built;
 
   submethod BUILD {
-    $!icon-actor-bin = Gnome::St::Bin.new;
+    $!iconActorBin = Gnome::St::Bin.new;
 
     my $textLayout = Gnome::Shell::St::BoxLayout.new(
       vertical => True,
@@ -307,23 +316,23 @@ class Gnome::Shell::UI::Dialog::ListSectionItem is Gnome::Shell::BoxLayout {
       style-class => 'dialog-list-item-title-description'
     );
 
-    $text-layout.add-child($_) for $!title, $!description;
+    $textLayout.add-child($_) for $!title, $!description;
     self.style-class = 'dialog-list-item';
     self.label-actor = $!title;
 
     $_ = Supplier.new for $!title-changed, $!description-changed;
 
-    self.add-child($_) for $!icon-actor-bin, $textLayout;
+    self.add-child($_) for $!iconActorBin, $textLayout;
   }
 
   submethod DESTROY {
-    .unref for $!icon-actor-bin, $!title, $!description
+    .unref for $!iconActorBin, $!title, $!description
   }
 
   method icon-actor is rw {
     Proxy.new:
-      FETCH => -> $                          { $!icon-actor-bin.get-child()  },
-      STORE => -> $, MutterClutterActor() \a { $!icon-actor-bin.set-child(a) };
+      FETCH => -> $                          { $!iconActorBin.get-child()  },
+      STORE => -> $, MutterClutterActor() \a { $!iconActorBin.set-child(a) };
   }
 
   method title is rw {
@@ -331,7 +340,7 @@ class Gnome::Shell::UI::Dialog::ListSectionItem is Gnome::Shell::BoxLayout {
       FETCH => -> $           { $!title.text },
 
       STORE => -> $, Str() \t {
-        $!title.text = t
+        $!title.text = t;
         $!title-changed.emit;
       };
   }
@@ -341,7 +350,7 @@ class Gnome::Shell::UI::Dialog::ListSectionItem is Gnome::Shell::BoxLayout {
       FETCH => -> $         { $!description.text },
 
       STORE => -> $, Str() \d {
-        $!description.text = d
+        $!description.text = d;
         $!description-changed.emit;
       };
   }

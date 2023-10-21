@@ -10,6 +10,8 @@ use Gnome::Shell::Misc::FileUtils;
 constant requestIface = loadInterfaceXML('org.freedesktop.impl.portal.Request');
 constant accessIface  = loadInterfaceXML('org.freedesktop.impl.portal.Access');
 
+### /home/cbwood/Projects/gnome-shell/js/ui/accessDialog.js
+
 class Gnome::Shell::UI::AccessDialog
   is Gnome::Shell::UI::ModalDialog
 {
@@ -28,6 +30,8 @@ class Gnome::Shell::UI::AccessDialog
       :$description,
       :$body
     ) {
+      self.GLib::Roles::GObject::BUILD;
+
       $!requestExported = False;
 
       # function _wrapJSObject(interfaceInfo, jsObj) {
@@ -136,6 +140,10 @@ class Gnome::Shell::UI::AccessDialog
         $!invocation.return_value(
           # cw: Please note that GLib::Variant may not be mature enough
           #     to handle this particular call..
+          #
+          #     However, EDS and JSON-GLib may provide a high-level
+          #     alternative by serializing the data structure into JSON,
+          #     and turning that JSON into a GVariant.
           GLib::Variant.new(
             '(ua{sv})',
             [ $response, $results ]

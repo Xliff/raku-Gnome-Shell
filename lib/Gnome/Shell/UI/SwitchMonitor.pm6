@@ -5,6 +5,8 @@ use Gnome::Shell::UI::SwitcherPopup;
 
 constant APP_ICON_SIZE is export = 96;
 
+### /home/cbwood/Projects/gnome-shell/js/ui/switchMonitor.js
+
 class Gnome::Shell::UI::SwitchMonitor::Switcher { ... }
 
 class Gnome::Shell::UI::SwitchMonitorPopup

@@ -6,6 +6,8 @@ use Gnome::Shell::Misc::Signals;
 constant CARETMOVED   is export = 'object:text-caret-moved';
 constant STATECHANGED is export = 'object:state-changed';
 
+### /home/cbwood/Projects/gnome-shell/js/ui/focusCaretTracker.js
+
 class Gnome::Shell::UI::FocusCaretTracker
   is Gnome::Shell::Misc::Signals::EventEmitter
 {

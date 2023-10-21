@@ -4,6 +4,8 @@ use Gnome::Shell::UI::Main;
 
 use Mutter::Clutter::GestureAction;
 
+### /home/cbwood/Projects/gnome-shell/js/ui/edgeDragAction.js
+
 class Gnome::Shell::UI::EdgeDragAction is Mutter::Clutter::GestureAction {
   has $!side          is built;
   has $!allowedModes  is built;

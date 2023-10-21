@@ -4,13 +4,15 @@ use Gnome::Shell::St::Bin;
 
 my \TC;
 
+### /home/cbwood/Projects/gnome-shell/js/ui/userWidget.js
+
 class Gnome::Shell::UI::UserWidgets::Avatar is Gnome::Shell::St::Bin {
 	has $!iconSize;
 	has $!user;
 
 	submethod BUILD ( :$user, :$params ) {
 		my %params = mergeHash(
-			$params, 
+			$params,
 			styleClass => user-icon,
 			reactive   => False,
 			iconSize   => AVATAR_ICON_SIZE
@@ -19,9 +21,9 @@ class Gnome::Shell::UI::UserWidgets::Avatar is Gnome::Shell::St::Bin {
 		( .style-class, .reactive ) = %params<styleClass reactive> given self;
 
 		self.bind_property(
-			'reactive', 
-			self, 
-			'track-hover', 
+			'reactive',
+			self,
+			'track-hover',
 			G_BINDING_SYNC_CREATE
 		);
 
@@ -149,7 +151,7 @@ class Gnome::Shell::UI::UserWidget is Gnome::Shell::St::BoxLayout {
 	submethod BUILD ( :$!user ) {
 		my ($vertical, $orientation) = CLUTTER_ORIENTATION_VERTICAL xx 2;
 
-		my  $xAlign = $vertical ?? CLUTTER_ACTOR_ALIGN_CENTER 
+		my  $xAlign = $vertical ?? CLUTTER_ACTOR_ALIGN_CENTER
 		                        !! CLUTTER_ACTOR_ALIGN_START;
 
 		my $styleClass = 'user-widget ' ~ $vertical ?? 'vertical' !! 'horizontal';
@@ -162,8 +164,8 @@ class Gnome::Shell::UI::UserWidget is Gnome::Shell::St::BoxLayout {
 			self.add-child($!label);
 
 			$!label.bind_property(
-				'label-actor', 
-				self, 
+				'label-actor',
+				self,
 				'label-actor',
 				G_BINDING_SYNC_CREATE
 			);

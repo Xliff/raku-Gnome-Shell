@@ -11,6 +11,7 @@ constant KEYBOARD_A11Y_SCHEMA    is export = 'org.gnome.desktop.a11y.keyboard';
 constant KEY_STICKY_KEYS_ENABLED is export = 'stickykeys-enable';
 constant KEY_SLOW_KEYS_ENABLED   is export = 'slowkeys-enable';
 
+### /home/cbwood/Projects/gnome-shell/js/ui/kbdA11yDialog.js
 
 class Gnome::Shell::UI::KbdA11yDialog {
   also does GLib::Roles::Object;
@@ -86,5 +87,5 @@ class Gnome::Shell::UI::KbdA11yDialog {
 
     $dialog.open
   }
-  
+
 }

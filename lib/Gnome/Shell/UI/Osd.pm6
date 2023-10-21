@@ -6,6 +6,8 @@ use Gnome::Shell::St::BoxLayout;
 use Gnome::Shell::St::Label;
 use Gnome::Shell::UI::Main;
 
+### /home/cbwood/Projects/gnome-shell/js/ui/osdMonitorLabeler.js
+
 class Gnome::Shell::UI::OSD::MonitorLabel is Gnome::Shell::St::Widget {
   has $!monitor is built;
   has $!label;

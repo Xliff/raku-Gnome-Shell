@@ -6,6 +6,8 @@ use Gnome::Shell::Raw::Types;
 use Gnome::Shell::St::Theme::Node;
 use Gnome::Shell::St::DrawingArea;
 
+### /home/cbwood/Projects/gnome-shell/js/ui/barLevel.js
+
 class Gnome::Shell::UI::BarLevel is Gnome::Shell::St::DrawingArea {
 
   has $!prop-value           is ranged(0..2) is default(0);
@@ -59,7 +61,13 @@ class Gnome::Shell::UI::BarLevel is Gnome::Shell::St::DrawingArea {
       }
   }
 
-  method maximum-value is also<maximum_value> is rw {
+  method maximum-value
+    is also<
+      maximum_value
+      max_value
+      max-value
+    >
+    is rw {
     Proxy.new:
       FETCH => -> $     { $!prop-maximum-value },
       STORE => -> $, \v {

@@ -14,6 +14,8 @@ constant APP_PERMISSIONS_ID         is export = 'shortcuts-inhibitor';
 constant GRANTED                    is export = 'GRANTED';
 constant DENIED                     is export = 'DENIED';
 
+### /home/cbwood/Projects/gnome-shell/js/ui/inhibitShortcutsDialog.js
+
 class Gnome::Shell::UI::InhibitShortcutsDialog {
   also does GLib::Roles::Object;
   also does Mutter::Meta::Roles::InhibitShortcutsDialog;

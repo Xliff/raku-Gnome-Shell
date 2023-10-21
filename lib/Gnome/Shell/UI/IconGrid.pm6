@@ -10,6 +10,8 @@ use Gnome::Shell::St::Label;
 use Gnome::Shell::St::TextureCache;
 use Gnome::Shell::St::ViewPort;
 
+### /home/cbwood/Projects/gnome-shell/js/ui/iconGrid.js
+
 const PAGE_SWITCH_TIME = 300;
 
 enum IconSize = (
@@ -94,7 +96,7 @@ sub swap ($value, $length) {
   $length - $value - 1;
 }
 
-class Gnome::Shell::UI::IconGrid::f.n is Gnome::Shell::SquareBin {
+class Gnome::Shell::UI::IconGrid::BaseIcon is Gnome::Shell::SquareBin {
   has $.box     is rw;
   has $.iconBin is rw;
 

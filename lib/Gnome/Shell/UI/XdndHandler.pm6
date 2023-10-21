@@ -5,6 +5,8 @@ use Gnome::Shell::UI::Main;
 
 use Mutter::Clutter::Actor;
 
+### /home/cbwood/Projects/gnome-shell/js/ui/xdndHandler.js
+
 class Gnome::Shell::UI::XDndHandler {
   has $!cursorWindowClone;
   has $!dummy;

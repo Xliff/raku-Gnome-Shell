@@ -2,7 +2,9 @@ use v6.c;
 
 use Gnome::Shell::UI::BoxPointer;
 use Gnome::Shell::UI::Main;
-#use Gnome::Shell::UI::PopupMenu;
+use Gnome::Shell::UI::PopupMenu;
+
+### /home/cbwood/Projects/gnome-shell/js/ui/shellEntry.js
 
 class Gnome::Shell::UI::EntryMenu
 	is Gnome::Shell::UI::Popup::Menu
@@ -16,11 +18,11 @@ class Gnome::Shell::UI::EntryMenu
 	submethod BUILD (:$!entry) {
 		$!clipboard = Gnome::Shell::St::Clipboard.get-default;
 
-		$!copyItem = Gnome::Shell::Popup::MenuItem.new('Copy');
+		$!copyItem = Gnome::Shell::PopupMenu::Item.new('Copy');
 		$!copyItem.activate.tap( -> @*a { self.onCopyActivated });
 		self.addMenuItem($!copyItem);
 
-		$!pasteItem = Gnome::Shell::Popup::MenuItem.new('Paste');
+		$!pasteItem = Gnome::Shell::PopupMenu::Item.new('Paste');
 		$!pasteItem.activate.tap( -> @*a { self.onPasteActivated });
 		self.addMenuItem($!pasteItem);
 
@@ -30,7 +32,7 @@ class Gnome::Shell::UI::EntryMenu
 	}
 
 	method makePasswordItem {
-		$!passwordItem = Gnome::Shell::Popup::MenuItem.new('');
+		$!passwordItem = Gnome::Shell::PopupMenu::Item.new('');
 		$!passwordItem.activate.tap( -> *@a { self.onPasswordActivated });
 		self.addMenuItem($!passwordItem);
 
@@ -136,7 +138,7 @@ sub addContextMenu is export ($entry, $params) {
 
 	$params = mergeHash($params, { actionMode => SHELL_ACTION_MODE_POPUP });
 	$entry.menu = Gnome::Shell::UI::EntryMenu.new($entry);
-	$entry.menuManager = Gnome::Shell::UI::Popup::MenuManager.new(
+	$entry.menuManager = Gnome::Shell::UI::PopupMenu::Manager.new(
 		$entry,
 		actionMode => $params<actionMode>
 	);

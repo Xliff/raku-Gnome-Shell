@@ -7,6 +7,8 @@ use Gnome::Shell::UI::ModalDialog;
 
 our enum DialogResponse = <NO_THANKS TAKE_TOUR>;
 
+### /home/cbwood/Projects/gnome-shell/js/ui/welcomeDialog.js
+
 class Gnome::Shell::UI::WelcomeDialog is Gnome::Shell::UI::ModalDialog {
   has $!tourAppInfo;
 

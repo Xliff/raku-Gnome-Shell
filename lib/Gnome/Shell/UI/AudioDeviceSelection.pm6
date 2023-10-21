@@ -8,18 +8,20 @@ use Gnome::Shell::UI::Dialog;
 use Gnome::Shell::UI::Main;
 use Gnome::Shell::UI::ModalDialog;
 
+### /home/cbwood/Projects/gnome-shell/js/ui/audioDeviceSelection.js
+
 my \AudioDeviceSelectionIface = loadInterfaceXML(
 	'org.gnome.Shell.AudioDeviceSelection'
 );
 
 our enum AudioDevice is export (
 	HEADPHONES => 1,
-	HEADSET    => 1 +< 1, 
+	HEADSET    => 1 +< 1,
 	MICROPHONE => 1 +< 2
 );
 
-class Gnome::Shell::AudioDeviceSelectionDialog 
-	is   Gnome::Shell::UI::ModalDialog 
+class Gnome::Shell::AudioDeviceSelectionDialog
+	is   Gnome::Shell::UI::ModalDialog
 	does Signaling[
 		[ 'device-selected', [uint32] ]
 	]
@@ -27,6 +29,8 @@ class Gnome::Shell::AudioDeviceSelectionDialog
 	has %!deviceItems;
 
 	submethod BUILD ( :$devices ) {
+		self.GLib::Roles::Object::BUILD;
+		
 		self.style-class = 'audio-device-selection-dialog';
 		self.buildLayout;
 
@@ -73,7 +77,7 @@ class Gnome::Shell::AudioDeviceSelectionDialog
 
 	method getDeviceIcon ($device) {
 		self.getDeviceString(
-			$device, 
+			$device,
 			<headphones headset input-microphone>.map("audio-{$_}-symbolic")
 		);
 	}
@@ -83,7 +87,7 @@ class Gnome::Shell::AudioDeviceSelectionDialog
 			style-class => 'audio-selection-device-box',
 			vertical    => True
 		);
-		$box.notify('height').tap(-> *@a { 
+		$box.notify('height').tap(-> *@a {
 			Mutter::Meta::Later.add(META_LATER_BEFORE_REDRAW, -> *@a {
 				$box.width = $box.height;
 				GLIB_SOURCE_REMOVE
@@ -124,7 +128,7 @@ class Gnome::Shell::AudioDeviceSelectionDialog
 		);
 
 		unless $app {
-			$*ERR.say: "Settings panel for desktop file { 
+			$*ERR.say: "Settings panel for desktop file {
 				          $desktopFile } could not be loaded!";
 			return;
 		}
@@ -133,5 +137,5 @@ class Gnome::Shell::AudioDeviceSelectionDialog
 		UI<overview>.hide;
 		$app.activate;
 	}
-	
+
 }

@@ -1,7 +1,9 @@
 use v6.c;
 
+### /home/cbwood/Projects/gnome-shell/js/ui/switcherPopup.js
+
 role AbstractClass {
-	
+
 	proto method new (|)
 	{ * }
 
@@ -20,7 +22,7 @@ sub primaryModifier ($mask) {
 	1 +< $mask.log(2);
 }
 
-class Gnome::Shell::UI::Switcher::Popup 
+class Gnome::Shell::UI::Switcher::Popup
 	is   Gnome::Shell::UI::St::Widget
 	does AbstractClass
 {
@@ -29,7 +31,7 @@ class Gnome::Shell::UI::Switcher::Popup
 
 	has $!mouseActive           = True;
 	has $!haveModal             = False;
-	has $!selectedIndex         = 0;	
+	has $!selectedIndex         = 0;
 	has $!modifierMask          = 0;
 	has $!modionTimeoutId       = 0;
 	has $!initialDelayTimeoutId = 0;
@@ -65,7 +67,7 @@ class Gnome::Shell::UI::Switcher::Popup
 		self.set-allocation($box);
 
 		my $childBox     = Mutter::Clutter::ActorBox.new;
-		my $primary      = UI<layoutManager>.primaryMonitor; 
+		my $primary      = UI<layoutManager>.primaryMonitor;
 		my $leftPadding  = self.get-theme-node().get-padding(ST_SIDE_LEFT);
 		my $rightPadding = self.get-theme-node().get-padding(ST_SIDE_RIGHT);
 		my $hPadding     = $leftPadding + $rightPadding;
@@ -76,10 +78,10 @@ class Gnome::Shell::UI::Switcher::Popup
 
 		$childBox.x1 = max(
 			$primary.x + $leftPadding,
-			$primary.x + ($primary.width - $cnWidth) div 2			
+			$primary.x + ($primary.width - $cnWidth) div 2
 		);
 		$childBox.x2 = min(
-			$primary.x + $primary.width - $rightPadding, 
+			$primary.x + $primary.width - $rightPadding,
 			$childBox.x1 + $cnWidth
 		);
 		$childBox.y1 = $primary.y + ($primary.height - $cnHeight) div 2;
@@ -113,7 +115,7 @@ class Gnome::Shell::UI::Switcher::Popup
 		$!switcherList.item-activated.tap( -> *@a { self.itemActivated(  |@a ) });
 		$!switcherList.item-entered.tap(   -> *@a {   self.itemEntered(  |@a ) });
 		$!switcherList.item-removed.tap(   -> *@a {   self.itemRemoved(  |@a ) });
-		
+
 		( .opacity, .visible) = (0, True) given self;
 		self.get-allocation-box;
 
@@ -135,7 +137,7 @@ class Gnome::Shell::UI::Switcher::Popup
 		});
 
 		GLib::Source.set-name-by-id(
-			$!initialDelayTimeoutId, 
+			$!initialDelayTimeoutId,
 			'[gnome-shell-raku] Main.osdWindow.cancel'
 		);
 	}
@@ -154,7 +156,7 @@ class Gnome::Shell::UI::Switcher::Popup
 
 	method keyPressHandler ($keysym, $action) {
 		die 'keyPressHandler - NYI';
-	} 
+	}
 
 	method key-press-event ($keyEvent) is vfunc {
 		my $keysym = $keyEvent.keyval;
@@ -170,12 +172,12 @@ class Gnome::Shell::UI::Switcher::Popup
 			return CLUTTER_EVENT_STOP;
 		}
 
-		self.fadeAndDestroy() 
+		self.fadeAndDestroy()
 			if $keysym == (CLUTTER_KEY_ESCAPE, CLUTTER_KEY_TAB).any;
 
 		my @finish-keys = (
-			CLUTTER_KEY_SPACE, 
-			CLUTTER_KEY_RETURN, 
+			CLUTTER_KEY_SPACE,
+			CLUTTER_KEY_RETURN,
 			CLUTTER_KEY_KP_ENTER,
 			CLUTTER_KEY_ISO_ENTER`
 		);
@@ -262,7 +264,7 @@ class Gnome::Shell::UI::Switcher::Popup
 			self.mouseTimedOut( |@a )
 		});
 		GLib::Source.set-name-by-id(
-			$!motionTimeoutId, 
+			$!motionTimeoutId,
 			'[gnome-shell-raku] self.mouseTimedOut'
 		);
 	}
@@ -296,14 +298,14 @@ class Gnome::Shell::UI::Switcher::Popup
 			self.ease(
 				opacity => 0,
 				POPUP_FADE_OUT_TIME,
-				CLUTTER_ANIMATION_MODE_EASE_OUT_QUAD,
+				CLUTTER_EASE_OUT_QUAD,
 				onComplete => -> *@a { self.destroy }
 			)
 		} else {
 			self.destroy
 		}
 	}
-	
+
 	method finish ($timestamp) {
 		self.fadeAndDestroy;
 	}
@@ -325,8 +327,8 @@ class Gnome::Shell::UI::Switcher::Popup
 
 }
 
-class Gnome::Shell::UI::Switcher::Button 
-	is Gnome::Shell::St::Button 
+class Gnome::Shell::UI::Switcher::Button
+	is Gnome::Shell::St::Button
 {
 	has $!square is built;
 
@@ -341,7 +343,7 @@ class Gnome::Shell::UI::Switcher::Button
 	}
 }
 
-class Gnome::Shell::UI::Switcher::List 
+class Gnome::Shell::UI::Switcher::List
 	is   Gnome::Shell::St::Widget
 	does Signaling[
 		[ 'item-added',   [Int] ],
@@ -426,7 +428,7 @@ class Gnome::Shell::UI::Switcher::List
 	method onItemMotion ($item) {
 		self.itemEntered( @!items.first($item.is(*), :k) )
 			unless $item.is( @!items[$!highlighted] );
-			
+
 		CLUTTER_EVENT_PROPAGATE
 	}
 
@@ -472,7 +474,7 @@ class Gnome::Shell::UI::Switcher::List
 		$adjustment.ease(
 			:$value,
 			POP_UP_SCROLL_TIME,
-			CLUTTER_ANIMATION_MODE_EASE_OUT_QUAD,
+			CLUTTER_EASE_OUT_QUAD,
 			onComplete => -> *@a {
 				$!scrollableLeft = False unless $index;
 				self.queue-relayout
@@ -498,7 +500,7 @@ class Gnome::Shell::UI::Switcher::List
 		$adjustment.ease(
 			:$value,
 			POPUP_SCROLL_TIME,
-			CLUTTER_ANIMATION_MODE_EASE_OUT_QUAD,
+			CLUTTER_EASE_OUT_QUAD,
 			onComplete => -> *@a {
 				$scrollableRight = False if $index == @!items.elems.pred;
 				self.queue_relayout

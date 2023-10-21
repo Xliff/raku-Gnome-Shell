@@ -2,6 +2,8 @@ use v6.c;
 
 use Gnome::Shell::Raw::Types;
 
+### /home/cbwood/Projects/gnome-shell/js/ui/checkBox.js
+
 class Gnome::Shell::St::UI::Checkbox {
   has $!container;
   has $!box;
