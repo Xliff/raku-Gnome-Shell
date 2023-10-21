@@ -52,7 +52,14 @@ class Gnome::Shell::St::Widget is Mutter::Clutter::Actor {
     $o.ref if $ref;
     $o;
   }
+  multi method new ( *%a ) {
+    my $st-widget = self.new-obj-ptr( self.get_type );
 
+    my $o = $st-widget ?? self.bless( :$st-widget ) !! Nil;
+    $o.setAttributes(|%a) if $o && +%a;
+    $o;
+  }
+  
   # Type: string
   method pseudo-class is rw  is g-property {
     my $gv = GLib::Value.new( G_TYPE_STRING );
