@@ -6,6 +6,8 @@ constant ANIMATED_ICON_UPDATE_TIMEOUT is export = 16;
 constant SPINNER_ANIMATION_TIME       is export = 300;
 constant SPINNER_ANIMATION_DELAY      is export = 1000;
 
+### /home/cbwood/Projects/gnome-shell/js/ui/animation.js
+
 class Gnome::Shell::UI::Animation is Gnome::Shell::St::Bin {
   has $!speed;
   has $!isLoaded;
@@ -173,7 +175,7 @@ class Gnome::Shell::UI::Animations::Spinner
         opacity  => 255,
         delay    => SPINNER_ANIMATION_DELAY,
         duration => SPINNER_ANIMATION_TIME,
-        mode     => CLUTTER_ANIMATION_MODE_LINEAR
+        mode     => CLUTTER_LINEAR
       );
     } else {
       self.opacity = 255;
@@ -187,7 +189,7 @@ class Gnome::Shell::UI::Animations::Spinner
       self.ease(
         opacity  => 0,
         duration => SPINNER_ANIMATION_TIME,
-        mode     => CLUTTER_ANIMATION_MODE_LINEAR,
+        mode     => CLUTTER_LINEAR,
         onComplete => -> *@a {
           self.stop;
           self.hide if $!hideOnStop;

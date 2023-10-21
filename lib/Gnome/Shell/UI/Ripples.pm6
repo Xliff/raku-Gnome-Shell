@@ -2,6 +2,8 @@ use v6.c;
 
 use Gnome::Shell::St::BoxLayout;
 
+### /home/cbwood/Projects/gnome-shell/js/ui/ripples.js
+
 class Gnome::Shell::St::UI::Ripples {
   has $!x;
   has $!y;
@@ -56,7 +58,7 @@ class Gnome::Shell::St::UI::Ripples {
         to   => 0,
         :$delay,
         :$duration,
-        CLUTTER_ANIMATION_MODE_EASE_IN_QUAD
+        CLUTTER_EASE_IN_QUAD
       );
 
       my $sx-t = Mutter::Clutter::PropertyTransition.new(
@@ -65,7 +67,7 @@ class Gnome::Shell::St::UI::Ripples {
         to   => $finalScale,
         :$delay,
         :$duration,
-        CLUTTER_ANIMATION_MODE_EASE_IN_QUAD
+        CLUTTER_EASE_IN_QUAD
       );
       my $sy-t = Mutter::Clutter::PropertyTransition.new(
         'scale-y',
@@ -73,7 +75,7 @@ class Gnome::Shell::St::UI::Ripples {
         to   => $finalScale,
         :$delay,
         :$duration,
-        CLUTTER_ANIMATION_MODE_EASE_IN_QUAD
+        CLUTTER_EASE_IN_QUAD
       );
       $sy-t.completed.tap({ $ripple.visible = False });
     }

@@ -10,6 +10,8 @@ constant HIDE_TIMEOUT         is export = 1500;
 constant FADE_TIME            is export = 100;
 constant LEVEL_ANIMATION_TIME is export = 100;
 
+### /home/cbwood/Projects/gnome-shell/js/ui/osdWindow.js
+
 class Gnome::Shell::UI::OsdWindow is Mutter::Clutter::Actor {
 
   has $!monitorIndex is built;
@@ -86,7 +88,7 @@ class Gnome::Shell::UI::OsdWindow is Mutter::Clutter::Actor {
       $!level.ease-property(
         'value',
         $value,
-        mode     => CLUTTER_ANIMATION_MODE_EASE_OUT_QUAD.
+        mode     => CLUTTER_EASE_OUT_QUAD.
         duration => LEVEL_ANIMATION_TIME
       );
     } else {
@@ -110,7 +112,7 @@ class Gnome::Shell::UI::OsdWindow is Mutter::Clutter::Actor {
     self.ease(
       opacity  => 255,
       duration => FADE_TIME,
-      mode     => CLUTTER_ANIMATION_MODE_EASE_OUT_QUAD
+      mode     => CLUTTER_EASE_OUT_QUAD
     );
 
     GLib::Source.remove($!hideTimeoutId) if $!hideTimeoutId;
@@ -132,7 +134,7 @@ class Gnome::Shell::UI::OsdWindow is Mutter::Clutter::Actor {
     self.ease(
       opacity    => 0,
       duration   => FADE_TIME,
-      mode       => CLUTTER_ANIMATION_MODE_EASE_OUT_QUAD
+      mode       => CLUTTER_EASE_OUT_QUAD
       onComplete => -> *@a {
         self.reset;
         global.display.enable-unredirect-for-display;

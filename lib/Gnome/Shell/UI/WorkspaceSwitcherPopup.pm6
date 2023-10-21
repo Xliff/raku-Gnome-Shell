@@ -8,6 +8,8 @@ constant DISPLAY_TIMEOUT is export = 600;
 
 our $WorkspaceSwitcherPopup is export;
 
+### /home/cbwood/Projects/gnome-shell/js/ui/workspaceSwitcherPopup.js
+
 class Gnome::Shell::WorkspaceSwitcherPopup is Muttter::Clutter::Actor {
 
   has $!activeWorkspaceIndex;
@@ -72,7 +74,7 @@ class Gnome::Shell::WorkspaceSwitcherPopup is Muttter::Clutter::Actor {
     self.opacity = 0;
     self.ease(
       $diration,
-      CLUTTER_ANIMATIONMODE_EASE_OUT_QUAD,
+      CLUTTER_EASE_OUT_QUAD,
       opacity => 255,
     );
   }
@@ -82,7 +84,7 @@ class Gnome::Shell::WorkspaceSwitcherPopup is Muttter::Clutter::Actor {
     $!timeoutId = 0;
     self.ease(
       ANIMATION_TIME,
-      CLUTTER_ANIMATIONMODE_EASE_OUT_QUAD,
+      CLUTTER_EASE_OUT_QUAD,
       opacity => 0e0
     );
     GLIB_SOURCE_REMOVE`

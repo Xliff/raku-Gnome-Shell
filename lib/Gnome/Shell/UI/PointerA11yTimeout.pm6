@@ -8,6 +8,8 @@ use Gnome::Shell::UI::Main;
 
 use GLib::Roles::Object;
 
+### /home/cbwood/Projects/gnome-shell/js/ui/pointerA11yTimeout.js
+
 class Gnome::Shell::UI::PieTimer is Gnome::Shell::UI::DrawingArea {
   has $!angle;
 
@@ -76,7 +78,7 @@ class Gnome::Shell::UI::PieTimer is Gnome::Shell::UI::DrawingArea {
     self.ease(
       opacity => 255,
       $duration / 4,
-      CLUTTER_ANIMATION_MODE_EASE_IN_QUAD
+      CLUTTER_EASE_IN_QUAD
     );
 
     # See if there is a way to ease arbitrary value and not a g-property!
@@ -84,7 +86,7 @@ class Gnome::Shell::UI::PieTimer is Gnome::Shell::UI::DrawingArea {
       'angle',
       2 * π,
       $duration,
-      CLUTTER_ANIMATION_MODE_EASE_IN_QUAD,
+      CLUTTER_EASE_IN_QUAD,
       -> *@a { self.onTransitionComplete }
     );
   }
@@ -95,7 +97,7 @@ class Gnome::Shell::UI::PieTimer is Gnome::Shell::UI::DrawingArea {
       scale-y => 2,
       opacity => 0,
       SUCCESS_ZOOM_OUT_DURATION,
-      CLUTTER_ANIMATION_MODE_EASE_IN_QUAD,
+      CLUTTER_EASE_IN_QUAD,
       onStopped => { self.destroy }
     )
   }
