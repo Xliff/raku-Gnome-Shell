@@ -250,7 +250,7 @@ sub generateFromFile (
   /;
 
   my %properties;
-  for $search[] {
+  for $search.sort( *.<p>[0].Str ) {
 
     #.gist.say;
 
