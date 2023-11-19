@@ -47,11 +47,18 @@ class Gnome::Shell::St::Bin is Gnome::Shell::St::Widget {
     $o.ref if $ref;
     $o;
   }
-
-  multi method new {
+  multi method new ( *%a ) {
     my $st-bin = st_bin_new();
 
-    $st-bin ?? self.bless( :$st-bin ) !! Nil;
+    my $o = $st-bin ?? self.bless( :$st-bin ) !! Nil;
+    $o.setAttributes( |%a ) if $o && +%a;
+    $o;
+  }
+
+  method child is rw {
+    Proxy.new:
+      FETCH => $     { $.get_child    },
+      STORE => $, \v { $.set_child(v) }
   }
 
   method get_child ( :$raw = False ) is also<get-child> {
@@ -73,14 +80,14 @@ class Gnome::Shell::St::Bin is Gnome::Shell::St::Widget {
 
 sub st_bin_get_child (StBin $bin)
   returns MutterClutterActor
-  is native(gnome-shell-st)
-  is export
+  is      native(gnome-shell-st)
+  is      export
 { * }
 
 sub st_bin_new ()
   returns StBin
-  is native(gnome-shell-st)
-  is export
+  is      native(gnome-shell-st)
+  is      export
 { * }
 
 sub st_bin_set_child (StBin $bin, MutterClutterActor $child)
