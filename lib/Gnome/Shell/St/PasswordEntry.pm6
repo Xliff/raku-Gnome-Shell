@@ -10,9 +10,9 @@ use Gnome::Shell::St::Widget;
 use GLib::Roles::Implementor;
 
 our subset StPasswordEntryAncestry is export of Mu
-  where StPasswordEntry | StWidgetAncestry;
+  where StPasswordEntry | StEntryAncestry;
 
-class Gnome::Shell::St::PasswordEntry is Gnome::Shell::St::Widget {
+class Gnome::Shell::St::PasswordEntry is Gnome::Shell::St::Entry {
   has StPasswordEntry $!stpe is implementor;
 
   submethod BUILD ( :$st-password-entry ) {
@@ -24,7 +24,7 @@ class Gnome::Shell::St::PasswordEntry is Gnome::Shell::St::Widget {
 
     $!stpe = do {
       when StPasswordEntry {
-        $to-parent = cast(StWidget, $_);
+        $to-parent = cast(StEntry, $_);
         $_;
       }
 
@@ -33,10 +33,10 @@ class Gnome::Shell::St::PasswordEntry is Gnome::Shell::St::Widget {
         cast(StPasswordEntry, $_);
       }
     }
-    self.setStWidget($to-parent);
+    self.setStEntry($to-parent);
   }
 
-  method Mutter::Cogl::Raw::Definitions::StPasswordEntry
+  method Gnome::Shell::Raw::Definitions::StPasswordEntry
     is also<StPasswordEntry>
   { $!stpe }
 
