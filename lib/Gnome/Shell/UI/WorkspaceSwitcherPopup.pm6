@@ -41,7 +41,7 @@ class Gnome::Shell::WorkspaceSwitcherPopup is Muttter::Clutter::Actor {
   }
 
   submethod DESTROY {
-    GLib::Source.remove($!timeoutId) if $timeoutId;
+    $!timeoutId.cancel if $timeoutId;
   }
 
   method redisplay {
@@ -62,7 +62,7 @@ class Gnome::Shell::WorkspaceSwitcherPopup is Muttter::Clutter::Actor {
   method display ($index) {
     $!activeWorkspaceIndex = $index;
     self.redisplay;
-    GLib::Source.remove($!timeoutId) if $!timeoutId;
+    $!timeoutId.cancel if $!timeoutId;
     $!timeoutId = GLib::Timeout.add(DISPLAY_TIMEOUT, { self.onTimeout });
     GLib::Source.set-name-by-id(
       $!timeoutId,
