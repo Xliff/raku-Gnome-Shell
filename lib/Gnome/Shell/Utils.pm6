@@ -34,7 +34,7 @@ class Gnome::Shell::Utils {
   ) {
     my gint ($n, $xx, $yy, $tw, $th) =
       ($n_captures, $x, $y, $target_width, $target_height);
-      
+
     my gfloat $ts = $target_scale;
 
     propReturObject(
@@ -335,6 +335,39 @@ class Gnome::Shell::Utils {
     my $mrv = shell_write_string_to_stream($stream, $str, $error);
     set_error($error);
     $mrv;
+  }
+
+  # cw: Note: This will not detect ALL URLs, especially since it doesn't
+  #     cover the auth portion of the spec. This can be addressed later.
+  my token nodeParts {
+    <[A..Za..z0..9\-_]>+
+  }
+
+  my token kvPairs {
+    <nodeParts>+ '=' <-[&,.\s]>+
+  }
+
+  my token url {
+    [ $<scheme>=<nodeParts>+ '://']?
+      [ $<user>=<nodeParts>+ ':' $<pass>=<nodeParts>+ '@' ]?
+      $<host> = [ (<nodeParts>+) ** { 2 .. Inf } %% '.' ]
+      [':' $<port> = \d+ ]?
+    [
+      '/'
+      (<nodeParts>+)+ %% '/' '/'?
+      ['?' <kvPairs>+ %% '&' ]?
+    ]?
+  }
+
+  role PosIsFrom {
+    method pos { $.from }
+  }
+
+  method findUrls ($text, :$match = False) is export {
+    my $matches = $text ~~ m:g/<url>/;
+    $matches .= map({ .<url> but PosIsFrom });
+    return $matches if $match;
+    $matches.map( *.Str );
   }
 
 }
