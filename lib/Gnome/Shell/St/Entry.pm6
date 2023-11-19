@@ -37,7 +37,7 @@ class Gnome::Shell::St::Entry is Gnome::Shell::St::Widget {
     self.setStWidget($to-parent);
   }
 
-  method Mutter::Cogl::Raw::Definitions::StEntry
+  method Gnome::Shell::Raw::Definitions::StEntry
     is also<StEntry>
   { $!ste }
 
