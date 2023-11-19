@@ -294,7 +294,7 @@ class Gnome::Shell::UI::PopupMenu::Switch
   submethod TWEAK ( :$state ) {
     $!state = False,
     self.setAttributes(
-      style-class => 'toggle-switch',
+      style-class     => 'toggle-switch',
       accessible-role => ATK_ROLE_CHECK_BOX,
 
       :$state
