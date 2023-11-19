@@ -177,8 +177,8 @@ class Gnome::Shell::St::Adjustment {
 
   # Is originally:
   # StAdjustment *adjustment --> void
-  method changed {
-    self.connect($!sta, 'changed');
+  method changed ($detail = '') {
+    self.connect($!sta, $detail ?? 'changed' !! "changed::{ $detail }" );
   }
 
   method add_transition (Str() $name, MutterClutterTransition() $transition)
