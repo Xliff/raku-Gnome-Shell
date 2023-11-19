@@ -80,8 +80,8 @@ class Gnome::Shell::St::Theme::Context {
   }
 
   # cw: Until a more definite signature is obtained.
-  method changed {
-    self.connect($!sttc, 'changed');
+  method changed ($detail = '') {
+    self.connect($!sttc, $detail ?? 'changed' !! "changed::{ $detail }" );
   }
 
   method get_font ( :$raw = False ) is also<get-font> {
