@@ -49,10 +49,12 @@ class Gnome::Shell::St::ScrollView is Gnome::Shell::St::Widget {
     $o.ref if $ref;
     $o;
   }
-  multi method new {
+  multi method new ( *%a ) {
     my $st-scroll-view = st_scroll_view_new();
 
-    $st-scroll-view ?? self.bless( $st-scroll-view ) !! Nil;
+    my $o = $st-scroll-view ?? self.bless( $st-scroll-view ) !! Nil;
+    $o.setAtributes( |%a ) if $o && +%a;
+    $o;
   }
 
   # Type: StScrollBar
