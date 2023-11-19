@@ -44,7 +44,7 @@ class Gnome::Shell::UI::ButtonBox is Gnome::Shell::St::Widget {
     $!natHPadding = $n.get-length('-natural-hpadding');
   }
 
-  method get_preferred_width ($fh) is vfunc {
+  method get_preferred_width ($fh = -1) is vfunc {
     my $child = self.get-first-child;
 
     my ($ms, $ns) = $child ?? $child.get-preferred-width(-1)
@@ -53,7 +53,7 @@ class Gnome::Shell::UI::ButtonBox is Gnome::Shell::St::Widget {
     ($ms, $ns) «+» ($!minHPadding, $!natHPadding) »*» 2;
   }
 
-  method get_preferred_height ($fw) is vfunc {
+  method get_preferred_height ($fw = -1) is vfunc {
     if self.get-first-child -> $c {
       return $c.get_preferred_height(-1);
     }
