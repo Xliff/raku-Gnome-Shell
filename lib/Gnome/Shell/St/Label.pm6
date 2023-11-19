@@ -50,10 +50,12 @@ class Gnome::Shell::St::Label is Gnome::Shell::St::Widget {
     $o.ref if $ref;
     $o;
   }
-  multi method new (Str() $text) {
+  multi method new (Str() $text = '', *%a) {
     my $st-label = st_label_new($text);
 
-    $st-label ?? self.bless( :$st-label ) !! Nil;
+    my $o = $st-label ?? self.bless( :$st-label ) !! Nil;
+    $o.setAttributes( |%a ) if $o && +%a;
+    $o;
   }
 
   # Type: StText
@@ -85,6 +87,7 @@ class Gnome::Shell::St::Label is Gnome::Shell::St::Widget {
         $gv.string;
       },
       STORE => -> $, Str() $val is copy {
+        # cw: I18N can be handled here...
         $gv.string = $val;
         self.prop_set('text', $gv);
       }
@@ -103,7 +106,12 @@ class Gnome::Shell::St::Label is Gnome::Shell::St::Widget {
     st_label_get_text($!stl);
   }
 
-  method set_text (Str() $text) is also<set-text> {
+  method set_text (Str() $text is copy) is also<set-text> {
+    # cw: I18N can be handled here, like so...
+    # $text = $text but GLib::I18n::TranslatableString
+    #   if <i18n is enabled>;
+    # cw: This converts text to its localized equivalents
+    # $text ~= $text;
     st_label_set_text($!stl, $text);
   }
 
