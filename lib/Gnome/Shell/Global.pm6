@@ -401,11 +401,22 @@ class Gnome::Shell::Global {
     shell_global_end_work($!sg);
   }
 
-  method get_current_time is also<get-current-time> {
+  method get_current_time
+    is also<
+      get-current-time
+      current-time
+      current_time
+    >
+  {
     shell_global_get_current_time($!sg);
   }
 
-  method get_display ( :$raw = False ) is also<get-display> {
+  method get_display ( :$raw = False )
+    is also<
+      get-display
+      display
+    >
+  {
     propReturnObject(
       shell_global_get_display($!sg),
       $raw,
@@ -423,7 +434,7 @@ class Gnome::Shell::Global {
     is also<get-pointer>
   { * }
 
-  multi method get_pointer {
+  multi method get_pointer is also<pointer> {
     samewith($, $, $);
   }
   multi method get_pointer ($x is rw, $y is rw, $mods is rw) {
@@ -440,11 +451,22 @@ class Gnome::Shell::Global {
     shell_global_get_runtime_state($!sg, $property_type, $property_name);
   }
 
-  method get_session_mode is also<get-session-mode> {
+  method get_session_mode
+    is also<
+      get-session-mode
+      session-mode
+      session_mode
+    >
+  {
     shell_global_get_session_mode($!sg);
   }
 
-  method get_settings ( :$raw = False ) is also<get-settings> {
+  method get_settings ( :$raw = False )
+    is also<
+      get-settings
+      settings
+    >
+  {
     propReturnObject(
       shell_global_get_settings($!sg),
       $raw,
@@ -452,7 +474,12 @@ class Gnome::Shell::Global {
     );
   }
 
-  method get_stage ( :$raw = False )  is also<get-stage> {
+  method get_stage ( :$raw = False )
+    is also<
+      get-stage
+      stage
+    >
+  {
     propReturnObject(
       shell_global_get_stage($!sg),
       $raw,
@@ -460,16 +487,32 @@ class Gnome::Shell::Global {
     );
   }
 
-  method get_switcheroo_control is also<get-switcheroo-control> {
+  method get_switcheroo_control
+    is also<
+      get-switcheroo-control
+      switcheroo-control
+      switcheroo_control
+    >
+  {
     shell_global_get_switcheroo_control($!sg);
   }
 
-  method get_window_actors is also<get-window-actors> {
+  method get_window_actors
+    is also<
+      get-window-actors
+      window-actors
+      window_actors
+    >
+  {
     shell_global_get_window_actors($!sg);
   }
 
   method get_workspace_manager ( :$raw = False )
-    is also<get-workspace-manager>
+    is also<
+      get-workspace-manager
+      workspace-manager
+      workspace_manager
+    >
   {
     propReturnObject(
       shell_global_get_workspace_manager($!sg),
@@ -514,4 +557,8 @@ class Gnome::Shell::Global {
     shell_global_set_stage_input_region($!sg, $rectangles);
   }
 
+  method scale-factor is also<scale_factor> {
+    Gnome::Shell::St::ThemeContext.get_for_stage($.stage).scale_factor;
+  }
+  
 }
