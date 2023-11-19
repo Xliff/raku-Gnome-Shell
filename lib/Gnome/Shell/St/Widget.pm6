@@ -20,8 +20,6 @@ class Gnome::Shell::St::Widget is Mutter::Clutter::Actor {
 
   submethod BUILD ( :$st-widget, *%props ) {
     self.setStWidget($st-widget) if $st-widget;
-
-    self."{ .key }"() = .value for %props.pairs;
   }
 
   method setStWidget (StWidgetAncestry $_) {
@@ -56,10 +54,10 @@ class Gnome::Shell::St::Widget is Mutter::Clutter::Actor {
     my $st-widget = self.new-obj-ptr( self.get_type );
 
     my $o = $st-widget ?? self.bless( :$st-widget ) !! Nil;
-    $o.setAttributes(|%a) if $o && +%a;
+    $o.setAttributes( |%a ) if $o && +%a;
     $o;
   }
-  
+
   # Type: string
   method pseudo-class is rw  is g-property {
     my $gv = GLib::Value.new( G_TYPE_STRING );
@@ -151,7 +149,10 @@ class Gnome::Shell::St::Widget is Mutter::Clutter::Actor {
   }
 
   # Type: MutterClutterActor
-  method label-actor ( :$raw = False )  is rw  is g-property {
+  multi method label-actor ( :$clear is required ) {
+    $.label-actor = MutterClutterActor;
+  }
+  multi method label-actor ( :$raw = False )  is rw  is g-property {
     my $gv = GLib::Value.new( Mutter::Clutter::Actor.get_type );
     Proxy.new(
       FETCH => sub ($) {
@@ -213,6 +214,15 @@ class Gnome::Shell::St::Widget is Mutter::Clutter::Actor {
   # StWidget *self --> void
   method popup-menu {
     self.connect($!stw, 'popup-menu');
+  }
+
+  method allocate (MutterClutterActorBox() $box) is vfunc {
+    $.set_allocation($box);
+
+    $.layout-manager.allocate(
+      $actor,
+      $.get_theme_node.get_content_box($box)
+    );
   }
 
   method add_accessible_state (Int() $state) is also<add-accessible-state> {
@@ -288,7 +298,13 @@ class Gnome::Shell::St::Widget is Mutter::Clutter::Actor {
     st_widget_get_style_pseudo_class($!stw);
   }
 
-  method get_theme_node ( :$raw = False ) is also<get-theme-node> {
+  method get_theme_node ( :$raw = False )
+    is also<
+      get-theme-node
+      theme_node
+      theme-node
+    >
+  {
     propReturnObject(
       st_widget_get_theme_node($!stw),
       $raw,
@@ -316,14 +332,22 @@ class Gnome::Shell::St::Widget is Mutter::Clutter::Actor {
     is also<navigate-focus>
   { * }
 
-  multi method navigate_focus ($direction, $wrap-around = False) {
+  multi method navigate_focus ($a where * !~~ MutterClutterActor, $b) {
+    if $a.^can('MutterClutterActor') {
+      self.navigate-focus($a.MutterClutterActor, $b);
+    }
+    self.navigate-focus($a.Int, $b);
+  }
+  multi method navigate_focus (Int $direction, $wrap-around = False) {
     samewith(MutterClutterActor, $direction, $wrap-around);
   }
   multi method navigate_focus (
-    MutterClutterActor() $from,
-    Int()                $direction,
-    Int()                $wrap_around
+          $from        is copy,
+    Int() $direction,
+    Int() $wrap_around          = False
   ) {
+    $from .= MutterClutterActor unless $from ~~ MutterClutterActor;
+
     my StDirectionType $d = $direction;
     my gboolean        $w = $wrap_around.so.Int;
 
@@ -414,6 +438,12 @@ class Gnome::Shell::St::Widget is Mutter::Clutter::Actor {
     my gboolean $t = $track_hover.so.Int;
 
     st_widget_set_track_hover($!stw, $track_hover);
+  }
+
+  method toggleStylePseudoClass ($class) {
+    self.has-style-pseudo-class($c)
+      ?? self.remove_style_pseudo_class($class)
+      !! self.add_style_pseudo_class($class);
   }
 
   method describe_actor (MutterClutterActor() $actor)
