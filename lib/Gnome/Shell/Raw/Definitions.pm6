@@ -83,3 +83,13 @@ class CRTerm                     is repr<CPointer> does GLib::Roles::Pointers is
 class GtkActionMuxer             is repr<CPointer> does GLib::Roles::Pointers is export { }
 class GtkActionObserver          is repr<CPointer> does GLib::Roles::Pointers is export { }
 class GtkActionObservable        is repr<CPointer> does GLib::Roles::Pointers is export { }
+
+class MethodStub {
+  method FALLBACK ( *@a ) { }
+  method say              { }
+  method WHERE            { }
+}
+
+multi sub postfix:<?> ($o) is export {
+  $o.defined ?? $o !! MethodStub.new
+}
