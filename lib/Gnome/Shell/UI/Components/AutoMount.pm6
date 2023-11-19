@@ -1,5 +1,10 @@
 use v6.c;
 
+use Gnome::Shell::Raw::Types;
+
+use Gnome::Shell::UI::MountOperation;
+
+
 constant GNOME_SESSION_AUTOMOUNT_INHIBIT is export = 16;
 constant AUTORUN_EXPIRE_TIMEOUT_SECS     is export = 10;
 
@@ -60,10 +65,7 @@ class Gnome::Shell::UI::Components::AutoMount::Manager {
     #     It needs to be a role which is punned on GObject.
     $!volumeMonitor.disconnectObject(self);
 
-    if $!mountAllId > 0 {
-      GLib::Source.remove($!mountAllId);
-      $!mountAllId = 0;
-    }
+    $mountAllId.cancel( :reset ) if $!mountAllId > 0 {
   }
 
   method InhibitorsChanged ($object, $senderName, $inhibitor?) is async {
@@ -141,7 +143,7 @@ class Gnome::Shell::UI::Components::AutoMount::Manager {
 
     self.mountVolume(
       $volume,
-      %params<useMountOp>   ?? Gnome::Shell::ShellMountOperation.new($volume)
+      %params<useMountOp>   ?? Gnome::Shell::UI::MountOperation.new($volume)
                             !! GMountOperation,
       %params<allowAutorun>
     );
