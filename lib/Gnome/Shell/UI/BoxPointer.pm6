@@ -1,10 +1,24 @@
 use v6.c;
 
-our enum PopupAnimation = (
+use Gnome::Shell::Raw::Types;
+
+use Gnome::Shell::St::Widget;
+
+use GLib::Roles::Object;
+
+### /home/cbwood/Projects/gnome-shell/js/ui/boxpointer.js
+
+our enum PopupAnimation (
   NONE  =>  0,
   SLIDE =>  1,
   FADE  =>  2,
   FULL  =>  0xffff,
+);
+our enum PopupAnimationFull is export (
+  BOXPOINTER_ANIMATION_NONE  => NONE,
+  BOXPOINTER_ANIMATION_SLIDE => SLIDE,
+  BOXPOINTER_ANIMATION_FADE  => FADE,
+  BOXPOINTER_ANIMATION_FULL  => FULL
 );
 
 our constant POPUP_ANIMATION_TIME is export = 150;
@@ -49,7 +63,7 @@ class Gnome::Shell::UI::BoxPointer is Gnome::Shell::St::Widget {
   method captured-event ($event) is vfunc {
     my $key-up-down =
       (CLUTTER_EVENT_TYPE_KEY_PRESS, CLUTTER_EVENT_TYPE_KEY_RELEASE).any;
-    my $enter-leaved =
+    my $enter-leave =
       (CLUTTER_EVENT_TYPE_ENTER, CLUTTER_EVENT_TYPE_LEAVE).any;
 
     return CLUTTER_EVENT_PROPAGATE if $event.type == $enter-leave;
@@ -84,7 +98,7 @@ class Gnome::Shell::UI::BoxPointer is Gnome::Shell::St::Widget {
       translation-x => 0,
       translation-y => 0,
       duration      => $animTime,
-      mode          => CLUTTER_ANIMATION_MODE_LINEAR,
+      mode          => CLUTTER_LINEAR,
       onComplete    => sub {
         $!muteInput = False;
         oncomplete() if &onComplete
@@ -97,7 +111,7 @@ class Gnome::Shell::UI::BoxPointer is Gnome::Shell::St::Widget {
 
     my $themeNode = self.get-theme-node;
 
-    my ($transitionX, $transitionY) = 0 xx 2;
+    my ($translationX, $translationY) = 0 xx 2;
     my $rise      = $themeNode.get-length('-arrow-rise');
     my $fade      = $animate +& FADE;
     my $animTime  = $animate +& FULL ?? POPUP_ANIMATION_TIME !! 0;
@@ -114,11 +128,11 @@ class Gnome::Shell::UI::BoxPointer is Gnome::Shell::St::Widget {
     $!muteInput = $!muteKeys = True;
     self.remove-all-transitions;
     self.ease({
-      opacity       => $fade ?? 0 ! 255,
+      opacity       => $fade ?? 0 !! 255,
       translation-x => $translationX,
       translation-y => $translationY,
       duration      => $animTime,
-      mode          => CLUTTER_ANIMATION_MODE_LINEAR,
+      mode          => CLUTTER_LINEAR,
       onComplete    => sub {
         self.hide();
         self.opacity = self.translation-x = self.translation-y = 0;
@@ -136,8 +150,8 @@ class Gnome::Shell::UI::BoxPointer is Gnome::Shell::St::Widget {
     my $top-bottom = (ST_SIDE_TOP,  ST_SIDE_BOTTOM).any;
     my $left-right = (ST_SIDE_LEFT, ST_SIDE_RIGHT ).any;
 
-    if $isWidth.not && $arrowSide == $top-bottom.any ||
-       $isWidth     && $arrowSide == $left-right.any
+    if $isWidth.not && $!arrowSide == $top-bottom.any ||
+       $isWidth     && $!arrowSide == $left-right.any
     {
       my $rise = $themeNode.get-length('-arrow-rise');
       ($minSize, $natSize) «+=« $rise;
@@ -146,16 +160,16 @@ class Gnome::Shell::UI::BoxPointer is Gnome::Shell::St::Widget {
     ($minSize, $natSize);
   }
 
-  method get_preferred_width ($forHeight) is vfunc {
+  method get_preferred_width ($forHeight is copy = -1) is vfunc {
     my $themeNode = self.get-theme-node;
-    my $forHeight = $themeNode.adjust-for-height($forHeight);
-    my $width     = $!bin.get-preferred-width($forHeight);
+    $forHeight = $themeNode.adjust-for-height($forHeight);
 
+    my $width = $!bin.get-preferred-width($forHeight);
     $width = self.adjustAllocationForArrow(True, $, $width);
     $themeNode.adjust-preferred-width($, $width);
   }
 
-  method get_preferred_height ($forWidth) is vfunc {
+  method get_preferred_height ($forWidth is copy = -1) is vfunc {
     my $themeNode   = self.get-theme-node;
     my $borderWidth = $themeNode.get-length('-arrow-border-width');
     $forWidth       = $themeNode.adjust-for-width($forWidth);
@@ -178,13 +192,13 @@ class Gnome::Shell::UI::BoxPointer is Gnome::Shell::St::Widget {
     my $rise        = $themeNode.get-length('arrow-rise');
     my $childBox    = Mutter::Clutter::ActorBox.new;
 
-    my ($avaiWidth, $availHeight) = $themeNode_content-box($box).get_size;
+    my ($availWidth, $availHeight) = $themeNode.content-box($box).get_size;
     ( .x1, .y1, .x2, .y2 ) = (0, 0, $availWidth, $availHeight) given $childBox;
     $!border.allocate($childBox);
 
     $_ := $childBox;
     ( .x1, .y1) = $borderWidth xx 2;
-    ( .y1, .y2) = ($availWidth - $boderWidth, $availHeight - $borderWidth);
+    ( .y1, .y2) = ($availWidth - $borderWidth, $availHeight - $borderWidth);
 
     given $!arrowSide {
       when ST_SIDE_TOP    { .y1 += $rise }
@@ -195,38 +209,6 @@ class Gnome::Shell::UI::BoxPointer is Gnome::Shell::St::Widget {
     $!bin.allocate($_);
   }
 
-  method allocate ($box) is vfunc {
-    if $!sourceActor && $!sourceActor.mapped {
-      self.reposition($box);
-      self.updateFlip($box);
-    }
-
-    self.set_allocation($box);
-
-    my $themeNode    = self.get_theme_node;
-    my $borderWidth  = $themeNode.get-length('-arrow-border-width')
-    my $rise         = $themeNode.get_length('-arrow-rise');
-    my $childBox     = Mutter::Clutter::ActorBox.new;
-
-    my ($availWidth, $availHeight) = $themeNode.get_content_box($box);
-
-    ( .x1, .y1, .x2, .y2 ) = (0, 0, $availWidth, $availHeight) given $childBox;
-
-    $!border.allocate($childBox);
-
-    ( .x1, .y1, .x2, .y2 ) =
-      ($borderWidth, $borderWidth, $availWidth, $availHeight)
-    given $childBox;
-
-    given $!arrowSide {
-      when ST_SIDE_TOP    { $childBox.y1 += $rise }
-      when ST_SIDE_BOTTOM { $childBox.y2 += $rise }
-      when ST_SIDE_LEFT   { $childBox.x1 += $rise }
-      when ST_SIDE_RIGHT  { $childBox.x2 += $rise }
-    }
-    $!bin.allocate($childBox);
-  }
-
   method drawBorder ($area) {
     my $themeNode = self.get-theme-node;
 
@@ -235,7 +217,7 @@ class Gnome::Shell::UI::BoxPointer is Gnome::Shell::St::Widget {
       my ($sw, $sh) = $!arrowActor.get-transformed-size;
       my ($ax, $ay) = self.get_transformed_position;
 
-      my $top-bottom = so $!arrowSide == (ST_SIDE_TOP, ST_SIDE_BOTTOM).any
+      my $top-bottom = so $!arrowSide == (ST_SIDE_TOP, ST_SIDE_BOTTOM).any;
       $!arrowOrigin = $top-bottom
         ?? $sx - $ax + $sw / 2
         !! $sy - $ay + $sh / 2;
@@ -250,6 +232,7 @@ class Gnome::Shell::UI::BoxPointer is Gnome::Shell::St::Widget {
 
     my ($w,  $h ) = $area.get-surface-size;
     my ($bw, $bh) = ($w, $h);
+    # cw: -XXX- $top-bottom doesn't exist! Verify from original code.
     if $top-bottom {
       $boxHeight -= $rise;
     } else {
