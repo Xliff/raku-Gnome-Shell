@@ -134,19 +134,14 @@ class Gnome::Shell::UI::Switcher::Popup
 		$!initialDelayTimeoutId = GLib::Timeout.add(POPUP_DELAY_TIMEOUT, -> *@a {
 			self.showImmediately;
 			GLIB_SOURCE_REMOVE
+			name => '[gnome-shell-raku] Main.osdWindow.cancel'
 		});
-
-		GLib::Source.set-name-by-id(
-			$!initialDelayTimeoutId,
-			'[gnome-shell-raku] Main.osdWindow.cancel'
-		);
 	}
 
 	method showImmediately {
 		return if $!initialDelayTimeoutId == 0;
 
-		GLib::Source.remove($!initialDelayTimeoutId);
-		$!initialDelayTimeoutId = 0;
+		$!initialDelayTimeoutId.cancel( :reset );
 		UI<osdWindowManager>.hideAll;
 		self.opacity = 255;
 	}
@@ -258,15 +253,11 @@ class Gnome::Shell::UI::Switcher::Popup
 	method disableHover {
 		$!mouseActive = False;
 
-		GLib::Source.remove($!motionTimeoutId) if $!motionTimeoutId;
-
+		$!motionTimeoutId.cancel;
 		$!motionTimeoutId = GLib::Timeout.add(DISABLE_HOVER_TIMEOUT, -> *@a {
 			self.mouseTimedOut( |@a )
+			name => '[gnome-shell-raku] self.mouseTimedOut'
 		});
-		GLib::Source.set-name-by-id(
-			$!motionTimeoutId,
-			'[gnome-shell-raku] self.mouseTimedOut'
-		);
 	}
 
 	method mouseTimedOut ( *@ ) {
@@ -276,8 +267,7 @@ class Gnome::Shell::UI::Switcher::Popup
 	}
 
 	method resetNoModsTimeout {
-		GLib::Source.remove($!moModsTimeoutId) if $!noModsTimeoutId;
-
+		$!moModsTimeoutId.cancel if $!noModsTimeoutId;
 		$!noModsTmeoutId = GLib::Timeout.add(NO_MODS_TIMEOUT, -> *@a {
 			self.finish(Global.display.get-current-time-roundtrip)
 			$!noModsTimeoutId = 0;
@@ -313,9 +303,9 @@ class Gnome::Shell::UI::Switcher::Popup
 	method onDestroy ( *@ ){
 		self.popModal;
 
-		GLib::Source.remove($_) if $_ for $!motionTimeoutId,
-                                      $!initialDelayTimeoutId,
-                                      $!noModsTmeoutId;
+		.cancel if $_ for $!motionTimeoutId,
+                      $!initialDelayTimeoutId,
+                      $!noModsTmeoutId;
 
     $!swithcerList.destory if $!switcherList;
 	}
@@ -337,7 +327,7 @@ class Gnome::Shell::UI::Switcher::Button
 		self.reactive    = True;
 	}
 
-	method get-preferred-width ($forHeight) is vfunc {
+	method get-preferred-width ($forHeight = -1) is vfunc {
 		$!square ?? self.get-preferred-height(-1)
 		         !! callsame;
 	}
@@ -534,7 +524,7 @@ class Gnome::Shell::UI::Switcher::List
 		($maxChildMin, $maxChildNat);
 	}
 
-	method get-preferred-width ($forHeight) is vfunc {
+	method get-preferred-width ($forHeight = -1) is vfunc {
 		my $themeNode    = self.get-theme-node;
 		my $maxChildMin  = self.maxChildWidth($forHeight).head;
 		my $minListWidth = $!list.get-preferred-width($forHeight).head;
