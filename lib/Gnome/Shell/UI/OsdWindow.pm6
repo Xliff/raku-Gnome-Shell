@@ -115,7 +115,7 @@ class Gnome::Shell::UI::OsdWindow is Mutter::Clutter::Actor {
       mode     => CLUTTER_EASE_OUT_QUAD
     );
 
-    GLib::Source.remove($!hideTimeoutId) if $!hideTimeoutId;
+    $!hideTimeoutId.cancel if $!hideTimeoutId;
     $!hideTimeoutId = GLib::Timeout.add(HIDE_TIMEOUT, -> *@a { self.hide });
     GLib::Source.set-name-by-id(
       $!hideTimeoutId,
