@@ -8,7 +8,7 @@ use Gnome::Shell::UI::Main;
 
 ### /home/cbwood/Projects/gnome-shell/js/ui/osdMonitorLabeler.js
 
-class Gnome::Shell::UI::OSD::MonitorLabel is Gnome::Shell::St::Widget {
+class Gnome::Shell::UI::OSD::Monitor::Label is Gnome::Shell::St::Widget {
   has $!monitor is built;
   has $!label;
   has $!box;
@@ -50,7 +50,7 @@ class Gnome::Shell::UI::OSD::MonitorLabel is Gnome::Shell::St::Widget {
 
 }
 
-class Gnome::Shell::UI::OSD::MonitorLabeler {
+class Gnome::Shell::UI::OSD::Monitor::Labeler {
   has $!monitorManager;
   has $!client;
   has $!clientWatchId;
@@ -105,7 +105,7 @@ class Gnome::Shell::UI::OSD::MonitorLabeler {
     for $!monitorLabels.entries.pairs {
       .values .= sort;
       $!osdLabels.push:
-        Gnome::Shell::OSD::MonitorLabel.new( .key, .value.join(' ') );
+        Gnome::Shell::OSD::Monitor::Label.new( .key, .value.join(' ') );
     }
   }
 
