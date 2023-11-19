@@ -9,11 +9,11 @@ use Gnome::Shell::Misc::Config;
 constant DEFAULT_MODE = 'restrictive';
 
 constant USER_SESSION_COMPONENTS = <
-    polkitAgent
-    telepathyClient
-    keyring
-    autorunManager
-    automountManager
+  polkitAgent
+  telepathyClient
+  keyring
+  autorunManager
+  automountManager
 >;
 
 USER_SESSION_COMPONENTS.push('networkAgent') if Config.HAVE_NETWORKMANAGER;
@@ -105,7 +105,7 @@ my \modes = (
     },
 );
 
-sub loadMode ($file, $info, :$encoding = 'utf8') {
+sub loadMode ($file, $info, :$encoding = 'utf8') is export {
 	my $name     = $info.get_name();
 	my $suffix   = $name.index('.json');
 	my $modeName = $suffix ?? $name.substr(0, $suffix) !! $name;
@@ -131,11 +131,11 @@ sub loadMode ($file, $info, :$encoding = 'utf8') {
     modes{$modeName}<isPrimary> = True;
 }
 
-sub loadModes {
+sub loadModes is export {
     collectFromDatadirs('modes', False, &loadMode);
 }
 
-sub listModes {
+sub listModes is export {
     loadModes;
     my $loop = GLib::MainLoop.new;
     my $id = GLib::Main.idle_add(=> *@a {
