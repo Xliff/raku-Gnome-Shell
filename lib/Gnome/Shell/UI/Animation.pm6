@@ -57,11 +57,7 @@ class Gnome::Shell::UI::Animation is Gnome::Shell::St::Bin {
   }
 
   method stop {
-    if $!timeoutId > 0 {
-      GLib::Source.remove($!timeoutId);
-      $!timeoutId = 0;
-    }
-
+    $!timeoutId.cancel( :reset ) if $!timeoutId > 0;
     $!isPlaying = False;
   }
 
