@@ -49,10 +49,12 @@ class Gnome::Shell::St::Icon is Gnome::Shell::St::Widget {
     $o.ref if $ref;
     $o;
   }
-  multi method new {
+  multi method new (*%a) {
     my $st-icon = st_icon_new();
 
-    $st-icon ?? self.bless( :$st-icon ) !! Nil;
+    my $o = $st-icon ?? self.bless( :$st-icon ) !! Nil;
+    $o.setAttributes( |%a ) if +%a;
+    $o;
   }
 
   # Type: StIcon
