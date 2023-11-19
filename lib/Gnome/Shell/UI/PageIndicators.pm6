@@ -86,7 +86,7 @@ class Gnome::Shell::UI::PageIndicators
       }
   }
 
-  method get_preferred_height ($forWidth) is vfunc {
+  method get_preferred_height ($forWidth = -1) is vfunc {
     my ($, $natHeight) = callsame;
     (0, $natHeight);
   }
