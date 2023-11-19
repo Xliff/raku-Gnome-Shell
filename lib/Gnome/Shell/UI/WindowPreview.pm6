@@ -470,7 +470,7 @@ class Gnome::Shell::UI::WindowsPreview extens Gnome::Shell::WindowPreview {
     Global.compositor.laters.remove($!long-press-later);
       if $!long-press-later;
 
-    GLib::Source.remove($!idleHideOverlayId) if $!idleHideOverlayId;
+    $!idleHideOverlayId.cancel if $!idleHideOverlayId;
 
     if $!inDrag {
       $.emit('drag-end');
@@ -495,9 +495,8 @@ class Gnome::Shell::UI::WindowsPreview extens Gnome::Shell::WindowPreview {
       +Global.stage.grab-actor === +$!closeButton
     );
 
-    GLib::Source.remove($!idleHideOverlayId) if $!idleHideOverlayId;
-
     my $s = self;
+    $!idleHideOverlayId.cancel if $!idleHideOverlayId;
     $!idleHideOverlayId = GLib::Timeout.add(
       WINDOW_OVERLAY_IDLE_HIDE_TIMEOUT,
       -> sub (*@a) {
