@@ -36,7 +36,7 @@ class Gnome::Shell::UI::Slider is Gnome::Shell::UI::BarLevel {
 
     .releaseId, .dragging = (0, False) given self;
 
-    self.Custon-Accessible.tap( -> *@a {
+    self.Custom-Accessible.tap( -> *@a {
       self.getMinimumIncrement( |@a );
     });
   }
