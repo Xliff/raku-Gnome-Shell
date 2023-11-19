@@ -4,6 +4,8 @@ use v6.c;
 use Gnome::Shell::UI::Main;
 #use Gnome::Shell::UI::MessageTray;
 
+### /home/cbwood/Projects/gnome-shell/js/ui/windowAttentionHandler.js
+
 class Gnome::Shell::UI::WindowAttentionSource
   is Gnome::Shell::UI::MessageTray::Source
 {
@@ -89,3 +91,58 @@ class Gnome::Shell::UI::WindowAttentionHandler {
     });
 
   }
+
+}
+
+class Gnome::Shell::UI::WindowAttention::Source
+  is Gnome::Shell::UI::MessageTray::Source
+{
+  has $!app;
+  has $!window;
+
+  submethod BUILD (:$!app, :$!window) {
+    self.title = $app.name
+
+    my $self = self;
+    $!window.connectObject(
+      'notify::demands-attention', -> *@a { $self.sync( |@a ) },
+      'notify::urgent',            -> *@a { $self.sync( |@a ) },
+      'focus'                      -> *@a { $self.destroy     },
+      'unmanaged',                 -> *@a { $self.destroy     }
+    );
+  }
+
+  method sync {
+    return if $!window.demands-attention || $!window.urgent;
+    self.destroy;
+  }
+
+  method createPolicy {
+    my $id = $!app.id.subst(/ '.desktop'$/, '');
+    $!app && $!app.app-info
+      ?? Gnome::Shell::UI::MessageTray::NotificationApplicationPolicy($id)
+      !! Gnome::Shell::UI::Messagetray::NotificationGenericPolicy;
+  }
+
+  method createIcon ($size) {
+    $!app.create-icon-textgure($size);
+  }
+
+  method destroy ($params) {
+    $!window.disconnectObject(self);
+
+    # cw: ???
+    #super.destroy($params);
+  }
+
+  method open {
+    Main.activateWindow($!window);
+  }
+
+}
+
+
+
+
+
+}
