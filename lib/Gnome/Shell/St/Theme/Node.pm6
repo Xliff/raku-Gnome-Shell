@@ -570,7 +570,7 @@ class Gnome::Shell::St::Theme::Node {
 
   multi method lookup_length (
     Str() $property_name,
-    Int() $inherit
+    Int() $inherit        = 0
   ) {
     samewith($property_name, $inherit, $);
   }
