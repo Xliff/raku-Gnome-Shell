@@ -5,6 +5,8 @@ use Gnome::Shell::Raw::Types;
 use Gnome::Shell::UI::MountOperation;
 
 
+### /home/cbwood/Projects/gnome-shell/js/ui/components/automountManager.js
+
 constant GNOME_SESSION_AUTOMOUNT_INHIBIT is export = 16;
 constant AUTORUN_EXPIRE_TIMEOUT_SECS     is export = 10;
 
