@@ -5,7 +5,7 @@ use Gnome::Shell::Raw::Types;
 constant WINDOW_ANIMATION_TIME is export = 250;
 constant WORKSPACE_SPACING     is export = 100;
 
-### /home/cbwood/Projects/gnome-shell/js/ui/dash.js
+### /home/cbwood/Projects/gnome-shell/js/ui/workspaceAnimation.js
 
 class Gnome::Shell::UI::WorkspaceAnimation::Group
   is Mutter::Clutter::Actor
