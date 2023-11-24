@@ -355,6 +355,7 @@ class Gnome::Shell::UI::Message is Gnome::Shell::St::Button {
   }
 
   method setSecondaryActor ($a) { $!secondaryBin.child = $a }
+  method unsetSecondaryActor    { $.setSecondaryActor(MutterClutterActor) }
 
   method setTitle ($t is copy) {
     return unless $t;
@@ -386,6 +387,8 @@ class Gnome::Shell::UI::Message is Gnome::Shell::St::Button {
     $!actionBin.add-actor($a);
     $!actionBin.visible = $.expanded;
   }
+
+  method unsetActionArea { $!actionBin.destroy-all-children }
 
   method addMediaControl ($i, &c) {
     my $button = Gnome::Shell::Ste::Button.new(
