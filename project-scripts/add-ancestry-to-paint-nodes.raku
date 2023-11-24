@@ -1,16 +1,20 @@
 use v6;
 
+use lib <. scripts>;
+
+use GTKScripts;
+
 sub MAIN (
   $file,
   :var(:$initvar) = 'object-var',
   :$parent,
-  :$prefix        = 'Mutter::Cogl',
+  :$prefix        = %config<prefix>,
   :$commit
 ) {
   my $fio      = $file.IO;
   my $contents = $fio.slurp;
 
-  my token classname { [ \w+ ]+ % '::' }
+  my token classname { [ \w+ ]+ % '::' [':' [\w+'<'.+?'>']+ % ':' ]? }
   my token typename  { \w+ }
 
   my rule also-does {
@@ -68,7 +72,8 @@ sub MAIN (
       method { $prefix }::Raw::Definitions::{ $tn }
       \{ { .[0] } \}
 
-      multi method new ({ $tn }Ancestry \${ $initvar }, :\$ref = True) \{
+      multi method new (\${ $initvar } where * ~~ {
+      $tn }Ancestry , :\$ref = True) \{
         return unless \${ $initvar };
 
         my \$o = self.bless( :\${ $initvar } );
