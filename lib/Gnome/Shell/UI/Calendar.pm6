@@ -2,10 +2,8 @@ use v6.c;
 
 ### /home/cbwood/Projects/gnome-shell/js/ui/calendar.js
 
-const SHOW_WEEKDATE_KEY = 'show-weekdate';
-const MESSAGE_ICON_SIZE = -1; // pick up from CSS
-
-sub NC_ ($c, $s) { "{ $c }{ chr(4) }{ $s }" };
+constant SHOW_WEEKDATE_KEY = 'show-weekdate';
+constant MESSAGE_ICON_SIZE = -1; // pick up from CSS
 
 sub sameYear  ($a, $b) { $a.year  === $b.year  }
 sub sameMonth ($a, $b) { $a.month === $b.month }
@@ -353,7 +351,7 @@ class Gnome::Shell::UI::Calendar is Gnome::Shell::St::Widget {
     my $oc = $!useeWeekdate ?? 1 !! 0;
     $.destroy-all-children;
 
-    $!topBox = Gnome::Shell::St::BoxLayout(
+    $!topBox = Gnome::Shell::St::BoxLayout.new(
       style-class => 'calendar-month-header'
     );
     $l.attach($!topBox, 0, 0, $oc + 7, 1);
