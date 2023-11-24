@@ -50,12 +50,16 @@ class Gnome::Shell::St::Label is Gnome::Shell::St::Widget {
     $o.ref if $ref;
     $o;
   }
-  multi method new (Str() $text = '', *%a) {
+  multi method new (Str() $text, *%a) {
     my $st-label = st_label_new($text);
 
     my $o = $st-label ?? self.bless( :$st-label ) !! Nil;
     $o.setAttributes( |%a ) if $o && +%a;
     $o;
+  }
+  multi method new ( *%a ) {
+    my $text = %a<text>:delete // '';
+    samewith($text, |%a);
   }
 
   # Type: StText
