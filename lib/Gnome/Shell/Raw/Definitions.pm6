@@ -93,3 +93,11 @@ class MethodStub {
 multi sub postfix:<?> ($o) is export {
   $o.defined ?? $o !! MethodStub.new
 }
+
+sub NC_ ($c, $s) is export {
+    "{ $c }{ chr(4) }{ $s }"
+}
+
+sub fmttime ($d, $f, :$lang) is export {
+  $lang ?? strftime($f, $d,, :$lang) !! strftime($f, $d);
+}
