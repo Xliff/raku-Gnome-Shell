@@ -651,7 +651,7 @@ class Gnome::Shell::UI::DateMenu::Messsages::Indicator
   method onSourceRemoved ($t, $s, *@) {
     # cw: Object type required for $s because we can't guarantee an object, so
     #     type resolution will need to be performed! -XXX-
-    $!sources.&remove($s);
+    $!sources.&removeObject($s);
     self.updateCount;
   }
 
