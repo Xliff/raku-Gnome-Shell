@@ -739,7 +739,7 @@ class Gnome::Shell::UI::MessageTray
   }
 
   method removeSource ($src) {
-    $!sources.&remove($src);
+    $!sources.&removeObject($src);
     $src.disconnectObject(self);
     $.emit('source-removed', $src);
   }

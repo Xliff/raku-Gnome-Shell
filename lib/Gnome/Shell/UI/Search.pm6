@@ -591,7 +591,7 @@ class Gnome::Shell::UI::Search::Result::View
   }
 
   method unregisterProvider ($p) {
-    @!provider.&remove($p);
+    @!provider.&removeObject($p);
     $p.display.destroy if $p.display;
   }
 
