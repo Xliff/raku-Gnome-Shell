@@ -6,7 +6,6 @@ use lib 'scripts';
 use GTKScripts;
 
 
-
 die 'Cannot find BuildList file in current directory.'
   unless 'BuildList'.IO.e;
 
@@ -49,7 +48,9 @@ sub MAIN(
     [ $_, $a, @buildlist.first(* eq $a, :k) // Inf ];
   });
 
-  my @to-be-skipped = ($skip // '').split(/','\s*/);
+  my @to-be-skipped = |%config<build-exclude>.split(/','\s*/), 
+                      |($skip // '').split(/','\s*/);
+  say "TBS: { @to-be-skipped.gist }";
   for @files.grep({ .[2] !~~ Inf }).sort( *[2] ) {
     unless .[2] {
       say "{ $_[0] } is not in the BuildList.";
