@@ -179,10 +179,20 @@ class Gnome::Shell::Utils {
     shell_util_sd_notify();
   }
 
-  method set_hidden_from_pick (MutterClutterActor() $actor, Int() $hidden) {
+  method set_hidden_from_pick (
+    MutterClutterActor() $actor,
+    Int()                $hidden = True
+  ) {
     my gboolean $h = $hidden.so.Int;
 
     shell_util_set_hidden_from_pick($actor, $hidden);
+  }
+
+  method set_unhidden_from_pick (
+    MutterClutterActor() $actor,
+    Int()                $hidden = False
+  ) {
+    self.set_hidden_from_pick($hidden);
   }
 
   proto method start_systemd_unit (|)
@@ -192,7 +202,7 @@ class Gnome::Shell::Utils {
     Str()           $mode,
                     &callback,
     gpointer        $user_data    = gpointer
-    GCancellable() :$cancellable,
+    GCancellable() :$cancellable  = GCancellable,
   ) {
     samewith($unit, $mode, $cancellable, &callback, $user_data);
   }
