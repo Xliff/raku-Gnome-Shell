@@ -411,8 +411,10 @@ class Gnome::Shell::UI::UnlockDialog is Gnome::Shell::St::Widget {
   has $!backgroundGroup;
   has $!clock;
   has $!gdmClient;
+  has $!grab;
   has $!idleMonitor;
   has $!idleWatchId;
+  has $!isModal;
   has $!lockdownSettings;
   has $!notificationsBox;
   has $!otherUserButton;
