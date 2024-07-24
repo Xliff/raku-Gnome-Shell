@@ -64,6 +64,13 @@ class Gnome::Shell::St::Theme::Context {
     $st-theme-context ?? self.bless( :$st-theme-context ) !! Nil;
   }
 
+  multi method scaleForStage ($s) {
+    $.get_for_stage($s).scale-factor;
+  }
+  multi method scaleForStage ( :g(:$global) is required where *.so ) {
+    $.scaleForStage(Global.stage);
+  }
+
   # Type: int
   method scale-factor is rw  is g-property {
     my $gv = GLib::Value.new( G_TYPE_INT );
