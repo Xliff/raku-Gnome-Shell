@@ -102,16 +102,19 @@ class Gnome::Shell::UI::QuickSettings::Toggle
 
     $!title.clutter-text.ellipsize = PANGO_ELLIPSIZE_END;
 
-    self.bind('title',    $!title-w,   'text');
-    self.bind('subtitle', $subtitle-w, 'text');
+    self.bind('title',    $!title-w,    'text');
+    self.bind('subtitle', $!subtitle-w, 'text');
 
-    # cw: WTF?
-    #     How are we to bind a string with a non-string?
-    # this.bind_property_full('subtitle',
-    #     this._subtitle, 'visible',
-    #     GObject.BindingFlags.SYNC_CREATE,
-    #     (bind, source) => [true, source !== null],
-    #     null);
+    self.bind_full(
+      'subtitle',
+      $!subtitle-w,
+      'visible',
+      sub ($b, $s) {
+        # cw: Was '[true, $s.defined]', but the return value is single only in C.
+        #     May need to investigate how the JS handles this.
+        $s.defined
+      }
+    );
   }
 
   method label is rw {
