@@ -238,7 +238,7 @@ class Gnome::Shell::UI::Workspace::Layout
 
   has $!needsLayout              = True;
   has $!workareasChangedId       = 0;
-  has $!windows                  = %{ } but GLib::Roles::HashObject;
+  has $!windows                  = Hash[Mu, Mu].new;
 
   has $!metaWorkpace;
   has $!monitorIndex;
@@ -474,7 +474,7 @@ class Gnome::Shell::UI::Workspace::Layout
 
       ($x, $y, $w, $h) »*=« $ss;
 
-      my $wi = %!windows{ $child };
+      my $wi = $!windows{ $child };
 
       my ($wbx, $wby, $wbw, $wbh) = 0 xx 4;
       if $wi.metaWindow.showing-on-its-workspace {
@@ -515,7 +515,43 @@ class Gnome::Shell::UI::Workspace::Layout
     $!lastBox = $cb.copy;
   }
 
-  #... syncOverlay
+  method syncOverlay ($p) {
+    $p.overlayEnabled = [&&](
+      $!metaWorkspace ?? $!metaWorkspace.?active !! True,
+      $!stateAdjustment.value
+    );
+  }
+
+  method syncOverlays {
+    $.syncOverlay($_) for $!windows.keys[];
+  }
+
+  method addWindow ($w, $mw) {
+    return if $!windows{$w}:exists;
+
+    $!windows{$w} = %{
+      metaWindow    => $mw,
+      sizeChangedId => $mw.Size-Changed.tap: SUB {
+        $!needsLayout = True,
+        self.layout_changed;
+      },
+      destroyId     => $w.destroy.tap: SUB {
+        self.removeWindow($w);
+      },
+      currentTransition => Nil
+    } but GLib::Roles::HashObject;
+
+    @!sortedWindows.push: $w;
+    @!sortedWindows.sort(-> $a, $b { [-](
+      $!windows{$a}<metaWindow>.get-stable-sequence,
+      $!windows{$b}<metaWindow>.get-stable-sequence
+    )});
+    $.syncOpacity($w, $mw);
+    $.syncOverlay($w);
+    $!container.add-child($w);
+    $!needsLayout = True;
+    $.layout_changed;
+  }d
 
 
 
