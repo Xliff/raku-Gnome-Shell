@@ -90,7 +90,7 @@ class MethodStub {
   method WHERE            { }
 }
 
-multi sub postfix:<?> ($o) is export {
+multi sub postfix:<?> ($o) is tighter(&infix:<.>) is export {
   $o.defined ?? $o !! MethodStub.new
 }
 
