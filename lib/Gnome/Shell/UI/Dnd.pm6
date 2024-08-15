@@ -11,10 +11,10 @@ constant SNAP_BACK_ANIMATION_TIME is export = 250;
 constant REVERT_ANIMATION_TIME    is export = 750;
 
 our enum DragMotionResult is export <
-    NO_DROP
-    COPY_DROP
-    MOVE_DROP
-    CONTINUE
+  DRAG_MOTION_RESULT_NO_DROP
+  DRAG_MOTION_RESULT_COPY_DROP
+  DRAG_MOTION_RESULT_MOVE_DROP
+  DRAG_MOTION_RESULT_CONTINUE
 >;
 
 our enum DragState is export <
