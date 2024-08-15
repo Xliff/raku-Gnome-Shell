@@ -26,6 +26,8 @@ constant BLUR_BRIGHTNESS      = 0.65;
 constant BLUR_SIGMA           = 45;
 constant SUMMARY_ICON_SIZE    = 32;
 
+### /home/cbwood/Projects/gnome-shell/js/ui/unlockDialog.js
+
 class Gnome::Shell::UI::NotificationsBox is Gnome::Shell::St::BoxLayout {
   method Wake-Up-Screen is g-signal { }
 
