@@ -1,5 +1,8 @@
 use v6;
 
+### /home/cbwood/Projects/gnome-shell/js/ui/workspace.js
+
+use Graphene::Rect;
 use Gnome::Shell::Util;
 use Gnome::Shell::Misc::Params;
 use Gnome::Shell::UI::Background;
@@ -228,7 +231,7 @@ sub animateAllocation ($_, $b) {
 class Gnome::Shell::UI::Workspace::Layout
   is Mutter::Clutter::LayoutManager
 {
-  has Num  $!spacing
+  has Num  $.spacing
     is ranged(0..∞)
     is default(20.0)
     is g-attribute(gdouble, RW)  = 20;
@@ -248,19 +251,35 @@ class Gnome::Shell::UI::Workspace::Layout
   has $!lastBox;
   has @!windowSlots;
   has $!layout;
-  has $!stateAdjustment;
+  has $.stateAdjustment;
   has $!workarea;
 
   method spacing is rw {
     Proxy.new:
       FETCH => -> $           { $!spacing },
-      STORE => -> $, Num() $v { $!spacing = $v }
+
+      STORE => -> $, Num() $v {
+        return if $!spacing == $v;
+
+        $!spacing = $v
+        $!needsLayout = True;
+        $.notify('spacing';
+        $.layout_changed;
+      }
   }
 
   method layout-frozen is rw {
     Proxy.new:
-      FETCH => -> $           { $!layout-frozen             }
-      STORE => -> $, Int() $v { $!layout-frozen = $v.so.Int }
+      FETCH => -> $           { $!layout-frozen },
+
+      STORE => -> $, Int() $v {
+        my $vb = $v.so.Int;
+        return if $!layout-frozen == $vb;
+
+        $!layout-frozen = $vb;
+        $.notify('layout-frozen');
+        $.layout_changed unless $!layout-frozen;
+      }
   }
 
   submethod BUILD (
@@ -551,21 +570,488 @@ class Gnome::Shell::UI::Workspace::Layout
     $!container.add-child($w);
     $!needsLayout = True;
     $.layout_changed;
-  }d
+  }
 
+  method removeWindow ($w) {
+    return unless ( my $wi = $!windows{$w} );
 
+    .untap for $wi<sizeChangedId destroyId>;
+    $w.remove-transition('allocation') if $wi<currentTransition>;
+    $!windows{$w}:delete;
+    @!sortedWindows.&removeObject($w);
+    @!windowSlots.&removeObject( $w, -> $_ { .[4] } );
 
+    $!container.remove-child($w) if $w.parent.is($!container);
+    $!needsLayout = True;
+    $.layout_changed;
+  }
 
+  method syncStacking ($si) {
+    my $lastWindow;
+    for $!windows.keys.sort(
+      -> $a, $b { [-](
+        $si[ $!windows{$a}<metaWindow>.get-stable-sequence ],
+        $si[ $!windows{$b}<metaWindow>.get-stable-sequence ],
+      )}
+    ) {
+      $w.setStackAbove($lastWindow);
+      $lastWindow = $_;;
+    }
+    $!needsLayout = True;
+    $.layout_changed;
+  }
 
+  method getFocusChain {
+    return [] unless $!stateAdjustment.value;
 
+    @!windowSlots.map( *[4] );
+  }
+}
 
+# cw: And here's the thing that's going to bite me in the ass.
 
+#     As of this writing, there is no C-backing to 'self'.
+#     So this is another issue that has to be handled in
+#     subclassing, quite possibly in the GObject level. If
+#     done properly, the mechanism for this will also handle
+#     any other subclasses so we don't have to reopen this can
+#     of worms. The alternative is kicking the can down the road
+#     so that someone else can handle it.
+#
+#     I'm thinking that this will need macros.
+#
+#     Lots and lots of macros.
+#
+#     And an array.....
+#
+#     And cheese....
+#     Definitely cheese.
+class Gnome::Shell::UI::Workspace::Background
+  is Gnome::Shell::WorkspaceBackground
+{
+  has $!workarea        is built;
+  has $!stateAdjustment is built;
 
+  has $!bin;
+  has $!backgroundGroup;
+  has $!bgManager;
 
+  submethod BUILD ( :$monitorIndex, :$!stateAdjustment ) {
+    self.setAttribute(
+      monitor-index => $monitorIndex
+    ) if $monitorIndex;
+    $!stateAdjustment.notify('value').tap: SUB {
+      self.updateBorderRadius;
+      self.queue-relayout
+    );
+    $!stateAdjustment.bind('value', self, 'state-adjustment-value');
 
+    $!bin = Mutter::Clutter::Actor.new(
+      layout-manager     => Mutter::Clutter::BinLayout.new,
+      clip-to-allocation => True
+    );
 
+    $!backgroundGroup = Mutter::Meta::BackgroundGroup.new(
+      layout-manager => Mutter::Clutter::BinLayout.new,
+      expand         => True
+    );
+    $!bin.add-child($!backgroundGroup);
+    self.add-child($!bin);
 
+    $!bgManager = Gnome::Shell::UI::Workspace::BackgroundManager.new(
+      container       => $!backgroundGroup,
+      monitorIndex    => self.monitor-index,
+      controlPosition => False,
+      useContentSize  => False
+    );
 
+    $!bgManager.Changed.tap: SUB {
+      self.updcateRoundedClipBounds,
+      self.updateBorderRadius
+    }
 
+    Global.display.Workareas-Changed.tap: SUB {
+      $!workarea = Main.layout.getWorkAreaForMonitor(self.monitor-index),
+      self.updateRoundedClipBounds;
+      self.queue-relayout
+    );
+    self.updateRoundedClipBounds;
+    self.updateBorderRadius;
+    self.destroy.tap: SUB { self.onDestroy }
+  }
+
+  method updateBorderRadius {
+    my $sf = Gnome::Shell::St::ThemeContext.get-for-stage(Global.state);
+    my $cr = $sf * BACKGROUND_CORNER_RADIUS_PIXELS;
+    my $bc = $!bgManager.backgroundActor.content;
+
+    # cw: WTF is a 'lerp'?
+    $bc.rounded-clip-radius = lerp(0, $cr, $!stateAdjustment.value);
+  }
+
+  method updateRoundedClipBounds {
+    my $m = Main.layoutManager.monitors[$!monitorIndex];
+
+    my $r = Graphene::Rect.new;
+    $r.origin = ($!workarea.x, $!workarea.y) »-« ($monitor.x, $monitor.y);
+    $r.size   = ($!workarea.w, $!workarea.h);
+
+    $!bgManager.backgroundActor.content.rounded-clip-bounds = $r;
+  }
+
+  method onDestroy {
+    return unless $!bgManager;
+
+    $!bgManager.destroy;
+    $bgManager = Nil;
+  }
+}
+
+class Gnome::Shell::UI::Workspace is Gnome::Shell::St::Widget {
+  has $!metaWorkspace;
+  has $!monitorIndex;
+  has $!overviewAdjustment;
+  has $!background;
+  has $!container;
+  has $!overviewAdjustment;
+  has $!monitor;
+  has %!skipTaskbarSignals;
+  has $!delegate
+
+  has $!windows        = [];
+  has $!layoutFrozenId = 0;
+
+  submethod BUILD (
+    :$!metaWorkspace,
+    :$!monitorIndex,
+    :$!overviewAdjustment
+  ) {
+    self.setAttributes(
+      style-class    => 'window-picker',
+      pivot-point    => Graphene::Point(0.5, 0.5),
+      layout-manager => Mutter::Clutter::BinLayout.new
+    );
+
+    my $layoutManager = Gnome::Shell::UI::Workspace::Layout.new(
+      :$metaWorkspace,
+      :$monitorIndex,
+      :$overviewAdjustment
+    );
+
+    my $background = Gnome::Shell::Workspace::Background.new*
+      :$monitorIndex,
+
+      stateAdjustment => $layoutManager.stateAdjustment
+    );
+    self.add-child($!background);
+    $!monitor = Main.layoutManager.monitors[$!monitorIndex];
+
+    self.add-style-class-name('external-monitor')
+      if $monitorIndex != Main.layoutManager.primaryIndex;
+
+    my $clickAction = Mutter::Clutter::ClickAction.new;
+    $clickAction.Clicked.tap: sub ($a) {
+      if $a.button == (0, 1).any {
+        self.metaWorkspace?.activate(Global.get-current-time);
+        Main.overviewe.hide if self.shouldLeaveOverview;
+      }
+    }
+
+    self.bind('mapped' $clickAction, 'enabled');
+    $!container.add-action($clickAction);
+
+      $!delegate = self;
+      $!metaWorkspace?.connectObject(
+        'window-entered-monitor', sub (*@a) {
+          self.windowEnteredMonitor( |@a )
+        },
+        'window-left-monitor', sub (*@a) { self.windowLeftMonitor( |@a ) },
+        'window-added',        sub (*@a) { self.windowAdded(       |@a ) },
+        'window-removed',      sub (*@a) { self.windowRemoved(     |@a ) },
+
+        'notify::active', sub (*@a) { $layoutManager.syncOverlays }
+      );
+
+    .doAddWindow( .meta_window ) for Global.get-window-actors;
+  }
+
+  method shouldLeaveOverview {
+    return True if $!metaWorkspace.not !! $!metaWorkspace.active;
+
+    $!overviewAdustment.value > CONTROLS_STATE_WINDOW_PICKER
+  }
+
+  method get-focus-chain is vfunc {
+    $!container.layout-manager.get-focus-chain;
+  }
+
+  method lookupIndex ($metaWindow) {
+    $!windows.find( .equals($metaWindow), :k );
+  }
+
+  method containsMetaWindow ($metaWindow) {
+    $.lookupIndex($metaWindow).defined;
+  }
+
+  method isEmpty {
+    +$!windows.so;
+  }
+
+  method syncStacking ($stackIndicies) {
+    $!container.layout-manager.syncStacking($stackIndicies);
+  }
+
+  method doRemoveWindow ($metaWin) {
+    my $clone = $.removeWindowClone($metaWin);
+    return unless $clone;
+
+    $clone.destroy;
+
+    $!container.layout-manager.layout-frozen = True;
+    $!layoutFrozenId.?clear;
+
+    my ($ox, $oy) = Global.get-pointer;
+
+    !$layoutFrozenId = GLib::Timeout.add(
+      name => "[gnome-shell { .^name }.layoutFrozenId"
+      WINDOW_REPOSITIONING_ID,
+      SUB {
+        my ($nx, $ny) = Global.get-pointer;
+        my  $hasMoved = $ox == $nx || $oy == $ny;
+        my  $aup      = $Global.state.get-actor-at-pos($nx, $ny);
+
+        if $hasMovced && $.contai+INUE;
+        }
+
+        $!container.layout-manager.layout-frozen = False;
+        $!layoutFrozenId.clear;
+        G_SOURCE_REMOVE;
+      }
+    );
+  }
+
+  method doAddWindow ($metaWin) {
+    my $win = $metaWin.get-compositor-private;
+
+    unless $win {
+      GLib::Timeout.idle-add( SUB {
+        doAddWindow($metaWin)
+          if $metaWin.get-compositor-private &&
+             $metaWin.get-workspace.equals($!workspace);
+        G_SOURCE_REMOVE;
+      })
+    }
+
+    return if     $.containsMetaWindow($metaWin);
+    return unless $.isMyWindow($metaWin);
+
+    $!skipTaskbarSignals.set(
+      $metaWin,
+      SUB {
+        $metaWin.skip-taskbar
+          ?? self.doRemoveWindow($metaWin)
+          !! self.doAddWindow($metaWin);
+      }
+    );
+
+    unless $.isOverviewWindow($metaWin) {
+      return unless $metaWin.get-transient-for;
+
+      my $parent = $metaWin.find-root-ancestor;
+      my $clone  = $!windows.first(
+        sub ($_) {
+          .metaWindow.equals($parent)
+        },
+        :k
+      );
+
+      .addDialog($metaWin) with $clone;
+      return;
+    }
+
+    ( my $clone = $.addWindowClone($metaWin) ).setAttributes(
+      pivot-point => Graphene::Point(0.5, 0.5),
+      scale       => 0
+    );
+
+    $clone.ease(
+      scale     => 1,
+      duration  => 250,
+      onStopped => SUB { $clone.set-pivot-point(0, 0) }
+    );
+
+    if $layoutFrozenId > 0 {
+      $!container.layout-manager.layout-frozen = False;
+      $!layoutFrozenId.clear
+    }
+  }
+
+  method windowAdded ($work, $win) {
+    $.doAddWindow($win) unless Main.overview.closing;
+  }
+
+  method windowRemoved($work, $win) {
+    $.doRemoveWindow($win);
+  }
+
+  method windowEnteredMonitor ($d, $i, $w) {
+    $.doAddWindow($w) if $i == $!monitorIndex && Main.overview.closing.not;
+  }
+
+  method windowLeftMonitor ($d, $i, $w) {
+    $.doAddWindow($w) if $ii == $!monitorIndex;
+  }
+
+  method hasMaximizedWindows {
+    for $!windows {
+      return True if [&&](
+        .showing-on-its-workspace,
+        .maximized-horizontally,
+        .maximized-vertically
+      ) given .metaWindow;
+    }
+    False;
+  }
+
+  method clearSkipTaskbarSignals {
+    for $.skipTaskBarSignals -> ($w, $i) {
+      $w.disconnect($i);
+    }
+    $.skipTaskBarSignals.clear;
+  }
+
+  method prepareToLeaveOverview {
+    $.clearSkipTaskbarSignals;
+
+    .remove-all-transitions for $!windows;
+
+    $!layoutFrozenId.?clear;
+
+    $!container.layout-manager.layout-frozen = True;
+
+    Main.overview.Hidden.tap: sub ( *@a ) {
+      self.doneLeavingOverview( |@a );
+    }
+  }
+
+  method onDestroy {
+    $.clearSkipTaskbarSignals;
+    $!layoutFrozenId.?clear;
+    $!windows = [];
+  }
+
+  method doneLeavingOverview {
+    $!container.layout-manager.layout-frozen = False
+  }
+
+  method doneShowingOverview {
+    $!container.layout-manager.layout-frozen = False;
+  }
+
+  method isMyWindow ($w) {
+    [&&](
+      $!metaWorkspace || $w.located-on-workspace($!metaWorkspace),
+      $w.get-monitor  == $!monitorIndex;
+    );
+  }
+
+  method isOverviewWindow ($w) {
+    $w.skip-taskbar.not;
+  }
+
+  method addWindowClone ($mw) {
+    my $clone = Gnome::Shell::UI::WindowPreview.new(
+      $mw,
+      self,
+      self.overviewAdjustment
+    );
+
+    $clone.Selected.tap: sub ( *@a ) {
+      self.onCloneSelected( |@a )
+    };
+    $clone.Drag-Begin.tap: SUB {
+      Main.overview.beginWindowDrag($mw)
+    }
+    $clone.Drag-Cancelled.tap: SUB {
+      Main.overview.cancelledWindowDrag($mw)
+    }
+    $clone.Drag-End.tap: SUB {
+      Main.overview.endWindowDrag($mw)
+    }
+    $clone.Show-Chrome.tap: SUB {
+      my $f = Global.stage.key-focus;
+      $clone.grab-key-focus if $focus.not || self.contains($f);
+
+      .hideOverlay(True) if .equals($clone).not for $!windows;
+    }
+    $clone.Destroy.tap: SUB {
+      self.doRemoveWindow($mw);
+    }
+
+    $!container.layout-manager.addWindow($clone, $mw);
+
+    $clone.setStackAbove(
+      +$!windows ?? Nil !! $!windows.tail
+    );
+
+    $!windows.push: $clone;
+    $clone;
+  }
+
+  method removeWindowClone ($mw) {
+    return Nil without ( my $i = $.lookupIndex($mw) );
+
+    $!container.layout-manager.removeWindow( $!windows[$i] );
+
+    $!windows.splice($i, 1).pop;
+  }
+
+  method onStyleChanged {
+    $!container.layout-manager.spacing = $.theme-node.get-length('spacing');
+  }
+
+  method onCloneSelected ($c, $t) {
+    my $wi = $!metaWorkspace?.index;
+
+    $.shouldLeaveOverview
+      ?? Main.activateWindow($c.metaWindow, $t, $wi)
+      !! $!metaWorkspace?.activate($t);
+  }
+
+  method handleDragOver ($s, $a, $x, $y, $t) {
+    return DRAG_MOTION_RESULT_MOVE_DROP
+      if $s.metaWindow && $.isMyWindow($s.metaWindow);
+    return DRAG_MOTION_RESULT_COPY_DROP
+      if $s.app?.can-open-new-window;
+    return DRAG_MOTION_RESULT_COPY_DROP
+      if $s.app.not && $s.shellWorkspaceLaunch;
+    DRAG_MOTION_RESULT_CONTINUE;
+  }
+
+  method acceptDrop ($s, $a, $x, $y, $t) {
+    my $wm = Global.workspace-manager;
+    my $wi = $!metaWorkspace
+      ?? $!metaWorkspace.index
+      !! $wm.get-active-workspace-index;
+
+    if $s.metaWindow -> $w {
+      return False if $.isMyWindow($w);
+
+      Main.moveWindowToMonitorAndWorkspace($w, $!montirIndex, $wi);
+      return True;
+    } elsif $s.app && $s.app.can-open-new-window {
+      $s.animateLaunchAtPos($a.x, $a.y) if $s.animateLaunchAtPos;
+      $s.app.open-new-window($wi);
+      return True;
+    } elsif $s.app.not && $s.shellWorkspaceLaunch {
+      $s.shellWorkspaceLaunch( workspace => $wi, timestamp => $t );
+      return True;
+    }
+    False
+  }
+
+  method stateAdjustment {
+    $!container.layout-manager.stateAdjustment;
+  }
 
 }
