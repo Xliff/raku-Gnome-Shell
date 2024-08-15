@@ -51,6 +51,15 @@ class Gnome::Shell::WorkspaceBackground {
     $o.ref if $ref;
     $o;
   }
+  multi method new ( *%a ) {
+    my $shell-workspace-background = self.new-object-ptr( self.get-type );
+
+    return Nil unless $shell-workspace-background;
+
+    my $o = self.bless( :$shell-workspace-background );
+    $o.setAttributes(%a) if $o && +%a;
+    $o;
+  }
 
   # Type: int
   method monitor-index is rw  is g-property is also<monitor_index> {
