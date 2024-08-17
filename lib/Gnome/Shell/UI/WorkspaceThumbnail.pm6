@@ -504,6 +504,7 @@ class Gnome::Shell::UI::Workspace::Thumbnail::Box
   has $!dropPlaceholderPos;
   has $!dropWorkspace;
   has $!spliceIndex;
+  has $!porthole;
 
   has $!maxThumbnailScale  = MAX_THUMBNAIL_SCALE;
   has $!targetScale        = 0;
@@ -512,7 +513,7 @@ class Gnome::Shell::UI::Workspace::Thumbnail::Box
   has $!updateStateId      = 0;
   has $!pendingScaleUpdate = False;
   has $!animatingIndicator = False;
-  has $!shouldShow         = True;
+  has $.shouldShow         = True;
   has $!stateCounts        = {};
   has $!thumbnails         = [];
 
@@ -531,6 +532,18 @@ class Gnome::Shell::UI::Workspace::Thumbnail::Box
 
         $!scale = v;
         $.notify('scale');
+        $.queue-relayout;
+      }
+  }
+
+  method expandedFraction is rw {
+    Proxy.new:
+      FETCH => -> $ { $!expandedFraction },
+
+      STORE => -> $, \v {
+        return if $!expandedFraction == v;
+        $!expandedFraction = v;
+        $.notify('expanded-fraction');
         $.queue-relayout;
       }
   }
@@ -920,4 +933,143 @@ class Gnome::Shell::UI::Workspace::Thumbnail::Box
     }
   }
 
-  
+  method updateStates {
+    $!updateStateId = 0;
+    return if $!animatingIndicator;
+
+    return if $!shouldShow && $.visible;
+
+    $.iterateStateThumbnails(WORKSPACE_THUMBNAIL_STATE_REMOVING, -> $t {
+      self.setThumnailState($t, WORKSPACE_THUMBNAIL_STATE_ANIMATING_OUT);
+      $t.ease-property(
+        'slide-position',
+        1,
+        duration   => SLIDE_ANIMATION_TIME,
+        mode       => CLUTTER_ANIMATION_MODE_LINEAR,
+        onComplete => SUB {
+          self.setThumnailState($t, WORKSPACE_THUMBNAIL_STATE_ANIMATED_OUT);
+          self.queueUpdateStates;
+        }
+      )
+    });
+
+    return if $!stateCounts{WORKSPACE_THUMBNAIL_ANIMATING_OUT};
+
+    $.iterateStateThumbnails(WORKSPACE_STATE_ANIMATED_OUT), -> $t {
+      self.setThumnailState($t, WORKSPACE_THUMBNAIL_STATE_COLLAPSING);
+      $t.ease-property(
+        'collapse-fraction',
+        1,
+        duration   => RESCALE_ANIMATION_TIME,
+        mode       => CLUTTER_ANIMATION_MODE_EASE_OUT_QUAD,
+        onComplete => SUB {
+          $!stateCounts{$t.state}--;
+          $t.state = WORKSPACE_THUMBNAIL_STATE_DESTROYED;
+          $!thumbnails.&removeObject($t);
+          $t.destroy;
+          self.queueUpdateStates;
+        }
+      )
+    });
+
+    $.iterateStateThumbnails(WORKSPACE_THUMBNAIL_STATE_NEW, -> $t {
+      self.setThumnailState($t, WORKSPACE_THUMBNAIL_STATE_EXPANDING);
+      $t.ease-property(
+        'scale',
+        $!targetScale,
+        duration   => RESCALE_ANIMATION_TIME,
+        mode       => CLUTTER_ANIMATION_MODE_EASE_OUT_QUAD,
+        onComplete => SUB {
+          self.setThumnailState($t, WORKSPACE_THUMBNAIL_STATE_EXPANDED);
+          self.queueUpdateStates;
+        }
+      );
+    });
+
+    if $!pendingScaleUpdate {
+      self.ease_property(
+        'scale',
+        $!targetScale,
+        duration   => RESCALE_ANIMATION_TIME,
+        mode       => CLUTTER_ANIMATION_MODE_EASE_OUT_QUAD,
+        onComplete => SUB { self.queueUpdateStates }
+      );
+    }
+
+    return if [||](
+      $!scale != $!targetScale,
+      $!stateCounts{WORKSPACE_THUMBNAIL_STATE_COLLAPSING} > 0,
+      $!stateCounts{WORKSPACE_THUMBNAIL_STATE_EXPANDING} > 0,
+    );
+
+    $.iterateStateThumbnails(WORKSPACE_THUMBNAIL_STATE_EXPANDED, -> $t {
+      self.setThumnailState(WORKSPACE_THUMBNAIL_STATE_ANIMATING_IN);
+      $t.ease-property(
+        'slide-position',
+        0,
+        duration   => SLIDE_ANIMATION_TIME,
+        mode       => CLUTTER_ANIMATION_MODE_EASE_OUT_QUAD,
+        onComplete => SUB {
+          self.setThumnailState($t, WORKSPACE_THUMBNAIL_STATE_NORMAL);
+        }
+      )
+    });
+  }
+
+  method queueUpdateStates {
+    return if $!updateStateId;
+
+    $!updateStateId = Global.compositor.get-laters.add(
+      META_LATER_TYPE_BEFORE_REDRAW,
+      SUB {
+        self.updateStates
+      }
+    );
+  }
+
+  method get_preferred_height ($fw) is vfunc {
+    my $tn = $.get-theme-node;
+    my $fw = $tn.adjust-for-width($fw);
+    my $s  = $tn.get-length('spacing');
+    my $nw = $!thumbnails.elems;
+    my $ts = $nw.pred * $s;
+    my $a  = $fw - $ts;
+    my $sc = min( ($a / $nw) / $!porthole.width, $!maxThumbnailScale);
+    my $h  = $!porthole.height.round * $sc;
+
+    $tn.adjust-preferred-height($h, $h);
+  }
+
+  method get_preferred_width ($fh) is vfunc {
+    my $tn = $.get-theme-node;
+    my $s  = $tn.get-length('spacing');
+    my $nw = $!thumbnails.elems;
+    my $ts = $nw.pred * $s;
+    my @t  = (0, |$!thumnails);
+    my $nw = @t.kv.rotor(2).reduce: sub ($a, @b ($i, $t)) {
+      my $ws = 0;
+      $ws += $s/2 if $i.pred > 0;
+      $ws += $s/2 if $i.pred < $!elems.pred;
+
+      my $p = 1 - $t.collapse-fraction;
+      my $w = ($!porthole.w * $!maxThumnailScale + $ws) *$p;
+      $a ~~ Numeric ?? $a + $w !! $w;
+    });
+
+    $tn.adjust-preferred-width($ts, $nw);
+  }
+
+  method updatePorthole {
+    if Main.layoutManager.monitors[$!monitorIndex].not {
+      $!porthole = {
+        x      => .x,
+        y      => .y,
+        width  => .w,
+        height => .h,
+        w      => .w,
+        h      => .h
+      } given Global.stage;
+    } else {
+      $!porthole = Main.layoutManager.getWorkareaForMonitor($!monitorIndex);
+    }
+  }
