@@ -399,7 +399,7 @@ class Gnome::Shell::UI::WindowsPreview extens Gnome::Shell::WindowPreview {
     my $c = $!window.container.layout-manager.add-window($metawindow);
     return unless $c;
 
-    Gnome::Shell::iutils.set-hidden-from-pick($c, True);
+    Gnome::Shell::Utils.set-hidden-from-pick($c, True);
   }
 
   method has-overlaps is vfunc {
