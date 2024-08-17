@@ -64,7 +64,7 @@ sub getRealActorScale ($a is copy) {
 }
 
 sub addDragMonitor ($m) is export {
-  @dragMonitors.push: $m;
+  @dragMonitors.push: $m ~~ Hash ?? $m !! $m.Hash
 }
 
 sub removeDragMonitor ($m) is export {
