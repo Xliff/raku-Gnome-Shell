@@ -85,9 +85,10 @@ class GtkActionObserver          is repr<CPointer> does GLib::Roles::Pointers is
 class GtkActionObservable        is repr<CPointer> does GLib::Roles::Pointers is export { }
 
 class MethodStub {
-  method FALLBACK ( *@a ) { }
-  method say              { }
-  method WHERE            { }
+  method FALLBACK ( *@a ) { Nil   }
+  method Str              { ''    }
+  method WHERE            { 0     }
+  method so               { False }
 }
 
 multi sub postfix:<?> ($o) is tighter(&infix:<.>) is export {
