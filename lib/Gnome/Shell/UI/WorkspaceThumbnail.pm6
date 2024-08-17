@@ -503,8 +503,8 @@ class Gnome::Shell::UI::Workspace::Thumbnail::Box
   has $!dragMonitor;
   has $!dropPlaceholderPos;
   has $!dropWorkspace;
+  has $!spliceIndex;
 
-  has $!spliceIndex        = -1;
   has $!maxThumbnailScale  = MAX_THUMBNAIL_SCALE;
   has $!targetScale        = 0;
   has $!scale              = 0;
@@ -534,7 +534,6 @@ class Gnome::Shell::UI::Workspace::Thumbnail::Box
         $.queue-relayout;
       }
   }
-
 
   submethod BUILD ( :$!monitorIndex, $!scrollAdjustment ) {
     $!delegate = self;
@@ -837,4 +836,68 @@ class Gnome::Shell::UI::Workspace::Thumbnail::Box
 
     .destroy for $!thumbnails;
     $!thumbnails = [];
+  }
+
+  method workspacesChanged {
+    my $vt  = $!thumbnails.grep({ .state == WORKSPACE_THUMNAIL_STATE_NORMAL });
+    my $wm  = Global.workspace-manager;
+    my $onw = $!vt.elems;
+    my $nnw = $wm.n-workspaces;
+
+    if $nnw > $onw {
+      $.addThumnails($onw, $nnw - $onw);
+    } else {
+      my ($rn, $ri) = ($onw - $nnw);
+      for ^$onw {
+        my $mw = $wm.get-workspace-by-index($_);
+        if $!thumnails[$_].metaWorkspace.equals($mw).not {
+          $ri = $_;
+          last;
+        }
+      }
+
+      $.removeThumnails($ri, $rn);
+    }
+
+    $.updateShouldShow;
+  }
+
+  method addThumbnails ($s, $c) {
+    my $wm = Global.workspace-manager;
+
+    for $s ..^ $s + $c {
+      # cw: Note same as .get-workspace-by-index
+      my $mw = $wm[$_];
+
+      my $tn = Gnome::Shell::UI::Workspace::Thumbnail.new($mw.monitorIndex);
+      $tn.setPorthole( .x, .y, .w, .h ) given $!porthole;
+      $!thumbnails.push: $tn;
+      self.add-child($tn);
+
+      if $!shouldShow && $s > 0 && $!spliceIndex.defined {
+        (.state, .slide-position, .collapse-fraction) =
+          (WORKSPACE_THUMBNAIL_STATE_NEW, 1, 1) given $tn;
+        $!haveNewThumnails = True;
+      } else {
+        $tn.state = WORKSPACE_THUMBNAIL_STATE_NORMAL;
+      }
+
+      $!stateCounts{$tn.state}++;
+    }
+    $.queueUpdateStates;
+    $!spliceIndex = Nil;
+  }
+
+  method removeThumbnails ($s, $c) {
+    my $cp = 0;
+    for $!thumbnails {
+      next if .state.Int > WORKSPACE_THUMNAIL_STATE_NORMAL.Int;
+
+      if $s <= $cp < $s + $c {
+        .workspaceRemoved();
+        $.setThumnailState($_, WORKSPACE_THUMBNAIL_STATE_REMOVING);
+      }
+      $cp++;
+    }
+    $.queueUpdateStates;
   }
