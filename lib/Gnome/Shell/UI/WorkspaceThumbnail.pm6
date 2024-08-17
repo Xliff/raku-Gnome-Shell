@@ -901,3 +901,23 @@ class Gnome::Shell::UI::Workspace::Thumbnail::Box
     }
     $.queueUpdateStates;
   }
+
+  method syncStacking ($o, $si) {
+    .syncStacking($si) for $!thumbnails;
+  }
+
+  method setThumbnailState ($th, $s) {
+    $!stateCounts{$tn.state}--;
+    $tn.state = $s;
+    $!stateCounts{$tn.state}++;
+  }
+
+  method iterateStateThumbnails ($s, &cb) {
+    return unless $!stateCounts{$s};
+
+    for $!thumbnails {
+      &cn(self, $_) if .state == $s
+    }
+  }
+
+  
