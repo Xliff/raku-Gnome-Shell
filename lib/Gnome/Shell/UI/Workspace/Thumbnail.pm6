@@ -1028,7 +1028,7 @@ class Gnome::Shell::UI::Workspace::Thumbnail::Box
   }
 
   method get_preferred_height ($fw) is vfunc {
-    my $tn = $.get-theme-node;
+    my $tn = self.get-theme-node;
     my $fw = $tn.adjust-for-width($fw);
     my $s  = $tn.get-length('spacing');
     my $nw = $!thumbnails.elems;
@@ -1041,7 +1041,7 @@ class Gnome::Shell::UI::Workspace::Thumbnail::Box
   }
 
   method get_preferred_width ($fh) is vfunc {
-    my $tn = $.get-theme-node;
+    my $tn = self.get-theme-node;
     my $s  = $tn.get-length('spacing');
     my $nw = $!thumbnails.elems;
     my $ts = $nw.pred * $s;
@@ -1072,4 +1072,128 @@ class Gnome::Shell::UI::Workspace::Thumbnail::Box
     } else {
       $!porthole = Main.layoutManager.getWorkareaForMonitor($!monitorIndex);
     }
+  }
+
+  method allocate ($box is copy) is vfunc {
+    self.set-allocation($box);
+    my $rtl = Clutter::Main.is-rtl;
+    return unless (my $nw = $!thumbails.elems);
+
+    my $tn = self.get-theme-node;
+    $box = $tn.get-content-box($box);
+
+    my ($phw, $phh) = ( .w, .h ) given $!porthole;
+    my  $s          = $tn.get-length('spacing');
+
+    if $!expandedFraction == (0, 1).any {
+      my ($, $nw) = $.get-preferred-width(-1);
+      my ($, $nh) = $.get-preferred-height($nw);
+
+      my $ts      = $nw.pred * $s;
+      my $aw      = $box.w - $ts;
+      my $ah      = [-](
+        min($nh, $phh * $!maxThumnailScale),
+        $tn.get-vertical-padding,
+        $tn.get-border-width(ST_SIDE_TOP),
+        $tn.get-border-width(ST_SIDE_BOTTOM)
+      );
+      my $ns      = ( my ($hs, $vs) = ($aw / $phw, $ah / $phh) ).min;
+
+      if $ns != $!targetScale {
+        ($!targetScale, $pendingScaleUpdate) = ($ns, True)
+          if $!targetScale > 0;
+
+        $.queueUpdateStates;
+      }
+
+      my $r   = $phw / $phh;
+      my $tfh = round($phh * $!scale);
+      my $tw  = round($tfw *$r);
+      my $th  = $tfh * $!expandFraction;
+      my $rvs = $th / $phh
+      my $ew  = ($!maxThumnailScale * $phw - $tw) * $nw;
+      my $iv  = $!scrollAdjustment.value;
+
+      ( .x1, .x2 ) »+=« (1, -1) »*» ($ew / 2);
+
+      my ($iuw, $ilw) = ( .ceiling, .floor ) given $iv;
+
+      my ($ilx1, $ilx2, $iux1, $iux2) = 0 xx 4;
+
+      my $itn = $!indicator.get-theme-node;
+
+      my ($itfb, $ibfb, $ilfb, $irfb);
+      for $itfb, ST_SIDE_TOP,  $ibfb, ST_SIDE_BOTTOM,
+          $ilfb, ST_SIDE_LEFT, $irfb, ST_SIDE_RIGHT
+      -> $b is rw, $s {
+        $b = $itn.get-padding($s) + $itn.get-border-width($s)
+      }
+
+      my $x = $box.x1;
+      without $!dropPlaceholderPos {
+        .allocate-preferred-size( |.get-position ) given $!dropPlaceholder;
+
+        Global.compositor.get-laters.add(
+          META_LATER_TYPE_BEFORE_REDRAW,
+          SUB { $!dropPlaceHolder.hide }
+        }
+      }
+
+      my $cb = Mutter::Clutter::ActorBox.new;
+      for $!thumbnails.kv -> $k, $_ {
+        $x += $s - ( .collapse-fraction * $s ) if $k;
+
+        my $y1 = $box.y1;
+        my $y2 = $y1 + $thh;
+
+        if $k == $!dropPlaceholderPos {
+          my ($, $plw) = $!dropPlaceholder.get-preferred-width;
+          ( .y1, .y2 ) = ($y1, $y2) given $cb;
+
+          $rtl
+            ?? ( .x2, .x1 ) = $box.x2 «-« ($x, $x + $plw).»round
+            !! ( .x1, .x2 ) = ($x, $x + $plw).»round
+          given $cb
+
+          $!dropPlaceholder.allocate($childBox);
+
+          Global.compositor.get-laters.add(
+            META_LATER_TYPE_BEFORE_REDRAW,
+            SUB { $!dropPlaceholder.show }
+          );
+          $x += $plw + $s
+        }
+
+        my ($x1, $x2) = ($x, $x + $tnw).»round;
+        my  $rhs      = ($x2 - $x1) / $phw;
+
+        $rtl
+          ?? ( .x2, .x1 ) = $box.x2 «-« ($x1, $x1 + $tnw).»round
+          !! ( .x1, .x2 ) = ($x1, $x1 + $tnw).»round
+        given $cb;
+        ( .y1, .y2 ) = $y1 «+« (0, $tnh) given $cb;
+
+        .setScale($rhs, $rvs);
+        .allocate($cb);
+
+        if $k == $iuw {
+          ($iux1, $iux2) = ( .x1, .x2 ) given $cb;
+        } elsif $k == $ilw {
+          ($ilx1, $ilx2) = ( .x1, .x2 ) given $cb;
+        }
+
+        $x += $tnw - ($tw * .collapse-fraction).round;
+      }
+
+      ( .y1, .y2 ) = $box.y1 «+« (0, $tnh) given $cb;
+
+      my ($ix1, $ix2) = ($ilx1, $ilx2) »+«
+                        ( ($iux1, $iux2) »-« ($ilx1, $ilx2) ) »*»
+                        ($iv % 1);
+
+      ( .x1, .x2 )   =  ($ix1, $ix2) + (-1, 1) »*« ($ilfb, $irfb) given $cb;
+      ( .y1, .y2)  »+=« (-1, 1) »*« ($itfb, $ibfb) given $cb;
+      $!indicator.allocate($cb);
+    }
+
   }
