@@ -18,6 +18,8 @@ constant WORKSPACE_CUT_SIZE            = 10;
 constant WORKSPACE_KEEP_ALIVE_TIME     = 100;
 constant MUTTER_SCHEMA                 = 'org.gnome.mutter';
 
+### /home/cbwood/Projects/gnome-shell/js/ui/workspaceThumbnail.js
+
 class Gnome::Shell::UI::Workspace::Thumbnail::PrimaryActorLayout
   is Mutter::Clutter::FixedLayout
 {
