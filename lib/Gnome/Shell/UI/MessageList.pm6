@@ -241,14 +241,6 @@ class Gnome::Shell::UI::LabelExpander::Layout
   }
 }
 
-class X::Gnome::Shell::UI::Error is Exception {
-  has $.message;
-
-  method new ($message) {
-    self.bless( :$message );
-  }
-}
-
 class Gnome::Shell::UI::Message is Gnome::Shell::St::Button {
 
   method close      is signal { }

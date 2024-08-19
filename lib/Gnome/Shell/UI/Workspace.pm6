@@ -222,7 +222,7 @@ class Gnome::Shell::UI::Workspace::Layout::Strategy::Unaligned
 
 sub animateAllocation ($_, $b) {
   .save-easing-state;
-  .easing-mode = CLUTTER_ANIMATION_EASE_OUT_QUAD;
+  .easing-mode = CLUTTER_EASE_OUT_QUAD;
   .allocate($box);
   .restore-easing-state;
   .get-transition('allocation');

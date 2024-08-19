@@ -19,7 +19,7 @@ class Gnome::Shell::UI::Dash::Icon
   method popupMenu         { nextwith(ST_SIDE_BOTTOM) }
   method scanAndFade       { }
   method undoScaleAndFade  { }
-  method handleDragOver    { DND_DRAG_MOTION_CONTINUE }
+  method handleDragOver    { DRAG_MOTION_RESULT_CONTINUE }
   method acceptDrop        { False }
 }
 
@@ -86,7 +86,7 @@ class Gnome::Shell::UI::Dash::Item::Container
     $.label.ease(
       opacity  => 256,
       duration => DASH_ITEM_LABEL_SHOW_TIME,
-      mode     => CLUTTER_MODE_EASE_OUT_QUAD
+      mode     => CLUTTER_EASE_OUT_QUAD
     );
   }
 
@@ -99,7 +99,7 @@ class Gnome::Shell::UI::Dash::Item::Container
     $.label.ease(
       opacity    => 0,
       duration   => DASH_ITEM_LABEL_HIDE_TIME,
-      mode       => CLUTTER_MODE_EASE_OUT_QUAD,
+      mode       => CLUTTER_EASE_OUT_QUAD,
       onComplete => SUB { $s.label.hide }
     );
   }
@@ -121,7 +121,7 @@ class Gnome::Shell::UI::Dash::Item::Container
       scale-y  => 1,
       opacity  => 255,
       duration => $a ?? DASH_ANIMATION_TIME !! 0,
-      mode     => CLUTTER_MODE_EASE_OUT_QUAD
+      mode     => CLUTTER_EASE_OUT_QUAD
     );
   }
 
@@ -139,7 +139,7 @@ class Gnome::Shell::UI::Dash::Item::Container
       scale-y    => 0,
       opacity    => 0,
       duration   => $a ?? DASH_ANIMATION_TIME !! 0,
-      mode       => CLUTTER_MODE_EASE_OUT_QUAD,
+      mode       => CLUTTER_EASE_OUT_QUAD,
       onComplete => SUB { $s.destroy }
     );
   }
@@ -363,7 +363,7 @@ class Gnome::Shell::UI::Dash {
 
   method onItemDragMotion ($e) {
     my $app = Dash.getAppFromSource($e.source);
-    return DND_DRAG_MOTION_RESULT_CONTINUE unless $app;
+    return DRAG_MOTION_RESULT_CONTINUE unless $app;
 
     my $showAppsHovered = $!showAppsIcon.contains($e.targetActor);
 
@@ -373,14 +373,14 @@ class Gnome::Shell::UI::Dash {
     $showAppsHovered ?? $!showAppsIcon.setDragApp($app)
                      !! $!showAppsIcon.clearDragApp;
 
-    DND_DRAG_MOTION_CONTINUE;
+    DRAG_MOTION_RESULT_CONTINUE;
   }
 
   method onWindowDragBegin {
     $.ease(
       opacity => 128,
       duration => OVERVIEW_ANIMATION_TIME / 2,
-      mode     => CLUTTER_MODE_EASE_OUT_QUAD
+      mode     => CLUTTER_EASE_OUT_QUAD
     );
   }
 
@@ -388,7 +388,7 @@ class Gnome::Shell::UI::Dash {
     $.ease(
       opacity => 255,
       duration => OVERVIEW_ANIMATION_TIME / 2,
-      mode     => CLUTTER_MODE_EASE_OUT_QUAD
+      mode     => CLUTTER_EASE_OUT_QUAD
     );
   }
 
@@ -557,14 +557,14 @@ class Gnome::Shell::UI::Dash {
         width    => $tw,
         height   => $th,
         duration => DASH_ANIMATION_TIME,
-        mode     => CLUTTER_MODE_EASE_OUT_QUAD
+        mode     => CLUTTER_EASE_OUT_QUAD
       );
     }
 
     $!separator?.ease(
       height   => $is.
       duration => DASH_ANIMATION_TIME,
-      mode     => CLUTTER_MODE_EASE_OUT_QUAD
+      mode     => CLUTTER_EASE_OUT_QUAD
     );
   }
 
@@ -688,8 +688,8 @@ class Gnome::Shell::UI::Dash {
 
   method handleDragOver ($s, $a, $x, $y, $t) {
     my $app = Dash.getAppFromSource($a);
-    return DND_DRAG_MOTION_NO_DROP unless $app && $app.is-window-backed.not;
-    return DND_DRAG_MOTION_NO_DROP
+    return DRAG_MOTION_NO_DROP unless $app && $app.is-window-backed.not;
+    return DRAG_MOTION_NO_DROP
       unless Global.settings.is-writeable('favorite-apps');
 
     my $favorites = AppFavorites.getAppFavorites.getFavorites;
@@ -723,7 +723,7 @@ class Gnome::Shell::UI::Dash {
 
       if $fp !== -1 && $pos === ($fp, $fp.succ).any {
         $.clearDragPlaceholder;
-        DND_DRAG_MOTION_CONTINUE;
+        DRAG_MOTION_RESULT_CONTINUE;
       }
 
       my $fadeIn = do if $!dragPlaceHolder {
@@ -739,10 +739,10 @@ class Gnome::Shell::UI::Dash {
       $!dragPlaceholder.show($fadeIn);
     }
 
-    return DND_DRAG_MOTION_NO_DROP   unless $!dragPlaceHolder;
-    return DND_DRAG_MOTION_MOVE_DROP if     $fp !== -1;
+    return DRAG_MOTION_NO_DROP   unless $!dragPlaceHolder;
+    return DRAG_MOTION_MOVE_DROP if     $fp !== -1;
 
-    DND_DRAG_MOTION_COPY_DROP
+    DRAG_MOTION_COPY_DROP
   }
 
   method acceptDrop ($s, $a, $x, $y, $t) {

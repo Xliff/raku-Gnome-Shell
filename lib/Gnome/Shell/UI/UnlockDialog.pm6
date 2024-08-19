@@ -211,7 +211,7 @@ class Gnome::Shell::UI::NotificationsBox is Gnome::Shell::St::BoxLayout {
       $w.height = 0;
       $w.ease({
         height     => $natHeight,
-        mode       => CLUTTER_ANIMATION_EASE_OUT_QUAD,
+        mode       => CLUTTER_EASE_OUT_QUAD,
         duration   => 250,
         onComplete => SUB {
           $!scrollView.vscrollbar-policy = GNOME_SHELL_ST_POLICY_AUTOMATIC;
@@ -665,7 +665,7 @@ class Gnome::Shell::UI::UnlockDialog is Gnome::Shell::St::Widget {
     $!adjustment.ease(
       0,
       duration   => CROSSFADE_TIME,
-      mode       => CLUTTER_ANIMATION_EASE_OUT_QUAD,
+      mode       => CLUTTER_EASE_OUT_QUAD,
       onComplete => SUB { self.maybeDestroyAuthPrompt }
     )
   }
@@ -677,7 +677,7 @@ class Gnome::Shell::UI::UnlockDialog is Gnome::Shell::St::Widget {
     $!adjustment.ease(
       1,
       duration   => CROSSFADE_TIME,
-      mode       => CLUTTER_ANIMATION_EASE_OUT_QUAD,
+      mode       => CLUTTER_EASE_OUT_QUAD,
     );
   }
 
@@ -753,7 +753,7 @@ class Gnome::Shell::UI::UnlockDialog is Gnome::Shell::St::Widget {
 
     $!adjustment.ease {
       $ep,
-      mode       => CLUTTER_ANIMATION_EASE_OUT_CUBIC,
+      mode       => CLUTTER_EASE_OUT_CUBIC,
       duration   => $d,
       onComplete => SUB {
         self.maybeDestroyAuthPrompt if $!activePage.is($!clock)

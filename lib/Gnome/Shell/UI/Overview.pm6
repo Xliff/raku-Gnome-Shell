@@ -6,10 +6,9 @@ use GLib::Timeout;
 
 ### /home/cbwood/Projects/gnome-shell/js/ui/overview.js
 
-constant ANIMATION_TIME is export = 250;
-
-constant DND_WINDOW_SWITCH_TIMEOUT   = 750;
-constant OVERVIEW_ACTIVATION_TIMEOUT = 0.5;
+constant OVERVIEW_ANIMATION_TIME is export = 250;
+constant DND_WINDOW_SWITCH_TIMEOUT         = 750;
+constant OVERVIEW_ACTIVATION_TIMEOUT       = 0.5;
 
 enum OverviewShownState <HIDDEN HIDING SHOWING SHOWN>;
 
@@ -263,7 +262,7 @@ class Gnome::Shell::UI::Overview
 
     $!windowSwitchTimestamp = Global.current-time;
 
-    return DRAG_MOTION_CONTINUE
+    return DRAG_MOTION_RESULT_CONTINUE
       if $tiw && $d.targetActor.degate.metaWindow.is($!lastHoveredWindow);
 
     $!lastHoveredWindow = Nil;
@@ -288,7 +287,7 @@ class Gnome::Shell::UI::Overview
       );
     }
 
-    DRAG_MOTION_CONTINUE;
+    DRAG_MOTION_RESULT_CONTINUE;
   }
 
   method onScrollEvent ($a, $e) {

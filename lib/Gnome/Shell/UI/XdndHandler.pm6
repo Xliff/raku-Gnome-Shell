@@ -87,7 +87,7 @@ class Gnome::Shell::UI::XDndHandler {
           source      => $self,
           targetActor => $pickedActor
         );
-        return unless $r == DND_DRAG_MOTION_RESULT_CONTINUE;
+        return unless $r == DRAG_MOTION_RESULT_CONTINUE;
       }
     }
 
@@ -101,7 +101,7 @@ class Gnome::Shell::UI::XDndHandler {
           $ty,
           global.get-current-time
         );
-        return unless $result == DND_DRAG_MOTION_RESULT_CONTINUE;
+        return unless $result == DRAG_MOTION_RESULT_CONTINUE;
       }
       $pickedActor .= get-parent();
     }

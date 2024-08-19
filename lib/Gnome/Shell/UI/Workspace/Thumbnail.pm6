@@ -677,7 +677,7 @@ class Gnome::Shell::UI::Workspace::Thumbnail::Box
 
   method onDragMotion ($e) {
     $.onLeave unless $.contains($e.targetActor);
-    return DND_DRAG_MOTION_CONTINUE;
+    return DRAG_MOTION_RESULT_CONTINUE;
   }
 
   method onLeave {
@@ -963,7 +963,7 @@ class Gnome::Shell::UI::Workspace::Thumbnail::Box
         'collapse-fraction',
         1,
         duration   => RESCALE_ANIMATION_TIME,
-        mode       => CLUTTER_ANIMATION_MODE_EASE_OUT_QUAD,
+        mode       => CLUTTER_EASE_OUT_QUAD,
         onComplete => SUB {
           $!stateCounts{$t.state}--;
           $t.state = WORKSPACE_THUMBNAIL_STATE_DESTROYED;
@@ -980,7 +980,7 @@ class Gnome::Shell::UI::Workspace::Thumbnail::Box
         'scale',
         $!targetScale,
         duration   => RESCALE_ANIMATION_TIME,
-        mode       => CLUTTER_ANIMATION_MODE_EASE_OUT_QUAD,
+        mode       => CLUTTER_EASE_OUT_QUAD,
         onComplete => SUB {
           self.setThumnailState($t, WORKSPACE_THUMBNAIL_STATE_EXPANDED);
           self.queueUpdateStates;
@@ -993,7 +993,7 @@ class Gnome::Shell::UI::Workspace::Thumbnail::Box
         'scale',
         $!targetScale,
         duration   => RESCALE_ANIMATION_TIME,
-        mode       => CLUTTER_ANIMATION_MODE_EASE_OUT_QUAD,
+        mode       => CLUTTER_EASE_OUT_QUAD,
         onComplete => SUB { self.queueUpdateStates }
       );
     }
@@ -1010,7 +1010,7 @@ class Gnome::Shell::UI::Workspace::Thumbnail::Box
         'slide-position',
         0,
         duration   => SLIDE_ANIMATION_TIME,
-        mode       => CLUTTER_ANIMATION_MODE_EASE_OUT_QUAD,
+        mode       => CLUTTER_EASE_OUT_QUAD,
         onComplete => SUB {
           self.setThumnailState($t, WORKSPACE_THUMBNAIL_STATE_NORMAL);
         }
