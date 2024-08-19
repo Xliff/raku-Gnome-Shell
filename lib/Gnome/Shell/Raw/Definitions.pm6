@@ -102,3 +102,32 @@ sub NC_ ($c, $s) is export {
 sub fmttime ($d, $f, :$lang) is export {
   $lang ?? strftime($f, $d,, :$lang) !! strftime($f, $d);
 }
+
+class X::Gnome::Shell::Error is Exception {
+  has $.message;
+
+  method new ($message) {
+    self.bless( :$message );
+  }
+}
+
+class X::Gnome::Shell::CancelledRequest is X::Gnome::Shell::Error     { }
+class X::Gnome::Shell::MissingParameter is X::Gnome::Shell::Error     { }
+
+class X::Gnome::Shell::BadItem          is X::Gnome::Shell::Error     { }
+class X::Gnome::Shell::BadIndex         is X::Gnome::Shell::BadItem   { }
+class X::Gnome::Shell::BadLength        is X::Gnome::Shell::BadItem   { }
+class X::Gnome::Shell::BadPage          is X::Gnome::Shell::BadItem   { }
+class X::Gnome::Shell::BadProperty      is X::Gnome::Shell::BadItem   { }
+class X::Gnome::Shell::BadSize          is X::Gnome::Shell::BadItem   { }
+class X::Gnome::Shell::BadState         is X::Gnome::Shell::BadItem   { }
+class X::Gnome::Shell::BadType          is X::Gnome::Shell::BadItem   { }
+
+class X::Gnome::Shell::UI               is X::Gnome::Shell::Error     { }
+class X::Gnome::Shell::UI::Error        is X::Gnome::Shell::UI        { }
+
+class X::Gnome::Shell::UI::NYI is X::Gnome::Shell::UI {
+  multi method new {
+    self.bless( message => 'Not yet implemented!' )
+  )
+}
