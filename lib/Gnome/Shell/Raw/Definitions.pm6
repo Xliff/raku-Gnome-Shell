@@ -6,6 +6,7 @@ use Cairo;
 
 use GLib::Raw::Definitions;
 
+use DateTime::Format;
 use GLib::Roles::Object;
 
 unit package Gnome::Shell::Raw::Definitions;
@@ -34,6 +35,8 @@ class StEntry                    is repr<CPointer> does GLib::Roles::Pointers is
 #class StGenericAccessible        is repr<CPointer> does GLib::Roles::Pointers is export { }
 #class StIcon                     is repr<CPointer> does GLib::Roles::Pointers is export { }
 #class StIconColors               is repr<CPointer> does GLib::Roles::Pointers is export { }
+class StIconInfo                 is repr<CPointer> does GLib::Roles::Pointers is export { }
+class StIconTheme                is repr<CPointer> does GLib::Roles::Pointers is export { }
 class StImageContent             is repr<CPointer> does GLib::Roles::Pointers is export { }
 #class StLabel                    is repr<CPointer> does GLib::Roles::Pointers is export { }
 class StPasswordEntry            is repr<CPointer> does GLib::Roles::Pointers is export { }
@@ -91,7 +94,7 @@ class MethodStub {
   method so               { False }
 }
 
-multi sub postfix:<?> ($o) is tighter(&infix:<.>) is export {
+multi sub postfix:<?> ($o) is export {
   $o.defined ?? $o !! MethodStub.new
 }
 
@@ -100,7 +103,7 @@ sub NC_ ($c, $s) is export {
 }
 
 sub fmttime ($d, $f, :$lang) is export {
-  $lang ?? strftime($f, $d,, :$lang) !! strftime($f, $d);
+  $lang ?? strftime($f, $d, :$lang) !! strftime($f, $d);
 }
 
 class X::Gnome::Shell::Error is Exception {
@@ -129,5 +132,5 @@ class X::Gnome::Shell::UI::Error        is X::Gnome::Shell::UI        { }
 class X::Gnome::Shell::UI::NYI is X::Gnome::Shell::UI {
   multi method new {
     self.bless( message => 'Not yet implemented!' )
-  )
+  }
 }
