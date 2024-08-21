@@ -205,3 +205,21 @@ our enum UnaryOperatorEnum is export (
   'MINUS_UOP',
   'EMPTY_UNARY_UOP'
 );
+
+constant StIconLookupFlags is export := guint32;
+our enum StIconLookupFlagsEnum is export (
+  ST_ICON_LOOKUP_NO_SVG           => 1,
+  ST_ICON_LOOKUP_FORCE_SVG        => 1 +< 1,
+  ST_ICON_LOOKUP_GENERIC_FALLBACK => 1 +< 2,
+  ST_ICON_LOOKUP_FORCE_SIZE       => 1 +< 3,
+  ST_ICON_LOOKUP_FORCE_REGULAR    => 1 +< 4,
+  ST_ICON_LOOKUP_FORCE_SYMBOLIC   => 1 +< 5,
+  ST_ICON_LOOKUP_DIR_LTR          => 1 +< 6,
+  ST_ICON_LOOKUP_DIR_RTL          => 1 +< 7
+);
+
+constant StIconThemeError is export := guint32;
+our enum StIconThemeErrorEnum is export <
+  ST_ICON_THEME_NOT_FOUND
+  ST_ICON_THEME_FAILED
+>;
