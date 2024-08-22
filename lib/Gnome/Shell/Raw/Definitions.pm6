@@ -35,6 +35,7 @@ class StEntry                    is repr<CPointer> does GLib::Roles::Pointers is
 #class StGenericAccessible        is repr<CPointer> does GLib::Roles::Pointers is export { }
 #class StIcon                     is repr<CPointer> does GLib::Roles::Pointers is export { }
 #class StIconColors               is repr<CPointer> does GLib::Roles::Pointers is export { }
+class StIconCache                is repr<CPointer> does GLib::Roles::Pointers is export { }
 class StIconInfo                 is repr<CPointer> does GLib::Roles::Pointers is export { }
 class StIconTheme                is repr<CPointer> does GLib::Roles::Pointers is export { }
 class StImageContent             is repr<CPointer> does GLib::Roles::Pointers is export { }
