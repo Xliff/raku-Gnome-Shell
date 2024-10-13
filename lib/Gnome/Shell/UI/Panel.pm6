@@ -19,6 +19,8 @@ constant BUTTON_DND_ACTIVATION_TIMEOUT = 250;
 constant N_QUICK_SETTINGS_COLUMNS      = 2;
 constant INACTIVE_WORKSPACE_DOT_SCALE  = 0.75;
 
+### /home/cbwood/Projects/gnome-shell/js/ui/panel.js
+
 class Gnome::Shell::UI::Panel::AppMenuButton
   is   Gnome::Shell::UI::PanelMenu::Button
 {
@@ -836,25 +838,4 @@ class Gnome::Shell::UIL::Panel
       );
     })
   }
-}
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
 }
