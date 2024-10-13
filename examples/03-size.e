@@ -24,7 +24,7 @@ $vbox.add ($text);
 my $size = 24;
 
 sub update_size() {
-    $text.style = 'font-size: ' + $size + 'pt';
+  $text.style = 'font-size: ' + $size + 'pt';
 }
 update_size();
 
@@ -35,8 +35,8 @@ my $s-button = Gnome::Shell::Button.new(
 
 $hbox.add ($s-button);
 $s-button.clicked.tap({
-    $size /= 1.2;
-    update_size;
+  $size /= 1.2;
+  update_size;
 });
 
 $b-button = Gnome::Shell::Button.new(
