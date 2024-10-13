@@ -412,10 +412,7 @@ class Gnome::Shell::Global {
   }
 
   method get_display ( :$raw = False )
-    is also<
-      get-display
-      display
-    >
+    is also<get-display>
   {
     propReturnObject(
       shell_global_get_display($!sg),
@@ -451,21 +448,11 @@ class Gnome::Shell::Global {
     shell_global_get_runtime_state($!sg, $property_type, $property_name);
   }
 
-  method get_session_mode
-    is also<
-      get-session-mode
-      session-mode
-      session_mode
-    >
-  {
+  method get_session_mode is also<get-session-mode> {
     shell_global_get_session_mode($!sg);
   }
 
-  method get_settings ( :$raw = False )
-    is also<
-      get-settings
-      settings
-    >
+  method get_settings ( :$raw = False ) is also<get-settings>
   {
     propReturnObject(
       shell_global_get_settings($!sg),
@@ -474,12 +461,7 @@ class Gnome::Shell::Global {
     );
   }
 
-  method get_stage ( :$raw = False )
-    is also<
-      get-stage
-      stage
-    >
-  {
+  method get_stage ( :$raw = False ) is also<get-stage> {
     propReturnObject(
       shell_global_get_stage($!sg),
       $raw,
@@ -487,13 +469,7 @@ class Gnome::Shell::Global {
     );
   }
 
-  method get_switcheroo_control
-    is also<
-      get-switcheroo-control
-      switcheroo-control
-      switcheroo_control
-    >
-  {
+  method get_switcheroo_control is also<get-switcheroo-control> {
     shell_global_get_switcheroo_control($!sg);
   }
 
@@ -508,11 +484,7 @@ class Gnome::Shell::Global {
   }
 
   method get_workspace_manager ( :$raw = False )
-    is also<
-      get-workspace-manager
-      workspace-manager
-      workspace_manager
-    >
+    is also<get-workspace-manager>
   {
     propReturnObject(
       shell_global_get_workspace_manager($!sg),
@@ -560,5 +532,5 @@ class Gnome::Shell::Global {
   method scale-factor is also<scale_factor> {
     Gnome::Shell::St::ThemeContext.get_for_stage($.stage).scale_factor;
   }
-  
+
 }
