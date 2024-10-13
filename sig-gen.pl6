@@ -1,6 +1,10 @@
 #!/usr/bin/env perl6
 use v6.c;
 
+use lib <scripts .>;
+
+use ScriptConfig;
+
 use LWP::Simple;
 #use Mojo::DOM:from<Perl5>;
 use DOM::Tiny;
@@ -72,7 +76,7 @@ sub MAIN (
 
       %signals{$mn} = ( :$udm, :$mn, :$v, :$s-sig, :$rt ).Hash;
     }
-  } elsif (my $control-io = $control.IO).r {
+  } elsif ( my $control-io = %config<include-directory.IO.add($control) ) {
     say 'Reading from file...';
 
     # If it's a readable file, we have to do things the (James) Hardway
