@@ -40,19 +40,33 @@ our enum DisplayFormatEnum is export <
 
 constant ExtensionState is export := guint32;
 our enum ExtensionStateEnum is export (
-  STATE_ENABLED     =>  1,
-  'STATE_DISABLED',
-  'STATE_ERROR',
-  'STATE_OUT_OF_DATE',
-  'STATE_DOWNLOADING',
-  'STATE_INITIALIZED',
-  STATE_UNINSTALLED => 99,
+  ENABLED         =>  1,
+  'DISABLED',
+  'ERROR',
+  'OUT_OF_DATE',
+  'DOWNLOADING',
+  'INITIALIZED',
+  UNINSTALLED     => 99,
 );
 
 constant ExtensionType is export := guint32;
 our enum ExtensionTypeEnum is export (
   TYPE_SYSTEM => 1,
   'TYPE_USER'
+);
+
+constant ShellActionMode is export := guint32;
+our enum ShellActionModeEnum is export (
+  SHELL_ACTION_MODE_NONE          => 0,
+  SHELL_ACTION_MODE_NORMAL        => 1,
+  SHELL_ACTION_MODE_OVERVIEW      => 1 +< 1,
+  SHELL_ACTION_MODE_LOCK_SCREEN   => 1 +< 2,
+  SHELL_ACTION_MODE_UNLOCK_SCREEN => 1 +< 3,
+  SHELL_ACTION_MODE_LOGIN_SCREEN  => 1 +< 4,
+  SHELL_ACTION_MODE_SYSTEM_MODAL  => 1 +< 5,
+  SHELL_ACTION_MODE_LOOKING_GLASS => 1 +< 6,
+  SHELL_ACTION_MODE_POPUP         => 1 +< 7,
+  SHELL_ACTION_MODE_ALL           => 0xffffffff,
 );
 
 constant ShellAppLaunchGpu is export := guint32;
