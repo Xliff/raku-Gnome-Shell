@@ -52,6 +52,25 @@ class Gnome::Shell::St::Adjustment {
     $o;
   }
   multi method new (
+    MutterClutterActor() :$actor,
+    Num()                :$value           = 0,
+    Num()                :$lower           = 0,
+    Num()                :$upper           = 100,
+    Num()                :$step_increment  = 1,
+    Num()                :$page_increment  = 10,
+    Num()                :$page_size       = 10
+  ) {
+    samewith(
+      $actor,
+      $value,
+      $lower,
+      $upper,
+      $step_increment,
+      $page_increment,
+      $page_size
+    );
+  }
+  multi method new (
     MutterClutterActor() $actor,
     Num()                $value,
     Num()                $lower,
