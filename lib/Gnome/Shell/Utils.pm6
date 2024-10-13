@@ -1,5 +1,7 @@
 use v6.c;
 
+use Method::Also;
+
 use Gnome::Shell::Raw::Types;
 use Gnome::Shell::Raw::Utils;
 
@@ -11,14 +13,16 @@ class Gnome::Shell::Utils {
   method shell_get_file_contents_utf8_sync (
     Str()                   $path,
     CArray[Pointer[GError]] $error = gerror
-  ) {
+  )
+    is also<shell-get-file-contents-utf8-sync>
+  {
     clear_error;
     my $mrv = shell_get_file_contents_utf8_sync($path, $error);
     set_error($error);
     $mrv;
   }
 
-  method check_cloexec_fds {
+  method check_cloexec_fds is also<check-cloexec-fds> {
     shell_util_check_cloexec_fds();
   }
 
@@ -31,7 +35,9 @@ class Gnome::Shell::Utils {
     Int()                   $target_height,
     Num()                   $target_scale,
                            :$raw            = False
-  ) {
+  )
+    is also<composite-capture-images>
+  {
     my gint ($n, $xx, $yy, $tw, $th) =
       ($n_captures, $x, $y, $target_width, $target_height);
 
@@ -54,6 +60,7 @@ class Gnome::Shell::Utils {
   }
 
   proto method create_pixbuf_from_data (|)
+    is also<create-pixbuf-from-data>
   { * }
 
   multi method create_pixbuf_from_data (
@@ -152,37 +159,41 @@ class Gnome::Shell::Utils {
     );
   }
 
-  method get_translated_folder_name (Str() $name) {
+  method get_translated_folder_name (Str() $name) is also<get-translated-folder-name> {
     shell_util_get_translated_folder_name($name);
   }
 
-  method get_uid {
+  method get_uid is also<get-uid> {
     shell_util_get_uid();
   }
 
-  method get_week_start {
+  method get_week_start is also<get-week-start> {
     shell_util_get_week_start();
   }
 
   method has_x11_display_extension (
     MutterMetaDisplay() $display,
     Str()               $extension
-  ) {
+  )
+    is also<has-x11-display-extension>
+  {
     so shell_util_has_x11_display_extension($display, $extension);
   }
 
-  method regex_escape (Str() $str) {
+  method regex_escape (Str() $str) is also<regex-escape> {
     shell_util_regex_escape($str);
   }
 
-  method sd_notify {
+  method sd_notify is also<sd-notify> {
     shell_util_sd_notify();
   }
 
   method set_hidden_from_pick (
     MutterClutterActor() $actor,
     Int()                $hidden = True
-  ) {
+  )
+    is also<set-hidden-from-pick>
+  {
     my gboolean $h = $hidden.so.Int;
 
     shell_util_set_hidden_from_pick($actor, $hidden);
@@ -191,11 +202,14 @@ class Gnome::Shell::Utils {
   method set_unhidden_from_pick (
     MutterClutterActor() $actor,
     Int()                $hidden = False
-  ) {
+  )
+    is also<set-unhidden-from-pick>
+  {
     self.set_hidden_from_pick($hidden);
   }
 
   proto method start_systemd_unit (|)
+    is also<start-systemd-unit>
   { * }
   multi method start_systemd_unit (
     Str()           $unit,
@@ -225,7 +239,9 @@ class Gnome::Shell::Utils {
   method start_systemd_unit_finish (
     GAsyncResult()          $res,
     CArray[Pointer[GError]] $error = gerror
-  ) {
+  )
+    is also<start-systemd-unit-finish>
+  {
     clear_error;
     my $mrv = shell_util_start_systemd_unit_finish($res, $error);
     set_error($error);
@@ -233,6 +249,7 @@ class Gnome::Shell::Utils {
   }
 
   proto method stop_systemd_unit (|)
+    is also<stop-systemd-unit>
   { * }
 
   multi method stop_systemd_unit (
@@ -263,7 +280,9 @@ class Gnome::Shell::Utils {
   method stop_systemd_unit_finish (
     GAsyncResult()          $res,
     CArray[Pointer[GError]] $error = gerror
-  ) {
+  )
+    is also<stop-systemd-unit-finish>
+  {
     clear_error;
     my $mrv = shell_util_stop_systemd_unit_finish($res, $error);
     set_error($error);
@@ -271,6 +290,7 @@ class Gnome::Shell::Utils {
   }
 
   proto method systemd_unit_exists (|)
+    is also<systemd-unit-exists>
   { * }
 
   multi method systemd_unit_exists (
@@ -287,13 +307,20 @@ class Gnome::Shell::Utils {
                    &callback,
     gpointer       $user_data    = gpointer
   ) {
-    shell_util_systemd_unit_exists($unit, $cancellable, $callback, $user_data);
+    shell_util_systemd_unit_exists(
+      $unit,
+      $cancellable,
+      $callback,
+      $user_data
+    );
   }
 
   method systemd_unit_exists_finish (
     GAsyncResult()          $res,
     CArray[Pointer[GError]] $error = gerror
-  ) {
+  )
+    is also<systemd-unit-exists-finish>
+  {
     clear_error;
     my $mrv = shell_util_systemd_unit_exists_finish($res, $error);
     set_error($error);
@@ -304,7 +331,9 @@ class Gnome::Shell::Utils {
     GFile()  $file,
              &callback,
     gpointer $user_data = gpointer
-  ) {
+  )
+    is also<touch-file-async>
+  {
     shell_util_touch_file_async($file, $callback, $user_data);
   }
 
@@ -312,14 +341,16 @@ class Gnome::Shell::Utils {
     GFile()                 $file,
     GAsyncResult()          $res,
     CArray[Pointer[GError]] $error = gerror
-  ) {
+  )
+    is also<touch-file-finish>
+  {
     clear_error;
     my $mrv = shell_util_touch_file_finish($file, $res, $error);
     set_error($error);
     $mrv;
   }
 
-  method translate_time_string (Str() $str) {
+  method translate_time_string (Str() $str) is also<translate-time-string> {
     shell_util_translate_time_string($str);
   }
 
@@ -340,7 +371,9 @@ class Gnome::Shell::Utils {
     GOutputStream()         $stream,
     Str()                   $str,
     CArray[Pointer[GError]] $error   = gerror
-  ) {
+  )
+    is also<write-string-to-stream>
+  {
     clear_error;
     my $mrv = shell_write_string_to_stream($stream, $str, $error);
     set_error($error);
