@@ -275,7 +275,7 @@ class Gnome::Shell::UI::PopupMenu::Item::Separator
 class Gnome::Shell::UI::PopupMenu::Switch
   is Gnome::Shell::St::Bin
 {
-  has Bool $!state is g-propery;
+  has Bool $!state is built is g-propery;
 
   method state is rw {
     Proxy.new:
@@ -292,7 +292,6 @@ class Gnome::Shell::UI::PopupMenu::Switch
   }
 
   submethod TWEAK ( :$state ) {
-    $!state = False,
     self.setAttributes(
       style-class     => 'toggle-switch',
       accessible-role => ATK_ROLE_CHECK_BOX,
