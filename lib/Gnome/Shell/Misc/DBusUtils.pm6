@@ -26,6 +26,7 @@ sub ensureIfaceResource {
 our sub loadInterfaceXML ($iface, :$encoding = 'utf8') {
   ensureIfaceResource;
 
+  # cw: Replace with %*RESOURCE entry.
   my $f = GIO::File.new-for-uri(
     "resource:///org/gnome/shell/dbus-interfaces/{ $iface }.xml"
   );
