@@ -112,103 +112,112 @@ sub loadMode ($file, $info, :$encoding = 'utf8') is export {
 
 	return unless modes{$modeName}:exists;
 
-    my ($contents, $newMode)`;
+  my ($contents, $newMode);
 	{
-        CATCH {
-            default { return }
-        }
-
-        $contents = $file.load_contents;
-        $newMode  = from-json( Buf.new($contents).decode($encoding) );
+    CATCH {
+      default {
+        $*ERR.say: "loadMode error{ .message } - { .backtrace.concise }"
+      }
     }
-    modes{$modeName} = {};
 
-    my @excluded-props = <unlockDialog>;
-    for $modes{DEFAULT_MODE}.pairs {
-        next if .key eq @excluded-props.any;
-        modes{$modeName}{ .key } = $newMode{ .key };
-    }
-    modes{$modeName}<isPrimary> = True;
+    $contents = $file.load_contents;
+    $newMode  = from-json( Buf.new($contents).decode($encoding) );
+  }
+  modes{$modeName} = %{};
+
+  my @excluded-props = <unlockDialog>;
+  for $modes{DEFAULT_MODE}.pairs {
+    next if .key eq @excluded-props.any;
+    modes{$modeName}{ .key } = $newMode{ .key };
+  }
+  modes{$modeName}<isPrimary> = True;
 }
 
 sub loadModes is export {
-    collectFromDatadirs('modes', False, &loadMode);
+  collectFromDatadirs('modes', False, &loadMode);
 }
 
 sub listModes is export {
-    loadModes;
-    my $loop = GLib::MainLoop.new;
-    my $id = GLib::Main.idle_add(=> *@a {
-        for modes.keys {
-            say $_ if $modes{$_}<isPrimary>;
-        }
-        $loop.quit;
-    });
-    GLib::Source.set_name_by_id($id, '[gnome-shell-raku] listModes')
-    $loop.run;
+  loadModes;
+  my $loop = GLib::MainLoop.new;
+  my $id = GLib::Main.idle_add(=> *@a {
+    for modes.keys {
+      say $_ if $modes{$_}<isPrimary>;
+    }
+    $loop.quit;
+  });
+  GLib::Source.set_name_by_id($id, '[gnome-shell-raku] listModes')
+  $loop.run;
 }
 
 class Gnome::Shell::UI::SessionMode
-    is   Gnome::Shell::Misc::Signals::EventEmitter
-    does Associative
+  is   Gnome::Shell::Misc::Signals::EventEmitter
+  does Associative
 {
-    has @!modeStack;
-    has %!properties;
+  has @!modeStack;
+  has %!properties;
 
-    submethod BUILD {
-        loadModes;
+  submethod BUILD {
+    loadModes;
 
-        my $isPrimary = modes[Global.session-mode] &&
-                        modes[Global.session-mode]<isPrimary>;
-        my $mode      = $isPrimary ? Global.session-mode !! 'user';
-        @!modeStack   = [$mode];
-        self.sync;
+    my $isPrimary = modes[Global.session-mode] &&
+                    modes[Global.session-mode]<isPrimary>;
+    my $mode      = $isPrimary ? Global.session-mode !! 'user';
+    @!modeStack   = [$mode];
+    self.sync;
+  }
+
+  method AT-KEY (\k) {
+    %!properties{k};
+  }
+
+  method EXISTS-KEY (\k) {
+    %!properties{k}:exists;
+  }
+  +
+  method FALLBACK ($n) {
+    with %!properties{$n} {
+      return $_;
     }
+    X::Method::NotFound.new.throw;
+  }
 
-    method AT-KEY (\k) {
-        %!properties{k};
-    }
+  method pushMode ($mode) {
+    $*ERR.say: "sessionMode: Pushing mode { $mode }";
+    @!modeStack.push: $mode;
+    self.sync;
+  }
 
-    method EXISTS-KEY (\k) {
-        %!properties{k}:exists;
-    }
+  method popMode ($mode) {
+    if self.currentMode ne $mode || @!modeStack.elems == 1
+      X::Gnome::Shell::InvalidSessionMode.new.throw;
 
-    method pushMode ($mode) {
-        $*ERR.say: "sessionMode: Pushing mode { $mode }";
-        @!modeStack.push: $mode;
-        self.sync;
-    }
+    $*ERR.say: "sessionMode: Popping mode { $mode }";
+    @!modeStack.pop;
+    self.sync;
+  }
 
-    method popMode ($mode) {
-        if self.currentMode ne $mode || @!modeStack.elems == 1
-            X::Gnome::Shell::InvalidSessionMode.new.throw;
+  method switchMode ($to) {
+    return if self.currentMode eq $to;
 
-        $*ERR.say: "sessionMode: Popping mode { $mode }";
-        @!modeStack.pop;
-        self.sync;
-    }
+    @!modeStack.tail = $to;
+    self.sync;
+  }
 
-    method switchMode ($to) {
-        return if self.currentMode eq $to;
+  method currentMode {
+    @!modeStack.tail;
+  }
 
-        @!modeStack.tail = $to;
-        self.sync;
-    }
+  method sync {
+    my $params   = modes{self.currentMode};
+    my $defaults = params<parentMode> ??
+      ?? ( modes{$params<parentMode>} // modes{DEFAULT_MODE} )
+      !!   modes{DEFAULT_MODE};
+    $params = mergeHash($params, $defaults);
 
-    method currentMode {
-        @!modeStack.tail;
-    }
+    self{ .key } = .value for $params.pairs;
 
-    method sync {
-        my $params   = modes{self.currentMode};
-        my $defaults = params<parentMode> ??
-            ?? ( modes{$params<parentMode>} // modes{DEFAULT_MODE} )
-            !!   modes{DEFAULT_MODE};
-        $params = mergeHash($params, $defaults);
-
-        self{ .key } = .value for $params.pairs;
-
-        self.emit('updated')
-    }
+    self.emit('updated')
+  }
 
 }
