@@ -13,6 +13,8 @@ use Gnome::Shell::UI::Global;
 use GLib::Roles::RegisterClass
 use GIO::Roles::AppInfo;
 
+### /home/cbwood/Projects/gnome-shell/js/ui/lookingGlass.js
+
 constant AUTO_COMPLETE_DOUBLE_TAB_DELAY                   = 500;
 constant AUTO_COMPLETE_SHOW_COMPLETION_ANIMATION_DURATION = 200;
 constant LG_ANIMATION_TIME                                = 500;

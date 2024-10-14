@@ -6,6 +6,8 @@ use Gnome::Shell::UI::PopMenu;
 use Gnome::Shell::UI::QuickSettings;
 use Gnome::Shell::UI::Slider;
 
+### /home/cbwood/Projects/gnome-shell/js/ui/status/backlight.js
+
 constant BUS_NAME            = 'org.gnome.SettingsDaemon.Power';
 constant OBJECT_PATH         = '/org/gnome/SettingsDaemon/Power';
 
