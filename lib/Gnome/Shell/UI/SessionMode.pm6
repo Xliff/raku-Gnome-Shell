@@ -125,7 +125,7 @@ sub loadMode ($file, $info, :$encoding = 'utf8') is export {
   }
   modes{$modeName} = %{};
 
-  my @excluded-props = <unlockDialog>;
+  my @excluded-props = .<unlockDialog>;
   for $modes{DEFAULT_MODE}.pairs {
     next if .key eq @excluded-props.any;
     modes{$modeName}{ .key } = $newMode{ .key };

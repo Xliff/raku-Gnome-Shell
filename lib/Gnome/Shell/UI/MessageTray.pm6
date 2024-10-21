@@ -21,7 +21,13 @@ constant IDLE_TIME                              = 1000;
 our enum NotificationDestroyedReason is export
   <EXPIRED DISMISSED SOURCE_CLOSED REPLACED>
 
-our enum State        is export <HIDDEN SHOWING SHOWN HIDING>
+our enum State        is export <
+  MESSAGE_TRAY_STATE_HIDDEN
+  MESSAGE_TRAY_STATE_SHOWING
+  MESSAGE_TRAY_STATE_SHOWN
+  MESSAGE_TRAY_STATE_HIDING
+>;
+
 our enum Urgency      is export <LOW NORMAL HIGH CRITICAL>
 our enum PrivacyScope is export <USER SYSTEM>;
 
@@ -597,7 +603,7 @@ class Gnome::Shell::UI::MessageTray
   has $!idleMonitor                      = Global.backend.get-core-idle-monitor;
   has $!notificationHovered              = False;
   has $!notificationRemoved              = False;
-  has $!notificationState                = HIDDEN;
+  has $!notificationState                = MESSAGE_TRAY_STATE_HIDDEN;
   has $!notificationTimeoutId            = 0;
   has $!pointerInNotification            = False;
   has $!sources                          = [];
@@ -756,7 +762,10 @@ class Gnome::Shell::UI::MessageTray
   method onNotificationDestroy ($n) {
     if $!notification.is($n) {
       $!notificationRemoved = True;
-      if $!notificationSate === (SHOWN, SHOWING).any {
+      if $!notificationSate === (
+        MESSAGE_TRAY_STATE_SHOWN,
+        MESSAGE_TRAY_STATE_SHOWING
+      ).any {
         $.updateNotificationTimeout(0);
         $.updateState;
       }
@@ -887,14 +896,17 @@ class Gnome::Shell::UI::MessageTray
 
     my $hn = Main.sessionMode.hasNotifications;
 
-    if $!notificationState == HIDDEN {
+    if $!notificationState == MESSAGE_TRAY_STATE_HIDDEN {
       my $nn = @!notificationQueue.head;
       if $hn && $nn {
         my $l   = $!busy || Main.layoutManager.primaryMonitor.inFullScreen;
         my $snn = $l.not || $nn.forFeedback || $nn.urgency == CRITICAL;
         $.showNotification if $snn;
       }
-    } else if $!notificationState == (SHOWING, SHOWN).any {
+    } else if $!notificationState == (
+      MESSAGE_TRAY_STATE_SHOWING,
+      MESSAGE_TRAY_STATE_SHOWN
+    ).any {
       my $e = $notificationExpired || [&&](
         $!userActiveWhileNotificationShown,
         $!notification.urgency != CRITICAL,
@@ -905,7 +917,10 @@ class Gnome::Shell::UI::MessageTray
 
       if $mc {
         $.hideNotification($hn && $!notificationRemoved.not);
-      } elsif $!notificationState == SHOWN && $!pointerInNotification {
+      } elsif [&&](
+        $!notificationState == MESSAGE_TRAY_SHOWN,
+        $!pointerInNotification
+      {
         $!banner.expanded.not ?? $.expandBanner(False)
                               !! $.ensureBannerFocused;
       }
@@ -953,7 +968,7 @@ class Gnome::Shell::UI::MessageTray
     if $!notification.urgency == CRITICAL ||
           $!notification.source.policy.forceExpanded;
 
-    $!notificationState = SHOWING;
+    $!notificationState = MESSAGE_TRAY_STATE_SHOWING;
     $!bannerBin.remove-all-transitions;
     $!bannerBin.ease(
       opacity  => 255,
@@ -1012,7 +1027,7 @@ class Gnome::Shell::UI::MessageTray
     $!bannerBin.remove-all-transitions;
 
     my ($s, $duration) = (self, $a ?? ANIMATION_TIME !! 0);
-    $!notificationState = HIDING;
+    $!notificationState = MESSAGE_TRAY_STATE_HIDING;
     $!bannerBin.ease(
       opacity => 0,
       mode    => CLUTTER_EASE_OUT_BACK,
@@ -1023,7 +1038,7 @@ class Gnome::Shell::UI::MessageTray
       y          => -$!bannerBin.height,
       mode       => CLUTTER_EASE_OUT_BACK,
       onComplete => SUB {
-        $!notificationState = HIDING;
+        $!notificationState = MESSAGE_TRAY_STATE_HIDING;
         $s.hideNotificationCompleted;
         $s.updateState
       )
