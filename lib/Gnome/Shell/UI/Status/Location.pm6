@@ -18,6 +18,8 @@ constant GeoclueIface          = loadInterfaceXML('org.freedesktop.GeoClue2.Mana
 constant GeoclueManager        = GIO::DBus::Proxy.makeProxyWrapper(GeoclueIface);
 constant AgentIface            = loadInterfaceXML('org.freedesktop.GeoClue2.Agent');
 
+### /home/cbwood/Projects/gnome-shell/js/ui/status/location.js
+
 enum GeoclueAccuracyLevelEnum = (
   GEOCLUE_ACCURACY_NONE         => 0,
   GEOCLUE_ACCURACY_COUNTRY      => 1,
