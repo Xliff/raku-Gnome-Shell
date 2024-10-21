@@ -6,6 +6,8 @@ use Gnome::Shell::Misc::Signals;
 use Gnome::Shell::UI::MessageTray;
 use Gnome::Shell::UI::Overview;
 
+### /home/cbwood/Projects/gnome-shell/js/ui/screenShield.js
+
 constant SCREENSAVER_SCHEMA = 'org.gnome.desktop.screensaver';
 constant LOCK_ENABLED_KEY   = 'lock-enabled';
 constant LOCK_DELAY_KEY     = 'lock-delay';
@@ -565,7 +567,7 @@ class Gnome::Shell::UI::ScreenShield
     $.setLocked(
       $!isGreeter
         ?? True
-        !! ($u.password-mode != ACCOUNTS_USER_PASWWORD_MODE_NONE)
+        !! ($u.password-mode != ACT_USER_PASSWORD_MODE_NONE)
     )
   }
 
@@ -580,6 +582,5 @@ class Gnome::Shell::UI::ScreenShield
       }
     );
   }
-
 
 }
