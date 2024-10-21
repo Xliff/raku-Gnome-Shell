@@ -16,18 +16,18 @@ my $ifaceResource;
 sub ensureIfaceResource {
   return unless $ifaceResource;
 
-  my $dir  = %*ENV<GNOME_SHELL_DATADIR> || Config.PKGDATADIR;
+  my $dir  = %*ENV<GNOME_SHELL_DATADIR> || PKGDATADIR;
   my $path = "{ $dir }/gnome-shell-dbus-interfaces.gresource";
 
   $ifaceResource = GIO::Resource.load($path);
   GIO::Resources.register($ifaceResource);
 }
 
-our sub loadInterfaceXML ($iface, :$encoding = 'utf8') {
+our sub loadInterfaceXML ($iface, :$encoding = 'utf8') is export {
   ensureIfaceResource;
 
   # cw: Replace with %*RESOURCE entry.
-  my $f = GIO::File.new-for-uri(
+  my $f = GIO::File.new_for_uri(
     "resource:///org/gnome/shell/dbus-interfaces/{ $iface }.xml"
   );
 
