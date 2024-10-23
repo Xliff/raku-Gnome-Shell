@@ -936,12 +936,3 @@ class Gnome::Shell::UI::PadOSD::Service
   }
 
 }
-
-
-
-
-
-
-
-  # ...
-}
