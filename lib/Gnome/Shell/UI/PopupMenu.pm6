@@ -775,7 +775,10 @@ class Gnome::Shell::UI::PopupMenu is Gnome::Shell::UI::PopupMenu::Base {
     CLUTTER_EVENT_PROPAGATE;
   }
 
-  method open ($a) {
+  multi method open ( :$animate is required ) {
+    self.open($animate);
+  }
+  multi method open ($a) {
     return if $.isOpen || $.isEmpty;
 
     my $s = self;
@@ -795,12 +798,15 @@ class Gnome::Shell::UI::PopupMenu is Gnome::Shell::UI::PopupMenu::Base {
 
     $!isOpen = True;
     $!boxPointer.setPosition($!sourceActor, $!arrowAlignment);
-    $!boxPoitner.open($a);
+    $!boxPointer.open($a);
     $.actor.parent.set-child-above-sibling($.actor);
     $.emit('open-state-changed', True);
   }
 
-  method close ($a) {
+  multi method close ( :$animate is required ) {
+    self.close($animate);
+  }
+  multi method close ($a) {
     $!activeMenuItem.active = False if $!activeMenuItem;
 
     my $s = self;
