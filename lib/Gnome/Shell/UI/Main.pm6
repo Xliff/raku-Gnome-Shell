@@ -160,7 +160,7 @@ class Gnome::Shell::UI::Main does Associative {
   }
 
   method sessionUpdated {
-    self!loadDefaultStylesheet if sessionMode.hasRunDialog;
+    self!loadDefaultStylesheet if $!sessionMode.hasRunDialog;
     wm.allowKeybinding(
       'overlay-key',
       SHELL_ACTION_MODE_NONE +| SHELL_ACTION_MODE_OVERVIEW,
@@ -169,18 +169,18 @@ class Gnome::Shell::UI::Main does Associative {
     wm.setCustomKeybindingHandler(
       'panel-run-dialog',
       SHELL_ACTION_MODE_NORMAL +| SHELL_ACTION_MODE_OVERVIEW,
-      sub { sessionMode.hasRunDialog ?? openRunDialog !! Nil }
+      sub { $!sessionMode.hasRunDialog ?? openRunDialog !! Nil }
     )
 
-    unless sessionMode.hasRunDialog {
+    unless $!sessionMode.hasRunDialog {
       .().close with ::("\&{ $_ }") for <RunDialog LookingGlass WelcomeDialog>;
     }
 
     if Global.backend.get-remote-access-controller -> \rac {
-      if sessionMode.allowScreencast && $remoteAccessInhibited {
+      if $!sessionMode.allowScreencast && $remoteAccessInhibited {
         rac.uninhibit_remote_access;
         $remoteAccessInhibited = False;
-      } else if sessionMode.allowScreencast.not && $remoteAccesssInhibited.not {
+      } else if $!sessionMode.allowScreencast.not && $remoteAccesssInhibited.not {
         rac.inhibit-remote-access;
         $remoteAccessInhibited = True;
       }
@@ -298,7 +298,7 @@ class Gnome::Shell::UI::Main does Associative {
       $em.init;
 
       $layoutManager.Startup-Prepared.tap: SUB { $screenShield.showDialog }
-        if $sessionMode.isGreeter && $screenShield;
+        if $!sessionMode.isGreeter && $screenShield;
 
       my ($Scripting, $perfModule);
       my $animationScript = Global.animationScript;
@@ -308,7 +308,7 @@ class Gnome::Shell::UI::Main does Associative {
         $perfModule.?init if $perfModule;
       }
 
-      if $sessionMode eq <gdm initial-setup>.any {
+      if $!sessionMode eq <gdm initial-setup>.any {
         GLib.log_structured(
           LOG_DOMAIN,
           G_LOG_LEVEL_MESSAGE,
@@ -340,7 +340,7 @@ class Gnome::Shell::UI::Main does Associative {
         }
 
         handleLockScreenWarning
-          if $sessionMode.currentMode ne <gdm initial-setup>.all;
+          if $!sessionMode.currentMode ne <gdm initial-setup>.all;
 
         LM.registerSessionWithGDM;
 
@@ -413,7 +413,7 @@ class Gnome::Shell::UI::Main does Associative {
 
   method getStyleVariant {
     my $cs = Gnome::Shell::St::Settings.get;
-    do given $sessionMode."{ $cs }"() {
+    do given $!sessionMode."{ $cs }"() {
       when 'force-dark'  { 'dark'  }
       when 'force-light' { 'light' }
       when 'prefer-dark' { $cs == ST_COLOR_SCHEME_PREFER_LIGHT  ?? 'light'
@@ -425,7 +425,7 @@ class Gnome::Shell::UI::Main does Associative {
   }
 
   method getDefaultStylesheet {
-    my ($name, $ss) = ($sessionMode.stylesheetName);
+    my ($name, $ss) = ($!sessionMode.stylesheetName);
 
     if Gnome::Shell::St::Settings.get.high-contrast.so {
       $ss = getStyleSheet( $name.subst('.css', '-high-contrast.css') );
@@ -526,7 +526,7 @@ class Gnome::Shell::UI::Main does Associative {
     $!themeResource.unregister-cleanup if $!themeResource;
 
     $!themeResource = GIO::Resource.load(
-      Global.datadir.add($sessionMode.themeResourceName)
+      Global.datadir.add($!sessionMode.themeResourceName)
     ) but GLib::Roles::Object::Cleanup['workspaces'];
   }
   # class AdjustmentRegistry sub{
@@ -604,7 +604,7 @@ class Gnome::Shell::UI::Main does Associative {
     $!themeResource.unregister-cleanup if $!themeResource;
 
     $!themeResource = GIO::Resource.load(
-      Global.datadir.add($sessionMode.themeResourceName)
+      Global.datadir.add($!sessionMode.themeResourceName)
     ) but GLib::Roles::Object::Cleanup['workspaces'];
   }
 
@@ -632,7 +632,7 @@ class Gnome::Shell::UI::Main does Associative {
     without $theme.default-stylesheet {
       X::Error.new(
         message => "No valid stylesheet found for {
-                    $sessionMode.stylesheetName }";
+                    $!sessionMode.stylesheetName }";
       ).throw;
     }
 
