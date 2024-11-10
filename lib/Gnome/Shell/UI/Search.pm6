@@ -322,7 +322,7 @@ class Gnome::Shell::UI::Search::Results::List
   }
 }
 
-class Gnome::Shell::UI::Search::Result::Grid
+class Gnome::Shell::UI::Search::Result::Grid::Layout
   is Mutter::Clutter::LayoutManager
 {
   has guint32 $!spacing is g-property = 0;
@@ -741,7 +741,12 @@ class Gnome::Shell::UI::Search::Result::View
     $!defaultResult?.activate;
   }
 
-  method highlightDefault ($h) {
+  multi method highlightDefault (
+    :s(:sel(:$selected)) is required = True
+  ) {
+    nextwith($selected);
+  }
+  multi method highlightDefault ($h) {
     $.setSelected($!defaultResult, $!highlightDefault = $h);
   }
 
