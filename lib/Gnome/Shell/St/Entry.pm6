@@ -195,11 +195,11 @@ class Gnome::Shell::St::Entry is Gnome::Shell::St::Widget {
     );
   }
 
-  method primary-icon-clicked {
+  method Primary-Icon-Clicked {
     self.connect($!ste, 'primary-icon-clicked');
   }
 
-  method secondary-icon-clicked {
+  method Secondary-Icon-Clicked {
     self.connect($!ste, 'secondary-icon-clicked');
   }
 
@@ -294,6 +294,18 @@ class Gnome::Shell::St::Entry is Gnome::Shell::St::Widget {
 
   method set_text (Str() $text) is also<set-text> {
     st_entry_set_text($!ste, $text);
+  }
+
+  method unset_hint_actor is also<unset-hint-actor> {
+    $.set-hint-actor(MutterClutterActor);
+  }
+
+  method unset_primary_icon is also<unset-primary-icon> {
+    $.set-primary-icon(MutterClutterActor);
+  }
+
+  method unset_secondary_icon is also<unset-secondary-icon> {
+    $.set-secondary-icon(MutterClutterActor);
   }
 
 }
