@@ -57,6 +57,7 @@ class StWidget                   is repr<CPointer> does GLib::Roles::Pointers is
 
 class ShellApp                   is repr<CPointer> does GLib::Roles::Pointers is export { }
 class ShellBlurEffect            is repr<CPointer> does GLib::Roles::Pointers is export { }
+class ShellCameraMonitor         is repr<CPointer> does GLib::Roles::Pointers is export { }
 class ShellGtkEmbed              is repr<CPointer> does GLib::Roles::Pointers is export { }
 class ShellEmbeddedWindow        is repr<CPointer> does GLib::Roles::Pointers is export { }
 class ShellGlobal                is repr<CPointer> does GLib::Roles::Pointers is export { }
