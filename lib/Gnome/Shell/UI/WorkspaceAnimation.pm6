@@ -25,7 +25,7 @@ class Gnome::Shell::UI::WorkspaceAnimation::Group
       $.add-child( $!background = Gnome::Shell::Meta::Background.new );
 
       $!bgManager = Gnome::Shell::UI::Background::Manager.new(
-        container       `=> $!background,
+        container       => $!background,
         monitorIdex     => $!monitor.index,
         controlPosition => False,
       );
