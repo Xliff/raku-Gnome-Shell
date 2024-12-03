@@ -7,6 +7,7 @@ use DOM::Tiny;
 
 use lib <scripts .>;
 
+use ScriptConfig;
 use GTKScripts;
 
 my @really-strings = <
