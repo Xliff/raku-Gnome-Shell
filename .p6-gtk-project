@@ -1,9 +1,9 @@
 prefix=Gnome::Shell::
 struct-prefix=St
 modules=Gnome::Shell::Raw::Types
-backups=backup,bitbucket,google-backup,azure-backup,hut
+backups=backup,bitbucket,google-backup,azure-backup,sourcehut
 hfile-prefix=
-lib=gnome-shell
+lib=gnome-shell-st
 include-directory=/home/cbwood/Projects/gnome-shell/src,/home/cbwood/Projects/gnome-shell/js/ui
 exec=gs-exec
 subprefixes=
