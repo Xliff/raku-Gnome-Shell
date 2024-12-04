@@ -256,8 +256,8 @@ our enum CRTokenTypeEnum is export <
   DELIM_TK
 >;
 
-constant Operator is export := guint32;
-our enum OperatorEnum is export (
+constant CrOperator is export := guint32;
+our enum CrOperatorEnum is export (
   NO_OP  => 0,
   'DIVIDE',
   'COMMA'
