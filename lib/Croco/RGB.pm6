@@ -5,6 +5,8 @@ use Method::Also;
 use Gnome::Shell::Raw::Types;
 use Croco::Raw::RGB;
 
+use GLib::Roles::Implementor;
+
 class Croco::RGB {
   also does GLib::Roles::Implementor;
 
@@ -17,10 +19,10 @@ class Croco::RGB {
     is also<CRRgb>
   { $!cr }
 
-  multi method new (CrocoRgb :$croco-rgb!) {
+  multi method new (CRRgb :$croco-rgb!) {
     $croco-rgb ?? self.bless( :$croco-rgb ) !! Nil;
-  )
-  multi method new (CrocoRgb $croco-rgb) {
+  }
+  multi method new (CRRgb $croco-rgb) {
     $croco-rgb ?? self.bless( :$croco-rgb ) !! Nil;
   }
   multi method new {
@@ -63,7 +65,7 @@ class Croco::RGB {
     cr_rgb_dump($!cr, $a_fp);
   }
 
-  method parse_from_buf (Str() $buf, Int() $a_enc, :$raw = False)
+  method parse_from_buf (Str() $buf, Int() $a_enc = CR_AUTO, :$raw = False)
     is also<parse-from-buf>
   {
     my CREncoding $a = $a_enc;
@@ -107,4 +109,24 @@ class Croco::RGB {
     cr_rgb_to_string($!cr);
   }
 
+  method gist {
+    qq:to/GIST/.chomp;
+      Croco::RGB.new(
+        cr => { $!cr.gist }
+      );
+      GIST
+  }
+
+}
+
+our %CROCO-CSS2-COLORS;
+sub load-croco-colors is export {
+  for @croco-css2-colors {
+    my $c := (%CROCO-CSS2-COLORS{$_} = Croco::RGB.new);
+    $c.set-from-name($_);
+  }
+}
+
+sub croco-colors is export {
+  @croco-css2-colors;
 }
