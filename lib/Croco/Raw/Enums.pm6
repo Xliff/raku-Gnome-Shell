@@ -53,20 +53,20 @@ our enum CRFontVariantEnum is export (
 
 constant CRFontWeight is export := guint32;
 our enum CRFontWeightEnum is export (
-  FONT_WEIGHT_NORMAL  =>       1,
-  FONT_WEIGHT_BOLD    =>  1 +< 1,
-  FONT_WEIGHT_BOLDER  =>  1 +< 2,
-  FONT_WEIGHT_LIGHTER =>  1 +< 3,
-  FONT_WEIGHT_100     =>  1 +< 4,
-  FONT_WEIGHT_200     =>  1 +< 5,
-  FONT_WEIGHT_300     =>  1 +< 6,
-  FONT_WEIGHT_400     =>  1 +< 7,
-  FONT_WEIGHT_500     =>  1 +< 8,
-  FONT_WEIGHT_600     =>  1 +< 9,
-  FONT_WEIGHT_700     => 1 +< 10,
-  FONT_WEIGHT_800     => 1 +< 11,
-  FONT_WEIGHT_900     => 1 +< 12,
-  FONT_WEIGHT_INHERIT => 1 +< 13,
+  CROCO_FONT_WEIGHT_NORMAL  =>       1,
+  CROCO_FONT_WEIGHT_BOLD    =>  1 +< 1,
+  CROCO_FONT_WEIGHT_BOLDER  =>  1 +< 2,
+  CROCO_FONT_WEIGHT_LIGHTER =>  1 +< 3,
+  CROCO_FONT_WEIGHT_100     =>  1 +< 4,
+  CROCO_FONT_WEIGHT_200     =>  1 +< 5,
+  CROCO_FONT_WEIGHT_300     =>  1 +< 6,
+  CROCO_FONT_WEIGHT_400     =>  1 +< 7,
+  CROCO_FONT_WEIGHT_500     =>  1 +< 8,
+  CROCO_FONT_WEIGHT_600     =>  1 +< 9,
+  CROCO_FONT_WEIGHT_700     => 1 +< 10,
+  CROCO_FONT_WEIGHT_800     => 1 +< 11,
+  CROCO_FONT_WEIGHT_900     => 1 +< 12,
+  CROCO_FONT_WEIGHT_INHERIT => 1 +< 13,
   'NB_FONT_WEIGHTS'
 );
 
@@ -256,9 +256,28 @@ our enum CRTokenTypeEnum is export <
   DELIM_TK
 >;
 
-constant CrOperator is export := guint32;
-our enum CrOperatorEnum is export (
-  NO_OP  => 0,
+constant CROperator is export := guint32;
+our enum CROperatorEnum is export (
+  NO_OP     => 0,
   'DIVIDE',
   'COMMA'
 );
+
+constant CRUnaryOperator is export := guint32;
+our enum CRUnaryOperatorEnum is export (
+  NO_UNARY_UOP      => 0,
+  'PLUS_UOP',
+  'MINUS_UOP',
+  'EMPTY_UNARY_UOP'
+);
+
+constant CREncoding is export := guint32;
+our enum CREncodingEnum is export (
+   CR_UCS_4         => 1,
+  'CR_UCS_1',
+  'CR_ISO_8859_1',
+  'CR_ASCII',
+  'CR_UTF_8',
+  'CR_UTF_16',
+  'CR_AUTO'
+)
