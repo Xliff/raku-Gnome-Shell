@@ -19,8 +19,8 @@ our $gnome-shell-registrar
 BEGIN add-object-registrar($gnome-shell-registrar);
 
 # cw: This will need to be replaced with something more robust!
-our constant gnome-shell       is export := '/usr/lib/gnome-shell/lib-gnome-shell';
-our constant gnome-shell-st    is export := '/usr/lib/gnome-shell/libst-1.0';
+our constant gnome-shell       is export := '/usr/lib/gnome-shell/libshell-15.so';
+our constant gnome-shell-st    is export := '/usr/lib/gnome-shell/libst-15.so';
 
 our constant cairo_surface_t   is export := Cairo::cairo_surface_t;
 our constant Atom              is export := guint32;
@@ -79,11 +79,6 @@ class ShellWindowTracker         is repr<CPointer> does GLib::Roles::Pointers is
 class ShellWM                    is repr<CPointer> does GLib::Roles::Pointers is export { }
 
 class ShellPolkitAuthenticationAgent is repr<CPointer> does GLib::Roles::Pointers is export { }
-
-class CRAdditionalSel            is repr<CPointer> does GLib::Roles::Pointers is export { }
-class CREncoding                 is repr<CPointer> does GLib::Roles::Pointers is export { }
-class CRStatement                is repr<CPointer> does GLib::Roles::Pointers is export { }
-class CRTerm                     is repr<CPointer> does GLib::Roles::Pointers is export { }
 
 class GtkActionMuxer             is repr<CPointer> does GLib::Roles::Pointers is export { }
 class GtkActionObserver          is repr<CPointer> does GLib::Roles::Pointers is export { }

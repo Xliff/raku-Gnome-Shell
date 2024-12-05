@@ -15,12 +15,17 @@ use Pango::Raw::Exports;
 
 unit package Gnome::Shell::Raw::Exports;
 
+our @croco-exports is export = <
+  Croco::Raw::Definitions
+  Croco::Raw::Enums
+  Croco::Raw::Structs
+>;
+
 our @gnome-shell-exports is export = <
   Gnome::Shell::Raw::Definitions
   Gnome::Shell::Raw::Enums
   Gnome::Shell::Raw::Structs
 >;
-
 
 our @gnome-shell-compunits is export = |@glib-exports,
                                        |@atk-exports,
@@ -33,4 +38,5 @@ our @gnome-shell-compunits is export = |@glib-exports,
                                        |@gsk4-exports,
                                        |@gdk4-exports,
                                        |@gtk4-exports,
+                                       |@croco-exports,
                                        |@gnome-shell-exports;

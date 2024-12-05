@@ -212,14 +212,6 @@ our enum StTextureCachePolicyEnum is export <
   ST_TEXTURE_CACHE_POLICY_FOREVER
 >;
 
-constant UnaryOperator is export := guint32;
-our enum UnaryOperatorEnum is export (
-  NO_UNARY_UOP    => 0,
-  'PLUS_UOP',
-  'MINUS_UOP',
-  'EMPTY_UNARY_UOP'
-);
-
 constant StIconLookupFlags is export := guint32;
 our enum StIconLookupFlagsEnum is export (
   ST_ICON_LOOKUP_NO_SVG           => 1,
