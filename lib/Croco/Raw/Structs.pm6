@@ -232,9 +232,9 @@ class CRStatement is repr<CStruct> does GLib::Roles::Pointers is export {
 # 	has CRNum                $!num ;
 # }
 #
-# class CRInput is repr<CStruct> is export {
-# 	has Pointer $!priv; # CRInputPriv
-# }
+class CRInput is repr<CStruct> is export {
+	has Pointer $!priv; # CRInputPriv
+}
 #
 # class CRInputPos is repr<CStruct> is export {
 # 	has glong    $!line           ;
@@ -248,9 +248,9 @@ class CRStatement is repr<CStruct> does GLib::Roles::Pointers is export {
 # 	has Pointer $!priv; # CROMParserPriv
 # }
 #
-# class CRParser is repr<CStruct> is export {
-# 	has Pointer $!priv; # CRParserPriv
-# }
+class CRParser is repr<CStruct> is export {
+	has Pointer $!priv; # CRParserPriv
+}
 #
 # class CRPropList is repr<CStruct> is export {
 # 	has Pointer $!priv; # CRPropListPriv
@@ -263,14 +263,6 @@ class CRStatement is repr<CStruct> does GLib::Roles::Pointers is export {
 # 	has CRParsingLocation $!location;
 # }
 #
-# class CRRgb is repr<CStruct> is export {
-# 	has guchar            $!name         ;
-# 	has glong             $!red          ;
-# 	has glong             $!green        ;
-# 	has glong             $!blue         ;
-# 	has gboolean          $!is_percentage;
-# 	has CRParsingLocation $!location     ;
-# }
 #
 # class CRSimpleSel is repr<CStruct> is export {
 # 	has SimpleSelectorType $!type_mask      ;
@@ -313,6 +305,6 @@ class CRStatement is repr<CStruct> does GLib::Roles::Pointers is export {
 # 	has CRStyleSheet $!sheet     ;
 # }
 #
-# class CRTknzr is repr<CStruct> is export {
-# 	has Pointer $!priv; #= CRTknzrPriv
-# }
+class CRTknzr is repr<CStruct> is export {
+	has Pointer $!priv; #= CRTknzrPriv
+}
