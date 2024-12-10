@@ -21,12 +21,12 @@ class CRParsingLocation is repr<CStruct> is export {
 class CRNum is repr<CStruct> is export {
 	has CRNumType         $!type    ;
 	has gdouble           $!val     ;
-	has CRParsingLocation $!location;
+	HAS CRParsingLocation $!location;
 }
 
 class CRString is repr<CStruct> is export {
 	has GString           $!stryng  ;
-	has CRParsingLocation $.location is rw;
+	HAS CRParsingLocation $.location;
 
   method stryng is rw is also<string> {
     Proxy.new:
@@ -41,7 +41,7 @@ class CRRgb is repr<CStruct> does GLib::Roles::Pointers is export {
   has glong             $.green         is rw;
   has glong             $.blue          is rw;
   has gboolean          $.is_percentage is rw;
-  has CRParsingLocation $.location      is rw;
+  HAS CRParsingLocation $.location      is rw;
 
   method name is rw {
     Proxy.new:
@@ -108,7 +108,7 @@ class CRTerm does GLib::Roles::Pointers is export {
   has glong             $.ref_count;
   has CRTerm            $!next;
   has CRTerm            $!prev;
-  has CRParsingLocation $.location     is rw;
+  HAS CRParsingLocation $.location;
 
   method content is rw {
     Proxy.new:
@@ -235,14 +235,31 @@ class CRStatement is repr<CStruct> does GLib::Roles::Pointers is export {
 class CRInput is repr<CStruct> is export {
 	has Pointer $!priv; # CRInputPriv
 }
-#
-# class CRInputPos is repr<CStruct> is export {
-# 	has glong    $!line           ;
-# 	has glong    $!col            ;
-# 	has gboolean $!end_of_file    ;
-# 	has gboolean $!end_of_line    ;
-# 	has glong    $!next_byte_index;
-# }
+
+class CRInputPos is repr<CStruct> is export {
+	has glong    $!line           ;
+	has glong    $!col            ;
+	has gboolean $!end_of_file    ;
+	has gboolean $!end_of_line    ;
+	has glong    $!next_byte_index;
+}
+
+class CRTokenU is repr<CUnion> {
+	has CRString $.str          ;
+	has CRRgb    $.rgb          ;
+	has CRNum    $.num          ;
+	has guint32  $.unichar is rw;
+}
+
+class CRToken is repr<CStruct> is export {
+  has CRTokenType       $.type       is rw;
+  has CRTokenExtraType  $.extra_type is rw;
+  HAS CRInputPos        $.pos             ;
+	HAS CRTokenU          $.u               ;
+  has CRString          $.dimen           ;
+  HAS CRParsingLocation $.location        ;
+}
+
 #
 # class CROMParser is repr<CStruct> is export {
 # 	has Pointer $!priv; # CROMParserPriv
