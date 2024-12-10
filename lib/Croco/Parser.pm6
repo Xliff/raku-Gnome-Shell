@@ -3,6 +3,7 @@ use v6.c;
 use Method::Also;
 
 use Gnome::Shell::Raw::Types;
+use GLib::Raw::Exceptions;
 use Croco::Raw::Parser;
 
 use GLib::GList;
@@ -11,12 +12,6 @@ use Croco::Tokenizer;
 use Croco::Term;
 
 use GLib::Roles::Implementor;
-
-our $LAST-STATUS is export;
-
-sub setCrocoStatus ($s) is export {
-  $LAST-STATUS = CRStatusEnum($s);
-}
 
 class Croco::Parser {
   does GLib::Roles::Implementor;
@@ -30,7 +25,15 @@ class Croco::Parser {
     is also<CRParser>
   { $!cp }
 
-  method new (CRTknzr() $tokenizer) {
+  multi method new (CRParser $croco-parser) {
+    $croco-parser ?? self.bless( :$croco-parser ) !! Nil;
+  }
+  multi method new ($tokenizer is copy where $tokenizer !~~ CRParser) {
+    $tokenizer .= CRTknzr if $tokenizer.^can('CRTknzr');
+    X::GLib::InvalidType.new(
+      messager => 'Parameter must be CRTknzr-compatible!'
+    ).throw unless $tookenizer ~~ CRTknzr;
+
     my $croco-parser = cr_parser_new($tokenizer);
 
     $croco-parser ?? self.bless( :$croco-parser ) !! Nil;
