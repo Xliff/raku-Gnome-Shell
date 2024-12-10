@@ -281,3 +281,9 @@ our enum CREncodingEnum is export (
   'CR_UTF_16',
   'CR_AUTO'
 )
+
+our $LAST-STATUS is export;
+
+sub setCrocoStatus ($s) is export {
+  $LAST-STATUS = CRStatusEnum($s);
+}
