@@ -282,6 +282,39 @@ our enum CREncodingEnum is export (
   'CR_AUTO'
 );
 
+constant CRCombinator is export := guint32;
+our enum CRCombinatorEnum is export <
+  NO_COMBINATOR
+  COMB_WS
+  COMB_PLUS
+  COMB_GT
+>;
+
+constant CRSimpleSelectorType is export := guint32;
+enum CRSimpleSelectorTypeEnum is export (
+  NO_SELECTOR_TYPE   => 0,
+  UNIVERSAL_SELECTOR => 1,
+  TYPE_SELECTOR      => 1 +< 1
+);
+
+constant CRAddSelectorType is export := guint32;
+our enum CRAddSelectorTypeEnum is export (
+  NO_ADD_SELECTOR           => 0 ,
+  CLASS_ADD_SELECTOR        => 1 ,
+  PSEUDO_CLASS_ADD_SELECTOR => 1 +< 1,
+  ID_ADD_SELECTOR           => 1 +< 3,
+  ATTRIBUTE_ADD_SELECTOR    => 1 +< 4
+);
+
+constant CRAttrMatchWay is export := guint32;
+our enum CRAttrMatchWayEnum is export (
+  NO_MATCH  => 0,
+  'SET',
+  'EQUALS',
+  'INCLUDES',
+  'DASHMATCH'
+);
+
 our $LAST-STATUS is export;
 
 sub setCrocoStatus ($s) is export {

@@ -6,32 +6,6 @@ use Pango::Raw::Enums;
 
 unit package Gnome::Shell::Raw::Enums;
 
-constant AddSelectorType is export := guint32;
-our enum AddSelectorTypeEnum is export (
-  NO_ADD_SELECTOR           =>        0,
-  CLASS_ADD_SELECTOR        =>        1,
-  PSEUDO_CLASS_ADD_SELECTOR => 1  +<  1,
-  ID_ADD_SELECTOR           => 1  +<  3,
-  ATTRIBUTE_ADD_SELECTOR    => 1  +<  4,
-);
-
-constant AttrMatchWay is export := guint32;
-our enum AttrMatchWayEnum is export (
-  NO_MATCH  => 0,
-  'SET',
-  'EQUALS',
-  'INCLUDES',
-  'DASHMATCH'
-);
-
-constant Combinator is export := guint32;
-our enum CombinatorEnum is export <
-  NO_COMBINATOR
-  COMB_WS
-  COMB_PLUS
-  COMB_GT
->;
-
 constant DisplayFormat is export := guint32;
 our enum DisplayFormatEnum is export <
   DISPLAY_ONELINE
@@ -104,13 +78,6 @@ our enum ShellSnippetHookEnum is export (
   SHELL_SNIPPET_HOOK_TEXTURE_COORD_TRANSFORM => 4096,
   SHELL_SNIPPET_HOOK_LAYER_FRAGMENT          => 6144,
   'SHELL_SNIPPET_HOOK_TEXTURE_LOOKUP'
-);
-
-constant SimpleSelectorType is export := guint32;
-our enum SimpleSelectorTypeEnum is export (
-  NO_SELECTOR_TYPE   =>        0,
-  UNIVERSAL_SELECTOR =>        1,
-  TYPE_SELECTOR      => 1  +<  1,
 );
 
 constant StAlign is export := guint32;
