@@ -181,14 +181,7 @@ class CRStatement is repr<CStruct> does GLib::Roles::Pointers is export {
 # 	has CRStatement $!rulesets  ;
 # }
 #
-# class CRAttrSel is repr<CStruct> is export {
-# 	has CRString          $!name     ;
-# 	has CRString          $!value    ;
-# 	has AttrMatchWay      $!match_way;
-# 	has CRAttrSel         $!next     ;
-# 	has CRAttrSel         $!prev     ;
-# 	has CRParsingLocation $!location ;
-# }
+
 #
 # class CRCascade is repr<CStruct> is export {
 # 	has Pointer $!priv; #= CRCascadePriv
@@ -260,6 +253,55 @@ class CRToken is repr<CStruct> is export {
   HAS CRParsingLocation $.location        ;
 }
 
+class CRPseudo is repr<CStruct> is export {
+	has CRPseudoType      $!type    ;
+	has CRString          $!name    ;
+	has CRString          $!extra   ;
+	HAS CRParsingLocation $!location;
+}
+
+class CRAttrSel is repr<CStruct> is export {
+	has CRString          $!name     ;
+	has CRString          $!value    ;
+	has guint             $!match_way; #= AttrAttachWay
+	has CRAttrSel         $!next     ;
+	has CRAttrSel         $!prev     ;
+	HAS CRParsingLocation $!location ;
+}
+
+class CRAdditionalSelectorContent is repr<CUnion> is export {
+  has CRString  $.class_name;
+  has CRString  $.id_name   ;
+  has CRPseudo  $.pseudo    ;
+  has CRAttrSel $.attr_sel  ;
+}
+
+class CRAdditionalSel is repr<CStruct> is export {
+  has CRAddSelectorType           $.type       is rw;
+  HAS CRAdditionalSelectorContent $.content  ;
+  has CRAdditionalSel             $.next     ;
+  has CRAdditionalSel             $.prev     ;
+  HAS CRParsingLocation           $.location ;
+}
+
+class CRSimpleSel is repr<CStruct> is export {
+	has CRSimpleSelectorType $.type_mask       is rw;
+	has gboolean             $.is_case_sentive is rw;
+	has CRString             $.name                 ;
+	has CRCombinator         $.combinator      is rw;
+	has CRAdditionalSel      $.add_sel              ;
+	has gulong               $.specificity     is rw;
+	has CRSimpleSel          $.next                 ;
+	has CRSimpleSel          $.prev                 ;
+	HAS CRParsingLocation    $.location             ;
+}
+
+
+
+
+
+
+
 #
 # class CROMParser is repr<CStruct> is export {
 # 	has Pointer $!priv; # CROMParserPriv
@@ -273,25 +315,10 @@ class CRParser is repr<CStruct> is export {
 # 	has Pointer $!priv; # CRPropListPriv
 # }
 #
-# class CRPseudo is repr<CStruct> is export {
-# 	has CRPseudoType      $!type    ;
-# 	has CRString          $!name    ;
-# 	has CRString          $!extra   ;
-# 	has CRParsingLocation $!location;
-# }
+
 #
 #
-# class CRSimpleSel is repr<CStruct> is export {
-# 	has SimpleSelectorType $!type_mask      ;
-# 	has gboolean           $!is_case_sentive;
-# 	has CRString           $!name           ;
-# 	has Combinator         $!combinator     ;
-# 	has CRAdditionalSel    $!add_sel        ;
-# 	has gulong             $!specificity    ;
-# 	has CRSimpleSel        $!next           ;
-# 	has CRSimpleSel        $!prev           ;
-# 	has CRParsingLocation  $!location       ;
-# }
+
 #
 # class CRSelector is repr<CStruct> is export {
 # 	has CRSimpleSel       $!simple_sel;
